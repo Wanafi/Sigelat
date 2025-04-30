@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "bacon/bacon-qr-code": "^3.0",
+        "doctrine/dbal": "^4.2",
         "filament/filament": "3.3",
         "filament/infolists": "3.3",
         "laravel/framework": "^12.0",

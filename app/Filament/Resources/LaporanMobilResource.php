@@ -51,13 +51,13 @@ class LaporanMobilResource extends Resource
                     ->label('Status')
                     ->colors([
                         'success' => 'Aktif',
-                        'warning' => 'TidakAktif',
-                        'danger' => 'DalamPerbaikan',
+                        'warning' => 'Tidak Aktif',
+                        'danger' => 'Dalam Perbaikan',
                     ])
                     ->icons([
                         'heroicon-o-check-circle' => 'Aktif',
-                        'heroicon-o-exclamation-triangle' => 'TidakAktif',
-                        'heroicon-o-wrench-screwdriver' => 'DalamPerbaikan',
+                        'heroicon-o-exclamation-triangle' => 'Tidak Aktif',
+                        'heroicon-o-wrench-screwdriver' => 'Dalam Perbaikan',
                     ]),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -76,11 +76,44 @@ class LaporanMobilResource extends Resource
                         'tidakaktif' => 'Tidak Aktif',
                         'dalamperbaikan' => 'Dalam Perbaikan',
                     ])
-                    ->default(['Tidak Aktif', 'Dalam Perbaikan']),
+                    ->default(['TidakAktif', 'DalamPerbaikan']),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+            
+                Tables\Actions\Action::make('konfirmasi')
+                    ->label('Konfirmasi')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->form([
+                        Forms\Components\TextInput::make('aksi')
+                            ->label('Aksi')
+                            ->required(),
+            
+                        Forms\Components\Textarea::make('catatan')
+                            ->label('Catatan')
+                            ->rows(3)
+                            ->required(),
+                    ])
+                    ->action(function (Model $record, array $data) {
+                        /** @var Mobil $record */
+                        $record->status_mobil = 'ProsesPelaporan';
+                        $record->save();
+            
+                        \App\Models\Riwayat::create([
+                            'riwayatable_id' => $record->id,
+                            'riwayatable_type' => get_class($record),
+                            'status' => 'proses',
+                            'user_id' => auth()->id(),
+                            'tanggal_cek' => now()->toDateString(),
+                            'aksi' => $data['aksi'],
+                            'catatan' => $data['catatan'],
+                        ]);
+            
+                        session()->flash('message', 'Laporan Gelar berhasil diproses!');
+                    })
+                    ->visible(fn ($record) => $record->status !== 'Proses'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

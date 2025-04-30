@@ -23,9 +23,9 @@ class LaporanAlatResource extends Resource
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?string $navigationLabel = 'Laporan Alat';
     public static function shouldRegisterNavigation(): bool
-{
-    return false;
-}
+    {
+        return false;
+    }
 
 
 
@@ -64,8 +64,7 @@ class LaporanAlatResource extends Resource
                         'danger' => 'Rusak',
                         'warning' => 'Habis',
                     ])
-                    ->toggleable()
-                    ,
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('tanggal_pembelian')
                     ->label('Tanggal Pembelian')
                     ->date('d M Y'),
@@ -82,7 +81,45 @@ class LaporanAlatResource extends Resource
                     ->searchable()
                     ->default(['rusak', 'habis']),
             ])
-            ->defaultSort('nama_alat');
+            ->defaultSort('nama_alat')
+
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+
+                Tables\Actions\Action::make('konfirmasi')
+                    ->label('Konfirmasi')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->form([
+                        Forms\Components\TextInput::make('aksi')
+                            ->label('Aksi')
+                            ->required(),
+
+                        Forms\Components\Textarea::make('catatan')
+                            ->label('Catatan')
+                            ->rows(3)
+                            ->required(),
+                    ])
+                    ->action(function (Model $record, array $data) {
+                        /** @var Alat $record */
+                        $record->status_alat = 'proses';
+                        $record->save();
+
+                        \App\Models\Riwayat::create([
+                            'riwayatable_id' => $record->id,
+                            'riwayatable_type' => get_class($record),
+                            'status' => 'Proses',
+                            'user_id' => auth()->id(),
+                            'tanggal_cek' => now()->toDateString(),
+                            'aksi' => $data['aksi'],
+                            'catatan' => $data['catatan'],
+                        ]);
+
+                        session()->flash('message', 'Laporan Alat berhasil diproses!');
+                    })
+                    ->visible(fn($record) => $record->status !== 'Proses'),
+            ]);
     }
 
     public static function getRelations(): array
