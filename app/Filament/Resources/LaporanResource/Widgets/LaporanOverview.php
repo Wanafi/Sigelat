@@ -33,7 +33,7 @@ class LaporanOverview extends BaseWidget
             Card::make('Laporan Gelar Alat', Gelar::count())
                 ->description('Laporan Kegiatan Gelar Alat 📄')
                 ->icon('heroicon-o-clipboard')
-                ->color('danger')
+                ->color('info')
                 ->chart([7, 2, 10, 3, 15, 4, 17])
                 ->url(route('filament.admin.resources.laporan-gelars.index')),
         ];

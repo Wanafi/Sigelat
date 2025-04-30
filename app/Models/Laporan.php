@@ -8,3 +8,4 @@ class Laporan extends Model
 {
     //
 }
+

@@ -18,6 +18,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Tables\Actions\DeleteBulkAction;
 use App\Filament\Resources\Manajemen\GelarResource\Pages;
@@ -29,18 +30,19 @@ class GelarResource extends Resource
 {
     protected static ?string $model = Gelar::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-truck';
-    protected static ?string $label = 'Gelar Alat';
+    protected static ?string $navigationIcon = 'heroicon-o-map';
+    protected static ?string $label = 'Kegiatan';
     protected static ?string $navigationGroup = 'Manajemen';
-    protected static ?string $pluralLabel = 'Gelar Alat';
+    protected static ?string $pluralLabel = 'Daftar Kegiatan Gelar Alat';
+    protected static ?string $navigationLabel = 'Gelar Alat';
 
     public static function form(Form $form): Form
-{
-    $totalAlat = Alat::count();
+    {
+        $totalAlat = Alat::count();
 
-    return $form
-        ->schema([
-            Section::make()
+        return $form
+            ->schema([
+                Section::make()
                     ->schema([
                         Select::make('mobil_id')
                             ->label('Mobil')
@@ -52,44 +54,44 @@ class GelarResource extends Resource
                             ->label('Nomor Plat Mobil')
                             ->placeholder('Belum ditempatkan')
                             ->nullable(),
-            Forms\Components\CheckboxList::make('alat_ids')
-                ->label('Pilih Alat yang Ada')
-                ->options(Alat::all()->pluck('nama_alat', 'id'))
-                ->columns(2)
-                ->dehydrated(false)
-                ->live()
-                ->afterStateUpdated(function (Set $set, ?array $state) use ($totalAlat) {
-                    $jumlahAlatTercentang = count($state ?? []);
-                    $status = ($jumlahAlatTercentang === $totalAlat) ? 'Lengkap' : 'Tidak Lengkap';
-                    $set('status', $status);
-                }),
-                Forms\Components\Select::make('status')
-                ->label('Status')
-                ->options([
-                    'Lengkap' => 'Lengkap',
-                    'Tidak Lengkap' => 'Tidak Lengkap',
-                ])
-                ->default(function (?Gelar $record) {
-                    // Cek apakah ada $record, jika ada tentukan default sesuai statusnya
-                    if ($record) {
-                        // Mengambil status berdasarkan data alat yang ada di $record
-                        return count($record->alat_ids) == Alat::count() ? 'Lengkap' : 'Tidak Lengkap';
-                    }
-                    // Defaultkan status 'Tidak Lengkap' saat buat baru
-                    return 'Tidak Lengkap';
-                })
-                ->disabled()
-                ->dehydrated(true),
-            
+                        Forms\Components\CheckboxList::make('alat_ids')
+                            ->label('Pilih Alat yang Ada')
+                            ->options(Alat::all()->pluck('nama_alat', 'id'))
+                            ->columns(2)
+                            ->dehydrated(false)
+                            ->live()
+                            ->afterStateUpdated(function (Set $set, ?array $state) use ($totalAlat) {
+                                $jumlahAlatTercentang = count($state ?? []);
+                                $status = ($jumlahAlatTercentang === $totalAlat) ? 'Lengkap' : 'Tidak Lengkap';
+                                $set('status', $status);
+                            }),
+                        Forms\Components\Select::make('status')
+                            ->label('Status')
+                            ->options([
+                                'Lengkap' => 'Lengkap',
+                                'Tidak Lengkap' => 'Tidak Lengkap',
+                            ])
+                            ->default(function (?Gelar $record) {
+                                // Cek apakah ada $record, jika ada tentukan default sesuai statusnya
+                                if ($record) {
+                                    // Mengambil status berdasarkan data alat yang ada di $record
+                                    return count($record->alat_ids) == Alat::count() ? 'Lengkap' : 'Tidak Lengkap';
+                                }
+                                // Defaultkan status 'Tidak Lengkap' saat buat baru
+                                return 'Tidak Lengkap';
+                            })
+                            ->disabled()
+                            ->dehydrated(true),
 
-            Forms\Components\DatePicker::make('tanggal_cek')
-                ->label('Tanggal Cek')
-                ->default(now())
-                ->required()
-                ->dehydrated(true),
-            ])->columns(2),
-        ]);
-}
+
+                        Forms\Components\DatePicker::make('tanggal_cek')
+                            ->label('Tanggal Cek')
+                            ->default(now())
+                            ->required()
+                            ->dehydrated(true),
+                    ])->columns(2),
+            ]);
+    }
 
 
     public static function table(Tables\Table $table): Tables\Table
@@ -104,13 +106,31 @@ class GelarResource extends Resource
                     ->searchable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')->label('Status')
-                    ->badge(),
+                    ->badge()
+                    ->colors([
+                        'success' => 'Lengkap',
+                        'warning' => 'Tidak Lengkap',
+                        'gray' => 'Proses',
+                    ])
+                    ->icons([
+                        'heroicon-o-check-circle' => 'Lengkap',
+                        'heroicon-o-exclamation-triangle' => 'Tidak Lengkap',
+                        'heroicon-o-clock' => 'Proses',
+                    ]),
                 Tables\Columns\TextColumn::make('tanggal_cek')
                     ->label('Tanggal Cek')
                     ->date(),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->searchable()
+                    ->preload()
+                    ->label('Filter Status')
+                    ->indicator('Filter By')
+                    ->options([
+                        'Lengkap' => 'Lengkap',
+                        'Tidak Lengkap' => 'Tidak Lengkap',
+                    ]),
             ])
             ->actions([
                 ActionGroup::make([

@@ -9,15 +9,21 @@ use App\Models\Riwayat;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Illuminate\Database\Eloquent\Model;
-use App\Filament\Resources\LaporanGelarResource\Pages;
 use Filament\Pages\Actions\Action;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Filters\SelectFilter;
+use App\Filament\Resources\LaporanGelarResource\Pages;
 
 class LaporanGelarResource extends Resource
 {
     protected static ?string $model = Gelar::class;
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?string $navigationLabel = 'Laporan Gelar';
+    protected static ?string $pluralLabel = 'Daftar Laporan Gelar Alat';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function shouldRegisterNavigation(): bool
@@ -38,7 +44,10 @@ class LaporanGelarResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('mobil.nomor_plat')
-                    ->label('Mobil'),
+                    ->label('Mobil')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Pelapor')
@@ -48,18 +57,48 @@ class LaporanGelarResource extends Resource
 
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
-                    ->badge(),
+                    ->badge()
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable()
+                    ->colors([
+                        'success' => 'Lengkap',
+                        'warning' => 'TidakLengkap',
+                        'gray' => 'Proses',
+                    ])
+                    ->icons([
+                        'heroicon-o-check-circle' => 'Lengkap',
+                        'heroicon-o-exclamation-triangle' => 'Tidak Lengkap',
+                        'heroicon-o-clock' => 'Proses',
+                    ]),
 
                 Tables\Columns\TextColumn::make('tanggal_cek')
                     ->label('Tanggal Cek')
-                    ->date(),
+                    ->date()
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->searchable()
+                    ->preload()
+                    ->label('Filter Status')
+                    ->indicator('Filter By')
+                    ->options([
+                        'Lengkap' => 'Lengkap',
+                        'Tidak Lengkap' => 'Tidak Lengkap',
+                        'proses' => 'Proses',
+                    ]),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make()
+                        ->color('warning'),
+                    DeleteAction::make()
+                        ->color('danger'),
+                ])->icon('heroicon-m-ellipsis-horizontal'),
             
                 Tables\Actions\Action::make('konfirmasi')
                     ->label('Konfirmasi')
@@ -77,7 +116,7 @@ class LaporanGelarResource extends Resource
                     ])
                     ->action(function (Model $record, array $data) {
                         /** @var Gelar $record */
-                        $record->status = 'proses';
+                        $record->status = 'Proses';
                         $record->save();
             
                         \App\Models\Riwayat::create([
@@ -92,7 +131,7 @@ class LaporanGelarResource extends Resource
             
                         session()->flash('message', 'Laporan Gelar berhasil diproses!');
                     })
-                    ->visible(fn ($record) => $record->status !== 'proses'),
+                    ->visible(fn ($record) => $record->status !== 'Proses'),
             ])
             
             ->bulkActions([

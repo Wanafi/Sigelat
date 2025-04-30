@@ -30,4 +30,9 @@ class Gelar extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getStatusGelarAttribute($value)
+{
+    return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
+}
 }

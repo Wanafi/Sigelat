@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         return $this->morphMany(Riwayat::class, 'riwayatable');
     }
+
+    public function getStatusUserAttribute($value)
+{
+    return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
+}
 }

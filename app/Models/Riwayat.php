@@ -34,4 +34,9 @@ class Riwayat extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getStatusRiwayatAttribute($value)
+{
+    return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
+}
 }

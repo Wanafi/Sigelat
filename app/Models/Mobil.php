@@ -22,6 +22,11 @@ class Mobil extends Model
     return $this->morphTo();
 }
 
+public function getStatusMobilAttribute($value)
+{
+    return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
+}
+
     protected $fillable = [
         'nomor_plat',
         'merk_mobil',

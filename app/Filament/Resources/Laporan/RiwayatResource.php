@@ -9,8 +9,11 @@ use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\Laporan\RiwayatResource\Pages;
 
@@ -45,6 +48,14 @@ class RiwayatResource extends Resource
             Tables\Columns\TextColumn::make('status')
                 ->label('Status')
                 ->badge()
+                ->colors([
+                    'success' => 'selesai',
+                    'gray' => 'proses',
+                ])
+                ->icons([
+                    'heroicon-o-check-circle' => 'selesai',
+                    'heroicon-o-clock' => 'proses',
+                ])
                 ->sortable()  // Menambahkan sortable agar user bisa mengurutkan berdasarkan status
                 ->toggleable(),
 
@@ -54,11 +65,26 @@ class RiwayatResource extends Resource
                 ->sortable()
                 ->toggleable(),
 
-            Tables\Columns\TextColumn::make('riwayatable_type')
+            Tables\Columns\BadgeColumn::make('riwayatable_type')
                 ->label('Jenis Laporan')
                 ->formatStateUsing(fn($state) => class_basename($state))
-                ->badge()
-                ->color('gray')
+                ->getStateUsing(function ($record) {
+                    if ($record->riwayatable_type === 'App\\Models\\Mobil') return 'Mobil';
+                    if ($record->riwayatable_type === 'App\\Models\\Alat') return 'Alat';
+                    if ($record->riwayatable_type === 'App\\Models\\Gelar') return 'Gelar';
+                    return 'Lainnya';
+                })
+                
+                ->colors([
+                    'info' => 'Mobil',
+                    'success' => 'Alat',
+                    'warning' => 'Gelar',
+                ])
+                ->icons([
+                    'heroicon-o-truck' => 'Mobil',
+                    'heroicon-o-wrench' => 'Alat',
+                    'heroicon-o-map' => 'Gelar',
+                ])
                 ->toggleable(),
 
             Tables\Columns\TextColumn::make('aksi')
@@ -74,7 +100,13 @@ class RiwayatResource extends Resource
                 ->toggleable(),  // Menambahkan toggleable
         ])
         ->actions([
-            ViewAction::make(),
+            ActionGroup::make([
+                ViewAction::make(),
+                EditAction::make()
+                    ->color('warning'),
+                DeleteAction::make()
+                    ->color('danger'),
+            ])->icon('heroicon-m-ellipsis-horizontal'),
             Tables\Actions\Action::make('selesai')
                 ->label('Tandai Selesai')
                 ->icon('heroicon-o-check-circle')

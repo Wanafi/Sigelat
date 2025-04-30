@@ -23,6 +23,11 @@ class Alat extends Model
     return $this->morphTo();
 }
 
+public function getStatusAlatAttribute($value)
+{
+    return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
+}
+
     protected $fillable = [
         'kode_barcode',
         'nama_alat',
