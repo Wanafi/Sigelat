@@ -19,7 +19,7 @@ class LaporanOverview extends BaseWidget
                 ->description('Jumlah Laporan Alat 🛠️')
                 ->icon('heroicon-o-wrench')
                 ->color('danger')
-                ->chart([7, 2, 10, 3, 15, 4, 17])
+                ->chart([17, 2, 10, 3, 15, 4, 17])
                 ->url(route('filament.admin.resources.laporan-alats.index')),
         
 
@@ -27,7 +27,7 @@ class LaporanOverview extends BaseWidget
                 ->description('Jumlah Laporan Mobil 🚗')
                 ->icon('heroicon-o-truck')
                 ->color('success')
-                ->chart([7, 2, 10, 3, 15, 4, 17])
+                ->chart([7, 20, 10, 39, 15, 4, 17])
                 ->url(route('filament.admin.resources.laporan-mobils.index')),
 
             Card::make('Laporan Gelar Alat', Gelar::count())
