@@ -21,7 +21,7 @@ class LaporanAlatResource extends Resource
 {
     protected static ?string $model = Alat::class;
     protected static ?string $navigationGroup = 'Laporan';
-    protected static ?string $navigationLabel = 'Laporan Alat';
+    protected static ?string $navigationLabel = 'Laporkan Alat';
     public static function shouldRegisterNavigation(): bool
     {
         return false;
