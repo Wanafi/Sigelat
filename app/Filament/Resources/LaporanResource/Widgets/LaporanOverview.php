@@ -6,35 +6,39 @@ use App\Models\Alat;
 use App\Models\Gelar;
 use App\Models\Mobil;
 use App\Models\Laporan;
+use App\Models\User;
+use Filament\Support\Enums\IconPosition;
 use Filament\Widgets\StatsOverviewWidget\Card;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Card\Action;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+
 class LaporanOverview extends BaseWidget
 {
     protected function getStats(): array
     {
         return [
-            Card::make('Alat Rusak/Habis', $this->getRusakHabisCount())
-                ->description('Jumlah Laporan Alat 🛠️')
-                ->icon('heroicon-o-wrench')
+            stat::make('Rekapitulasi Jumlah Pengguna', User::count())
+                ->description('Total Pengguna')
+                ->descriptionIcon('heroicon-o-user')
+                ->color('success'),
+    
+            stat::make('Riwayat Penggunaan Alat', $this->getRusakHabisCount())
+                ->description('Laporan Alat')
+                ->descriptionIcon('heroicon-o-wrench')
                 ->color('danger')
-                ->chart([17, 2, 10, 3, 15, 4, 17])
                 ->url(route('filament.admin.resources.laporan-alats.index')),
         
-
-            Card::make('Laporan Mobil ', Mobil::count())
-                ->description('Jumlah Laporan Mobil 🚗')
-                ->icon('heroicon-o-truck')
+            stat::make('Aktivitas Operasional Mobil', Mobil::count())
+                ->description('Laporan Mobil')
+                ->descriptionIcon('heroicon-o-truck')
                 ->color('success')
-                ->chart([7, 20, 10, 39, 15, 4, 17])
                 ->url(route('filament.admin.resources.laporan-mobils.index')),
 
-            Card::make('Laporan Gelar Alat', Gelar::count())
-                ->description('Laporan Kegiatan Gelar Alat 📄')
-                ->icon('heroicon-o-clipboard')
+            stat::make('Distribusi Gelar Alat Operasional', Gelar::count())
+                ->description('Kegiatan Gelar Alat')
+                ->descriptionIcon('heroicon-o-clipboard')
                 ->color('info')
-                ->chart([7, 2, 10, 3, 15, 4, 17])
                 ->url(route('filament.admin.resources.laporan-gelars.index')),
         ];
     }

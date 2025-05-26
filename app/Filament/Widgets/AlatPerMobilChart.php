@@ -8,7 +8,21 @@ use Filament\Widgets\BarChartWidget;
 
 class AlatPerMobilChart extends BarChartWidget
 {
-    protected static ?string $heading = 'Kondisi Alat per Mobil';
+    protected static ?string $heading = 'Distribusi Kondisi Alat Per Mobil';
+
+    protected static ?string $maxWidth = '7xl';
+
+    public function getColumnSpan(): int|string|array
+    {
+        return 'full';
+    }
+
+    public function getExtraAttributes(): array
+    {
+        return [
+            'class' => 'w-full', // tambahan untuk memastikan lebar penuh
+        ];
+    }
 
     protected function getData(): array
     {
@@ -17,13 +31,7 @@ class AlatPerMobilChart extends BarChartWidget
         $kondisiLabels = Alat::select('status_alat')->distinct()->pluck('status_alat')->toArray();
 
         $defaultColors = [
-            '#60A5FA',
-            '#34D399',
-            '#FBBF24',
-            '#F87171',
-            '#A78BFA',
-            '#FB7185',
-            '#FACC15',
+            '#60A5FA', '#34D399', '#FBBF24', '#F87171', '#A78BFA', '#FB7185', '#FACC15',
         ];
 
         $datasets = [];
@@ -47,18 +55,13 @@ class AlatPerMobilChart extends BarChartWidget
     protected function getOptions(): array
     {
         return [
-            'animation' => [
-                'duration' => 1000,
-                'easing' => 'easeOutBounce',
-            ],
+            'responsive' => true,
+            'maintainAspectRatio' => false,
+            'borderRadius' => 5,
             'scales' => [
                 'x' => ['stacked' => true],
                 'y' => ['stacked' => true],
             ],
-            'maintainAspectRatio' => false,
-            'responsive' => true,
         ];
     }
-
-    // 👇 Ini yang bikin container-nya full width
 }
