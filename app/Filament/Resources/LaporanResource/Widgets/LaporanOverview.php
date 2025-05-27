@@ -32,7 +32,7 @@ class LaporanOverview extends BaseWidget
             stat::make('Aktivitas Operasional Mobil', Mobil::count())
                 ->description('Laporan Mobil')
                 ->descriptionIcon('heroicon-o-truck')
-                ->color('success')
+                ->color('warning')
                 ->url(route('filament.admin.resources.laporan-mobils.index')),
 
             stat::make('Distribusi Gelar Alat Operasional', Gelar::count())

@@ -21,7 +21,7 @@ class LaporanMobilResource extends Resource
 {
     protected static ?string $model = Mobil::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-m-rectangle-stack';
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?string $navigationLabel = 'Laporkan Mobil';
     public static function shouldRegisterNavigation(): bool

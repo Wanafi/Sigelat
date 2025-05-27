@@ -26,7 +26,7 @@ class RiwayatResource extends Resource
         return true;
     }
 
-    protected static ?string $navigationIcon = 'heroicon-o-clock';
+    protected static ?string $navigationIcon = 'heroicon-m-clock';
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?string $navigationLabel = 'Riwayat Konfirmasi';
 
