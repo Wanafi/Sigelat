@@ -50,14 +50,12 @@ class LaporanMobilResource extends Resource
                 BadgeColumn::make('status_mobil')
                     ->label('Status')
                     ->colors([
-                        'success' => 'Aktif',
-                        'warning' => 'Tidak Aktif',
-                        'danger' => 'Dalam Perbaikan',
+                        'warning' => 'TidakAktif',
+                        'danger' => 'DalamPerbaikan',
                     ])
                     ->icons([
-                        'heroicon-o-check-circle' => 'Aktif',
-                        'heroicon-o-exclamation-triangle' => 'Tidak Aktif',
-                        'heroicon-o-wrench-screwdriver' => 'Dalam Perbaikan',
+                        'heroicon-o-exclamation-triangle' => 'TidakAktif',
+                        'heroicon-o-wrench-screwdriver' => 'DalamPerbaikan',
                     ]),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -72,9 +70,9 @@ class LaporanMobilResource extends Resource
                 MultiSelectFilter::make('status_mobil')
                     ->label('Status Mobil')
                     ->options([
-                        'aktif' => 'Aktif',
-                        'tidakaktif' => 'Tidak Aktif',
-                        'dalamperbaikan' => 'Dalam Perbaikan',
+                        'aktif' => 'Aktif', 
+                        'tidakaktif' => 'TidakAktif',
+                        'dalamperbaikan' => 'DalamPerbaikan',
                     ])
                     ->default(['TidakAktif', 'DalamPerbaikan']),
             ])
