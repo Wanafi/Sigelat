@@ -116,6 +116,14 @@ class RiwayatResource extends Resource
                     $record->status = 'selesai';
                     $record->save();
 
+                    if ($record->riwayatable_type === \App\Models\Alat::class) {
+                    $alat = $record->riwayatable;
+                    if ($alat) {
+                    $alat->status_alat = 'Dipinjam';
+                    $alat->save();
+                    }
+                }
+
                     // Menampilkan pesan bahwa laporan telah selesai
                     session()->flash('message', 'Laporan berhasil ditandai sebagai selesai!');
                 }),

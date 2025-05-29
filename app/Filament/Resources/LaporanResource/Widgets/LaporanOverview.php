@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\LaporanResource\Widgets;
 
+use App\Filament\Resources\Manajemen\MobilResource;
 use App\Models\Alat;
 use App\Models\Gelar;
 use App\Models\Mobil;
@@ -29,13 +30,13 @@ class LaporanOverview extends BaseWidget
                 ->color('danger')
                 ->url(route('filament.admin.resources.laporan-alats.index')),
         
-            stat::make('Aktivitas Operasional Mobil', Mobil::count())
+            stat::make('Aktivitas Operasional Mobil', $this->getTidakaktifPerbaikanCount())
                 ->description('Laporan Mobil')
                 ->descriptionIcon('heroicon-o-truck')
                 ->color('warning')
                 ->url(route('filament.admin.resources.laporan-mobils.index')),
 
-            stat::make('Distribusi Gelar Alat Operasional', Gelar::count())
+            stat::make('Distribusi Gelar Alat Operasional', $this->gettidaklengkapprosesCount())
                 ->description('Kegiatan Gelar Alat')
                 ->descriptionIcon('heroicon-o-clipboard')
                 ->color('info')
@@ -47,5 +48,17 @@ class LaporanOverview extends BaseWidget
     {
         // Asumsi bahwa ada kolom 'status' dengan nilai 'rusak' atau 'habis'
         return Alat::whereIn('status_alat', ['rusak', 'habis'])->count();
+    }
+
+    protected function getTidakaktifPerbaikanCount()
+    {
+        // Asumsi bahwa ada kolom 'status' dengan nilai 'rusak' atau 'habis'
+        return Mobil::whereIn('status_mobil', ['TidakAktif', 'DalamPerbaikan'])->count();
+    }
+
+    protected function gettidaklengkapprosesCount()
+    {
+        // Asumsi bahwa ada kolom 'status' dengan nilai 'rusak' atau 'habis'
+        return Gelar::whereIn('status', ['TidakLengkap'])->count();
     }
 }

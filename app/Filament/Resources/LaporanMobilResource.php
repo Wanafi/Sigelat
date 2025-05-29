@@ -111,7 +111,7 @@ class LaporanMobilResource extends Resource
             
                         session()->flash('message', 'Laporan Gelar berhasil diproses!');
                     })
-                    ->visible(fn ($record) => $record->status !== 'Proses'),
+                    ->visible(fn ($record) => $record->status !== 'proses'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

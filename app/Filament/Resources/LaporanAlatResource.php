@@ -60,6 +60,10 @@ class LaporanAlatResource extends Resource
                         'primary' => 'Dipinjam',
                         'danger' => 'Rusak',
                         'warning' => 'Habis',
+                        'gray' => 'proses',
+                    ])
+                    ->icons([
+                        'heroicon-o-clock' => 'proses',
                     ])
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('tanggal_pembelian')
@@ -106,7 +110,7 @@ class LaporanAlatResource extends Resource
                         \App\Models\Riwayat::create([
                             'riwayatable_id' => $record->id,
                             'riwayatable_type' => get_class($record),
-                            'status' => 'Proses',
+                            'status' => 'proses',
                             'user_id' => auth()->id(),
                             'tanggal_cek' => now()->toDateString(),
                             'aksi' => $data['aksi'],
@@ -115,7 +119,7 @@ class LaporanAlatResource extends Resource
 
                         session()->flash('message', 'Laporan Alat berhasil diproses!');
                     })
-                    ->visible(fn($record) => $record->status !== 'Proses'),
+                    ->visible(fn($record) => $record->status !== 'proses'),
             ]);
     }
 
