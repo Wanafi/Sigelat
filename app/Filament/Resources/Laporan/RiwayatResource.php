@@ -36,109 +36,109 @@ class RiwayatResource extends Resource
     }
 
     public static function table(Table $table): Table
-{
-    return $table
-        ->columns([
-            Tables\Columns\TextColumn::make('user.name')
-                ->label('Pelapor')
-                ->sortable()
-                ->toggleable()  // Menambahkan toggleable untuk kolom yang bisa disembunyikan
-                ->searchable(),
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Pelapor')
+                    ->sortable()
+                    ->toggleable()  // Menambahkan toggleable untuk kolom yang bisa disembunyikan
+                    ->searchable(),
 
-            Tables\Columns\TextColumn::make('status')
-                ->label('Status')
-                ->badge()
-                ->colors([
-                    'success' => 'selesai',
-                    'gray' => 'proses',
-                ])
-                ->icons([
-                    'heroicon-o-check-circle' => 'selesai',
-                    'heroicon-o-clock' => 'proses',
-                ])
-                ->sortable()  // Menambahkan sortable agar user bisa mengurutkan berdasarkan status
-                ->toggleable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->colors([
+                        'success' => 'selesai',
+                        'gray' => 'proses',
+                    ])
+                    ->icons([
+                        'heroicon-o-check-circle' => 'selesai',
+                        'heroicon-o-clock' => 'proses',
+                    ])
+                    ->sortable()  // Menambahkan sortable agar user bisa mengurutkan berdasarkan status
+                    ->toggleable(),
 
-            Tables\Columns\TextColumn::make('tanggal_cek')
-                ->label('Tanggal Cek')
-                ->date()
-                ->sortable()
-                ->toggleable(),
+                Tables\Columns\TextColumn::make('tanggal_cek')
+                    ->label('Tanggal Cek')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(),
 
-            Tables\Columns\BadgeColumn::make('riwayatable_type')
-                ->label('Jenis Laporan')
-                ->formatStateUsing(fn($state) => class_basename($state))
-                ->getStateUsing(function ($record) {
-                    if ($record->riwayatable_type === 'App\\Models\\Mobil') return 'Mobil';
-                    if ($record->riwayatable_type === 'App\\Models\\Alat') return 'Alat';
-                    if ($record->riwayatable_type === 'App\\Models\\Gelar') return 'Gelar';
-                    return 'Lainnya';
-                })
-                
-                ->colors([
-                    'info' => 'Mobil',
-                    'success' => 'Alat',
-                    'warning' => 'Gelar',
-                ])
-                ->icons([
-                    'heroicon-o-truck' => 'Mobil',
-                    'heroicon-o-wrench' => 'Alat',
-                    'heroicon-o-map' => 'Gelar',
-                ])
-                ->toggleable(),
+                Tables\Columns\BadgeColumn::make('riwayatable_type')
+                    ->label('Jenis Laporan')
+                    ->formatStateUsing(fn($state) => class_basename($state))
+                    ->getStateUsing(function ($record) {
+                        if ($record->riwayatable_type === 'App\\Models\\Mobil') return 'Mobil';
+                        if ($record->riwayatable_type === 'App\\Models\\Alat') return 'Alat';
+                        if ($record->riwayatable_type === 'App\\Models\\Gelar') return 'Gelar';
+                        return 'Lainnya';
+                    })
 
-            Tables\Columns\TextColumn::make('aksi')
-                ->label('Aksi')
-                ->searchable(false)  // Menonaktifkan pencarian di kolom aksi
-                ->toggleable()
-                ->getStateUsing(fn ($record) => $record->aksi ? $record->aksi : '-'),  // Menambahkan nilai default jika kosong
+                    ->colors([
+                        'info' => 'Mobil',
+                        'success' => 'Alat',
+                        'warning' => 'Gelar',
+                    ])
+                    ->icons([
+                        'heroicon-o-truck' => 'Mobil',
+                        'heroicon-o-wrench' => 'Alat',
+                        'heroicon-o-map' => 'Gelar',
+                    ])
+                    ->toggleable(),
 
-            Tables\Columns\TextColumn::make('catatan')
-                ->label('Catatan')
-                ->placeholder('-')
-                ->searchable(false)
-                ->toggleable(),  // Menambahkan toggleable
-        ])
-        ->actions([
-            ActionGroup::make([
-                ViewAction::make(),
-                EditAction::make()
-                    ->color('warning'),
-                DeleteAction::make()
-                    ->color('danger'),
-            ])->icon('heroicon-m-ellipsis-horizontal'),
-            Tables\Actions\Action::make('selesai')
-                ->label('Tandai Selesai')
-                ->icon('heroicon-o-check-circle')
-                ->color('success')
-                ->action(function (Model $record) {
-                    // Mengubah status menjadi selesai
-                    $record->status = 'selesai';
-                    $record->save();
+                Tables\Columns\TextColumn::make('aksi')
+                    ->label('Aksi')
+                    ->searchable(false)  // Menonaktifkan pencarian di kolom aksi
+                    ->toggleable()
+                    ->getStateUsing(fn($record) => $record->aksi ? $record->aksi : '-'),  // Menambahkan nilai default jika kosong
 
-                    if ($record->riwayatable_type === \App\Models\Alat::class) {
-                    $alat = $record->riwayatable;
-                    if ($alat) {
-                    $alat->status_alat = 'Dipinjam';
-                    $alat->save();
-                    }
-                }
+                Tables\Columns\TextColumn::make('catatan')
+                    ->label('Catatan')
+                    ->placeholder('-')
+                    ->searchable(false)
+                    ->toggleable(),  // Menambahkan toggleable
+            ])
+            ->actions([
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make()
+                        ->color('warning'),
+                    DeleteAction::make()
+                        ->color('danger'),
+                ])->icon('heroicon-m-ellipsis-horizontal'),
+                Tables\Actions\Action::make('selesai')
+                    ->label('Tandai Selesai')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->action(function (Model $record) {
+                        // Mengubah status menjadi selesai
+                        $record->status = 'selesai';
+                        $record->save();
 
-                    // Menampilkan pesan bahwa laporan telah selesai
-                    session()->flash('message', 'Laporan berhasil ditandai sebagai selesai!');
-                }),
-        ])
-        
-        ->bulkActions([
-            Tables\Actions\BulkAction::make('delete')
-                ->label('Hapus')
-                ->icon('heroicon-o-trash')
-                ->action(function ($records) {
-                    // Mengambil ID dari setiap record dan menghapusnya
-                    Riwayat::destroy($records->pluck('id'));  // Menggunakan pluck untuk mengambil ID dari collection
-                }),
-        ]);
-}
+                        if ($record->riwayatable_type === \App\Models\Alat::class) {
+                            $alat = $record->riwayatable;
+                            if ($alat) {
+                                $alat->status_alat = 'Dipinjam';
+                                $alat->save();
+                            }
+                        }
+
+                        // Menampilkan pesan bahwa laporan telah selesai
+                        session()->flash('message', 'Laporan berhasil ditandai sebagai selesai!');
+                    }),
+            ])
+
+            ->bulkActions([
+                Tables\Actions\BulkAction::make('delete')
+                    ->label('Hapus')
+                    ->icon('heroicon-o-trash')
+                    ->action(function ($records) {
+                        // Mengambil ID dari setiap record dan menghapusnya
+                        Riwayat::destroy($records->pluck('id'));  // Menggunakan pluck untuk mengambil ID dari collection
+                    }),
+            ]);
+    }
 
 
 
