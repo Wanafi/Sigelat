@@ -28,7 +28,7 @@ class AlatPerMobilChart extends BarChartWidget
     {
         $mobils = Mobil::with('alats')->get();
         $labels = $mobils->pluck('nomor_plat')->toArray();
-        $kondisiLabels = ['Habis', 'Rusak'];
+        $kondisiLabels = ['Hilang', 'Rusak'];
 
         $defaultColors = [
             "#0071BC", // Biru PLN

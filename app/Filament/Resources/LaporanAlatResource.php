@@ -6,15 +6,29 @@ use Filament\Forms;
 use App\Models\Alat;
 use Filament\Tables;
 use App\Models\Laporan;
+use App\Models\Riwayat;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\LaporanAlatResource\Pages;
 use App\Filament\Resources\LaporanAlatResource\RelationManagers;
+use App\Filament\Resources\LaporanAlatResource\Pages\EditLaporanAlat;
+use App\Filament\Resources\LaporanAlatResource\Pages\ViewLaporanAlat;
+use App\Filament\Resources\LaporanAlatResource\Pages\ListLaporanAlats;
+use App\Filament\Resources\LaporanAlatResource\Pages\CreateLaporanAlat;
 use App\Filament\Resources\RiwayatsRelationManagerResource\RelationManagers\RiwayatsRelationManager;
 
 class LaporanAlatResource extends Resource
@@ -57,12 +71,12 @@ class LaporanAlatResource extends Resource
                 Tables\Columns\BadgeColumn::make('status_alat')
                     ->label('Status Alat')
                     ->colors([
-                        'primary' => 'Dipinjam',
+                        'primary' => 'Bagus',
                         'danger' => 'Rusak',
-                        'warning' => 'Habis',
+                        'warning' => 'Hilang',
                     ])
                     ->icons([
-                        'heroicon-o-no-symbol' => 'Habis',
+                        'heroicon-o-no-symbol' => 'Hilang',
                         'heroicon-o-exclamation-circle' => 'Rusak',
                     ])
                     ->toggleable(),
@@ -74,52 +88,52 @@ class LaporanAlatResource extends Resource
                 MultiSelectFilter::make('status_alat')
                     ->label('Filter Status Alat')
                     ->options([
-                        'Dipinjam' => 'Dipinjam',
+                        'Bagus' => 'Bagus',
                         'Rusak' => 'Rusak',
-                        'Habis' => 'Habis',
+                        'Hilang' => 'Hilang',
                     ])
                     ->placeholder('Semua Status')
                     ->searchable()
-                    ->default(['rusak', 'habis']),
+                    ->default(['rusak', 'hilang']),
             ])
             ->defaultSort('nama_alat')
 
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make()->color('warning'),
+                    Tables\Actions\Action::make('konfirmasi')
+                        ->label('Konfirmasi')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->form([
+                            Forms\Components\TextInput::make('aksi')
+                                ->label('Aksi')
+                                ->required(),
+                            Forms\Components\Textarea::make('catatan')
+                                ->label('Catatan')
+                                ->rows(3)
+                                ->required(),
+                        ])
+                        ->action(function (Model $record, array $data) {
+                            /** @var Alat $record */
+                            $record->status_alat = 'proses';
+                            $record->save();
 
-                Tables\Actions\Action::make('konfirmasi')
-                    ->label('Konfirmasi')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->form([
-                        Forms\Components\TextInput::make('aksi')
-                            ->label('Aksi')
-                            ->required(),
+                            \App\Models\Riwayat::create([
+                                'riwayatable_id' => $record->id,
+                                'riwayatable_type' => get_class($record),
+                                'status' => 'proses',
+                                'user_id' => auth()->id(),
+                                'tanggal_cek' => now()->toDateString(),
+                                'aksi' => $data['aksi'],
+                                'catatan' => $data['catatan'],
+                            ]);
 
-                        Forms\Components\Textarea::make('catatan')
-                            ->label('Catatan')
-                            ->rows(3)
-                            ->required(),
-                    ])
-                    ->action(function (Model $record, array $data) {
-                        /** @var Alat $record */
-                        $record->status_alat = 'proses';
-                        $record->save();
-
-                        \App\Models\Riwayat::create([
-                            'riwayatable_id' => $record->id,
-                            'riwayatable_type' => get_class($record),
-                            'status' => 'proses',
-                            'user_id' => auth()->id(),
-                            'tanggal_cek' => now()->toDateString(),
-                            'aksi' => $data['aksi'],
-                            'catatan' => $data['catatan'],
-                        ]);
-
-                        session()->flash('message', 'Laporan Alat berhasil diproses!');
-                    })
-                    ->visible(fn($record) => $record->status !== 'proses'),
+                            session()->flash('message', 'Laporan Alat berhasil diproses!');
+                        })
+                        ->visible(fn($record) => $record->status_alat !== 'proses'),
+                ]),
             ]);
     }
 

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('merek_alat');
             $table->text('spesifikasi');
             $table->date('tanggal_pembelian');
-            $table->enum('status_alat', ['Dipinjam', 'Rusak', 'Habis']);
+            $table->enum('status_alat', ['Bagus', 'Rusak', 'Hilang']);
             $table->timestamps();
         });
     }

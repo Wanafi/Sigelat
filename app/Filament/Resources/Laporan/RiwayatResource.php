@@ -122,7 +122,7 @@ class RiwayatResource extends Resource
                         if ($record->riwayatable_type === \App\Models\Alat::class) {
                             $alat = $record->riwayatable;
                             if ($alat) {
-                                $alat->status_alat = 'Dipinjam';
+                                $alat->status_alat = 'Bagus';
                                 $alat->save();
                             }
                         }

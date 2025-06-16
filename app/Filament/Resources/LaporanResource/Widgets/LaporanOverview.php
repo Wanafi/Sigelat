@@ -24,7 +24,7 @@ class LaporanOverview extends BaseWidget
                 ->descriptionIcon('heroicon-o-user')
                 ->color('success'),
     
-            stat::make('Riwayat Penggunaan Alat', $this->getRusakHabisCount())
+            stat::make('Riwayat Penggunaan Alat', $this->getRusakHilangCount())
                 ->description('Laporan Alat')
                 ->descriptionIcon('heroicon-o-wrench')
                 ->color('danger')
@@ -44,21 +44,21 @@ class LaporanOverview extends BaseWidget
         ];
     }
 
-    protected function getRusakHabisCount()
+    protected function getRusakHilangCount()
     {
-        // Asumsi bahwa ada kolom 'status' dengan nilai 'rusak' atau 'habis'
-        return Alat::whereIn('status_alat', ['rusak', 'habis'])->count();
+        // Asumsi bahwa ada kolom 'status' dengan nilai 'rusak' atau 'Hilang'
+        return Alat::whereIn('status_alat', ['rusak', 'hilang'])->count();
     }
 
     protected function getTidakaktifPerbaikanCount()
     {
-        // Asumsi bahwa ada kolom 'status' dengan nilai 'rusak' atau 'habis'
+        // Asumsi bahwa ada kolom 'status' dengan nilai 'rusak' atau 'Hilang'
         return Mobil::whereIn('status_mobil', ['TidakAktif', 'DalamPerbaikan'])->count();
     }
 
     protected function gettidaklengkapprosesCount()
     {
-        // Asumsi bahwa ada kolom 'status' dengan nilai 'rusak' atau 'habis'
+        // Asumsi bahwa ada kolom 'status' dengan nilai 'rusak' atau 'Hilang'
         return Gelar::whereIn('status', ['TidakLengkap'])->count();
     }
 }

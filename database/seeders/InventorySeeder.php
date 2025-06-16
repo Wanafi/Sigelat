@@ -37,7 +37,7 @@ class InventorySeeder extends Seeder
                 'merek_alat' => $faker->randomElement(['Fluke', 'Kyoritsu', 'Hioki', 'UNI-T']),
                 'spesifikasi' => $faker->sentence(6),
                 'tanggal_pembelian' => $faker->dateTimeBetween('-5 years', 'now')->format('Y-m-d'),
-                'status_alat' => $faker->randomElement(['Dipinjam', 'Rusak', 'Habis']),
+                'status_alat' => $faker->randomElement(['Bagus', 'Rusak', 'Hilang']),
                 'mobil_id' => $faker->randomElement($mobilList),
             ]);
             $alatIDs[] = $alat->id;

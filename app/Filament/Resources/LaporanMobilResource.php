@@ -5,16 +5,31 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Mobil;
+use App\Models\Riwayat;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\LaporanMobilResource\Pages;
 use App\Filament\Resources\LaporanMobilResource\RelationManagers;
+use App\Filament\Resources\LaporanMobilResource\Pages\EditLaporanMobil;
+use App\Filament\Resources\LaporanMobilResource\Pages\ViewLaporanMobil;
+use App\Filament\Resources\LaporanMobilResource\Pages\ListLaporanMobils;
+use App\Filament\Resources\LaporanMobilResource\Pages\CreateLaporanMobil;
 use App\Filament\Resources\RiwayatsRelationManagerResource\RelationManagers\RiwayatsRelationManager;
 
 class LaporanMobilResource extends Resource
@@ -70,48 +85,49 @@ class LaporanMobilResource extends Resource
                 MultiSelectFilter::make('status_mobil')
                     ->label('Status Mobil')
                     ->options([
-                        'aktif' => 'Aktif', 
+                        'aktif' => 'Aktif',
                         'tidakaktif' => 'TidakAktif',
                         'dalamperbaikan' => 'DalamPerbaikan',
                     ])
                     ->default(['TidakAktif', 'DalamPerbaikan']),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-            
-                Tables\Actions\Action::make('konfirmasi')
-                    ->label('Konfirmasi')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->form([
-                        Forms\Components\TextInput::make('aksi')
-                            ->label('Aksi')
-                            ->required(),
-            
-                        Forms\Components\Textarea::make('catatan')
-                            ->label('Catatan')
-                            ->rows(3)
-                            ->required(),
-                    ])
-                    ->action(function (Model $record, array $data) {
-                        /** @var Mobil $record */
-                        $record->status_mobil = 'ProsesPelaporan';
-                        $record->save();
-            
-                        \App\Models\Riwayat::create([
-                            'riwayatable_id' => $record->id,
-                            'riwayatable_type' => get_class($record),
-                            'status' => 'proses',
-                            'user_id' => auth()->id(),
-                            'tanggal_cek' => now()->toDateString(),
-                            'aksi' => $data['aksi'],
-                            'catatan' => $data['catatan'],
-                        ]);
-            
-                        session()->flash('message', 'Laporan Gelar berhasil diproses!');
-                    })
-                    ->visible(fn ($record) => $record->status !== 'proses'),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make()->color('warning'),
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\Action::make('konfirmasi')
+                        ->label('Konfirmasi')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->form([
+                            Forms\Components\TextInput::make('aksi')
+                                ->label('Aksi')
+                                ->required(),
+                            Forms\Components\Textarea::make('catatan')
+                                ->label('Catatan')
+                                ->rows(3)
+                                ->required(),
+                        ])
+                        ->action(function (Model $record, array $data) {
+                            /** @var Mobil $record */
+                            $record->status_mobil = 'proses';
+                            $record->save();
+
+                            \App\Models\Riwayat::create([
+                                'riwayatable_id' => $record->id,
+                                'riwayatable_type' => get_class($record),
+                                'status' => 'proses',
+                                'user_id' => auth()->id(),
+                                'tanggal_cek' => now()->toDateString(),
+                                'aksi' => $data['aksi'],
+                                'catatan' => $data['catatan'],
+                            ]);
+
+                            session()->flash('message', 'Laporan Alat berhasil diproses!');
+                        })
+                        ->visible(fn($record) => $record->status_alat !== 'proses'),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

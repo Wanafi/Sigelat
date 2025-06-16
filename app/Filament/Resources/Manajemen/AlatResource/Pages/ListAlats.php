@@ -15,12 +15,12 @@ class ListAlats extends ListRecords
     {
         return [
             'Semua' => Tab::make(),
-            'Dipinjam' => Tab::make()
-                ->modifyQueryUsing(fn($query) => $query->where('status_alat', 'dipinjam'))
-                ->badge(Alat::query()->where('status_alat', 'dipinjam')->count()),
-            'Habis' => Tab::make()
-                ->modifyQueryUsing(fn($query) => $query->where('status_alat', 'habis'))
-                ->badge(Alat::query()->where('status_alat', 'habis')->count()),
+            'Bagus' => Tab::make()
+                ->modifyQueryUsing(fn($query) => $query->where('status_alat', 'Bagus'))
+                ->badge(Alat::query()->where('status_alat', 'Bagus')->count()),
+            'Hilang' => Tab::make()
+                ->modifyQueryUsing(fn($query) => $query->where('status_alat', 'hilang'))
+                ->badge(Alat::query()->where('status_alat', 'hilang')->count()),
             'Rusak' => Tab::make()
                 ->modifyQueryUsing(fn($query) => $query->where('status_alat', 'rusak'))
                 ->badge(Alat::query()->where('status_alat', 'rusak')->count()),

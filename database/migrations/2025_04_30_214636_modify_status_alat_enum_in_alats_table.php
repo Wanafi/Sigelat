@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('alats', function (Blueprint $table) {
-            $table->enum('status_alat', ['Dipinjam', 'Rusak', 'Habis', 'Proses'])
-                ->default('Dipinjam')
+            $table->enum('status_alat', ['Bagus', 'Rusak', 'Hilang', 'Proses'])
+                ->default('Bagus')
                 ->change();
         });
     }
@@ -24,8 +24,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('alats', function (Blueprint $table) {
-            $table->enum('status_alat', ['Dipinjam', 'Rusak', 'Habis'])
-                ->default('Dipinjam')
+            $table->enum('status_alat', ['Bagus', 'Rusak', 'Hilang'])
+                ->default('Bagus')
                 ->change();
         });
     }

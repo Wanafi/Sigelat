@@ -95,19 +95,19 @@ class AlatResource extends Resource
                         ToggleButtons::make('status_alat')
                             ->inline()
                             ->options([
-                                'Dipinjam' => 'Dipinjam',
+                                'Bagus' => 'Bagus',
                                 'Rusak' => 'Rusak',
-                                'Habis' => 'Habis',
+                                'Hilang' => 'Hilang',
                             ])
                             ->colors([
-                                'Dipinjam' => 'success',
+                                'Bagus' => 'success',
                                 'Rusak' => 'warning',
-                                'Habis' => 'danger',
+                                'Hilang' => 'danger',
                             ])
                             ->icons([
-                                'Dipinjam' => 'heroicon-o-check-circle',
+                                'Bagus' => 'heroicon-o-check-circle',
                                 'Rusak' => 'heroicon-o-exclamation-triangle',
-                                'Habis' => 'heroicon-o-wrench-screwdriver',
+                                'Hilang' => 'heroicon-o-wrench-screwdriver',
                             ])->required(),
                     ]),
                 FormSection::make('Mobil')
@@ -149,14 +149,14 @@ class AlatResource extends Resource
                     ->label('Status')
                     ->sortable()
                     ->colors([
-                        'success' => 'Dipinjam',
+                        'success' => 'Bagus',
                         'warning' => 'Rusak',
-                        'danger' => 'Habis',
+                        'danger' => 'Hilang',
                     ])
                     ->icons([
-                        'heroicon-o-check-circle' => 'Dipinjam',
+                        'heroicon-o-check-circle' => 'Bagus',
                         'heroicon-o-exclamation-triangle' => 'Rusak',
-                        'heroicon-o-wrench-screwdriver' => 'Habis',
+                        'heroicon-o-wrench-screwdriver' => 'Hilang',
                     ]),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -215,14 +215,14 @@ class AlatResource extends Resource
                                         TextEntry::make('status_alat')
                                             ->badge()
                                             ->colors([
-                                                'success' => 'Dipinjam',
+                                                'success' => 'Bagus',
                                                 'warning' => 'Rusak',
-                                                'danger' => 'Habis',
+                                                'danger' => 'Hilang',
                                             ])
                                             ->icons([
-                                                'heroicon-o-check-circle' => 'Dipinjam',
+                                                'heroicon-o-check-circle' => 'Bagus',
                                                 'heroicon-o-exclamation-triangle' => 'Rusak',
-                                                'heroicon-o-wrench-screwdriver' => 'Habis',
+                                                'heroicon-o-wrench-screwdriver' => 'Hilang',
                                             ]),
                                     ])->columns(2),
                                     Section::make([
