@@ -22,7 +22,7 @@ class InventorySeeder extends Seeder
                 'nomor_plat' => 'DA ' . rand(1000, 9999) . ' XX',
                 'merk_mobil' => $faker->randomElement(['Hilux', 'Innova', 'Carry']),
                 'no_unit' => $faker->randomElement(['Unit12', 'Unit13', 'Unit14']),
-                'status_mobil' => $faker->randomElement(['Aktif', 'TidakAktif', 'DalamPerbaikan', 'ProsesPelaporan']),
+                'status_mobil' => $faker->randomElement(['Aktif', 'TidakAktif', 'DalamPerbaikan']),
             ]);
             $mobilList[] = $mobil->id;
         }
@@ -37,7 +37,7 @@ class InventorySeeder extends Seeder
                 'merek_alat' => $faker->randomElement(['Fluke', 'Kyoritsu', 'Hioki', 'UNI-T']),
                 'spesifikasi' => $faker->sentence(6),
                 'tanggal_pembelian' => $faker->dateTimeBetween('-5 years', 'now')->format('Y-m-d'),
-                'status_alat' => $faker->randomElement(['Dipinjam', 'Rusak', 'Habis', 'Proses']),
+                'status_alat' => $faker->randomElement(['Dipinjam', 'Rusak', 'Habis']),
                 'mobil_id' => $faker->randomElement($mobilList),
             ]);
             $alatIDs[] = $alat->id;

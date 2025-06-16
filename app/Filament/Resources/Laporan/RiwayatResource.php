@@ -29,7 +29,10 @@ class RiwayatResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-m-clock';
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?string $navigationLabel = 'Riwayat Konfirmasi';
-
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
     public static function form(Form $form): Form
     {
         return $form->schema([]);
@@ -44,20 +47,6 @@ class RiwayatResource extends Resource
                     ->sortable()
                     ->toggleable()  // Menambahkan toggleable untuk kolom yang bisa disembunyikan
                     ->searchable(),
-
-                Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
-                    ->badge()
-                    ->colors([
-                        'success' => 'selesai',
-                        'gray' => 'proses',
-                    ])
-                    ->icons([
-                        'heroicon-o-check-circle' => 'selesai',
-                        'heroicon-o-clock' => 'proses',
-                    ])
-                    ->sortable()  // Menambahkan sortable agar user bisa mengurutkan berdasarkan status
-                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('tanggal_cek')
                     ->label('Tanggal Cek')
@@ -98,6 +87,20 @@ class RiwayatResource extends Resource
                     ->placeholder('-')
                     ->searchable(false)
                     ->toggleable(),  // Menambahkan toggleable
+
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->colors([
+                        'success' => 'selesai',
+                        'gray' => 'proses',
+                    ])
+                    ->icons([
+                        'heroicon-o-check-circle' => 'selesai',
+                        'heroicon-o-clock' => 'proses',
+                    ])
+                    ->sortable()  // Menambahkan sortable agar user bisa mengurutkan berdasarkan status
+                    ->toggleable(),
             ])
             ->actions([
                 ActionGroup::make([

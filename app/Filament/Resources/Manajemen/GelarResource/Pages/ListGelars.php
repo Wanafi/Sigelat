@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Manajemen\GelarResource\Pages;
 
+use App\Models\Gelar;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\ListRecords\Tab;
@@ -23,9 +24,11 @@ class ListGelars extends ListRecords
         return [
             'Semua' => Tab::make(),
             'Lengkap' => Tab::make()
-                ->modifyQueryUsing(fn($query) => $query->where('status', 'lengkap')),
+                ->modifyQueryUsing(fn($query) => $query->where('status', 'lengkap'))
+                ->badge(Gelar::query()->where('status', 'lengkap')->count()),
             'Tidak Lengkap' => Tab::make()
-                ->modifyQueryUsing(fn($query) => $query->where('status', 'tidak lengkap')),
+                ->modifyQueryUsing(fn($query) => $query->where('status', 'tidaklengkap'))
+                ->badge(Gelar::query()->where('status', 'tidaklengkap')->count()),
             ];
     }
 }

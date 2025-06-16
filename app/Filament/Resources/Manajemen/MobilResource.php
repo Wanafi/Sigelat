@@ -34,11 +34,14 @@ use Filament\Infolists\Components\Section as infosection;
 class MobilResource extends Resource
 {
     protected static ?string $model = Mobil::class;
-    protected static ?string $navigationIcon = 'heroicon-o-truck';
+    protected static ?string $navigationIcon = 'heroicon-m-truck';
     protected static ?string $navigationLabel = 'Daftar Mobil';
     protected static ?string $modelLabel = 'Car List';
     protected static ?string $navigationGroup = 'Manajemen';
-
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {

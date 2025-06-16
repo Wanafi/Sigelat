@@ -44,13 +44,20 @@ class LaporanGelarResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('mobil.nomor_plat')
-                    ->label('Mobil')
+                    ->label('Nomor Plat')
                     ->sortable()
                     ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Pelapor')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
+                
+                Tables\Columns\TextColumn::make('tanggal_cek')
+                    ->label('Tanggal Cek')
+                    ->date()
                     ->sortable()
                     ->searchable()
                     ->toggleable(),
@@ -72,12 +79,7 @@ class LaporanGelarResource extends Resource
                         'heroicon-o-clock' => 'Proses',
                     ]),
 
-                Tables\Columns\TextColumn::make('tanggal_cek')
-                    ->label('Tanggal Cek')
-                    ->date()
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(),
+                
             ])
             ->filters([
                 SelectFilter::make('status')
@@ -91,6 +93,7 @@ class LaporanGelarResource extends Resource
                         'proses' => 'Proses',
                     ]),
             ])
+            
             ->actions([
                 ActionGroup::make([
                     ViewAction::make(),

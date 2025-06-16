@@ -28,10 +28,19 @@ class AlatPerMobilChart extends BarChartWidget
     {
         $mobils = Mobil::with('alats')->get();
         $labels = $mobils->pluck('nomor_plat')->toArray();
-        $kondisiLabels = Alat::select('status_alat')->distinct()->pluck('status_alat')->toArray();
+        $kondisiLabels = ['Habis', 'Rusak'];
 
         $defaultColors = [
-            '#60A5FA', '#34D399', '#FBBF24', '#F87171', '#A78BFA', '#FB7185', '#FACC15',
+            "#0071BC", // Biru PLN
+            "#FFD200", // Kuning PLN
+            "#EF4136", // Merah PLN
+            "#4CAF50", // Hijau (stabil)
+            "#FF9800", // Oranye (semangat)
+            "#9E9E9E", // Abu-abu netral
+            "#00BCD4", // Cyan (segar)
+            "#8E24AA", // Ungu
+            "#D81B60", // Pink tua
+            "#795548", // Coklat
         ];
 
         $datasets = [];

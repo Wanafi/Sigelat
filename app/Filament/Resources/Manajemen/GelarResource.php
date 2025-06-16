@@ -30,12 +30,15 @@ class GelarResource extends Resource
 {
     protected static ?string $model = Gelar::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-map';
+    protected static ?string $navigationIcon = 'heroicon-m-map';
     protected static ?string $label = 'Kegiatan';
     protected static ?string $navigationGroup = 'Manajemen';
     protected static ?string $pluralLabel = 'Daftar Kegiatan Gelar Alat';
     protected static ?string $navigationLabel = 'Gelar Alat';
-
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
     public static function form(Form $form): Form
     {
         $totalAlat = Alat::count();
@@ -69,7 +72,7 @@ class GelarResource extends Resource
                             ->label('Status')
                             ->options([
                                 'Lengkap' => 'Lengkap',
-                                'Tidak Lengkap' => 'Tidak Lengkap',
+                                'TidakLengkap' => 'TidakLengkap',
                             ])
                             ->default(function (?Gelar $record) {
                                 // Cek apakah ada $record, jika ada tentukan default sesuai statusnya
@@ -78,7 +81,7 @@ class GelarResource extends Resource
                                     return count($record->alat_ids) == Alat::count() ? 'Lengkap' : 'Tidak Lengkap';
                                 }
                                 // Defaultkan status 'Tidak Lengkap' saat buat baru
-                                return 'Tidak Lengkap';
+                                return 'TidakLengkap';
                             })
                             ->disabled()
                             ->dehydrated(true),
@@ -109,12 +112,12 @@ class GelarResource extends Resource
                     ->badge()
                     ->colors([
                         'success' => 'Lengkap',
-                        'warning' => 'Tidak Lengkap',
+                        'warning' => 'TidakLengkap',
                         'gray' => 'Proses',
                     ])
                     ->icons([
                         'heroicon-o-check-circle' => 'Lengkap',
-                        'heroicon-o-exclamation-triangle' => 'Tidak Lengkap',
+                        'heroicon-o-exclamation-triangle' => 'TidakLengkap',
                         'heroicon-o-clock' => 'Proses',
                     ]),
                 Tables\Columns\TextColumn::make('tanggal_cek')
@@ -129,7 +132,7 @@ class GelarResource extends Resource
                     ->indicator('Filter By')
                     ->options([
                         'Lengkap' => 'Lengkap',
-                        'Tidak Lengkap' => 'Tidak Lengkap',
+                        'TidakLengkap' => 'TidakLengkap',
                     ]),
             ])
             ->actions([

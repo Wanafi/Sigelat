@@ -60,10 +60,10 @@ class LaporanAlatResource extends Resource
                         'primary' => 'Dipinjam',
                         'danger' => 'Rusak',
                         'warning' => 'Habis',
-                        'gray' => 'proses',
                     ])
                     ->icons([
-                        'heroicon-o-clock' => 'proses',
+                        'heroicon-o-no-symbol' => 'Habis',
+                        'heroicon-o-exclamation-circle' => 'Rusak',
                     ])
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('tanggal_pembelian')

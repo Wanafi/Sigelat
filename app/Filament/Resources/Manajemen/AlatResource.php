@@ -46,11 +46,14 @@ use App\Filament\Resources\Manajemen\AlatResource\RelationManagers;
 class AlatResource extends Resource
 {
     protected static ?string $model = Alat::class;
-    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
+    protected static ?string $navigationIcon = 'heroicon-m-wrench-screwdriver';
     protected static ?string $navigationLabel = 'Daftar Alat';
     protected static ?string $modelLabel = 'Tools List';
     protected static ?string $navigationGroup = 'Manajemen';
-
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
 
 
@@ -208,7 +211,7 @@ class AlatResource extends Resource
                                         TextEntry::make('mobil.nomor_plat')
                                             ->label('Mobil')
                                             ->icon('heroicon-m-truck')
-                                            ->formatStateUsing(fn ($state) => $state ?? 'Belum Ditempatkan'),
+                                            ->formatStateUsing(fn($state) => $state ?? 'Belum Ditempatkan'),
                                         TextEntry::make('status_alat')
                                             ->badge()
                                             ->colors([
