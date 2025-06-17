@@ -28,6 +28,7 @@ class RiwayatResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-m-clock';
     protected static ?string $navigationGroup = 'Laporan';
+    protected static ?int $navigationSort = 3;
     protected static ?string $navigationLabel = 'Riwayat Konfirmasi';
     public static function getNavigationBadge(): ?string
     {
@@ -92,12 +93,12 @@ class RiwayatResource extends Resource
                     ->label('Status')
                     ->badge()
                     ->colors([
-                        'success' => 'selesai',
-                        'gray' => 'proses',
+                        'success' => 'Selesai',
+                        'gray' => 'Proses',
                     ])
                     ->icons([
-                        'heroicon-o-check-circle' => 'selesai',
-                        'heroicon-o-clock' => 'proses',
+                        'heroicon-o-check-circle' => 'Selesai',
+                        'heroicon-o-clock' => 'Proses',
                     ])
                     ->sortable()  // Menambahkan sortable agar user bisa mengurutkan berdasarkan status
                     ->toggleable(),
@@ -110,13 +111,13 @@ class RiwayatResource extends Resource
                     DeleteAction::make()
                         ->color('danger'),
                 ])->icon('heroicon-m-ellipsis-horizontal'),
-                Tables\Actions\Action::make('selesai')
-                    ->label('Tandai Selesai')
+                Tables\Actions\Action::make('Selesai')
+                    // ->label('Tandai Selesai')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->action(function (Model $record) {
                         // Mengubah status menjadi selesai
-                        $record->status = 'selesai';
+                        $record->status = 'Selesai';
                         $record->save();
 
                         if ($record->riwayatable_type === \App\Models\Alat::class) {

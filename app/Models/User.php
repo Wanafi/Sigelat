@@ -11,7 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, Notifiable, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -56,4 +56,6 @@ class User extends Authenticatable
 {
     return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
 }
+
+
 }

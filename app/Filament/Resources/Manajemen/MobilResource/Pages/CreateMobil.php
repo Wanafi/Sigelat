@@ -9,4 +9,8 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateMobil extends CreateRecord
 {
     protected static string $resource = MobilResource::class;
+    protected function getCreatedNotificationTitle(): ?string
+    {
+        return 'Mobil Telah Terdaftar';
+    }
 }

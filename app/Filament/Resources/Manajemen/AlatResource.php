@@ -49,6 +49,7 @@ class AlatResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-m-wrench-screwdriver';
     protected static ?string $navigationLabel = 'Daftar Alat';
     protected static ?string $modelLabel = 'Tools List';
+    protected static ?int $navigationSort = 2;
     protected static ?string $navigationGroup = 'Manajemen';
     public static function getNavigationBadge(): ?string
     {

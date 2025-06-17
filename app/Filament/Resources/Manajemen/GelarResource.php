@@ -34,6 +34,7 @@ class GelarResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-m-map';
     protected static ?string $label = 'Kegiatan';
+    protected static ?int $navigationSort = 2;
     protected static ?string $navigationGroup = 'Manajemen';
     protected static ?string $pluralLabel = 'Daftar Kegiatan Gelar Alat';
     protected static ?string $navigationLabel = 'Gelar Alat';
