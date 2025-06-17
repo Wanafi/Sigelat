@@ -64,14 +64,24 @@ class LaporanMobilResource extends Resource
                 Tables\Columns\TextColumn::make('no_unit'),
                 BadgeColumn::make('status_mobil')
                     ->label('Status')
-                    ->colors([
-                        'warning' => 'TidakAktif',
-                        'danger' => 'DalamPerbaikan',
-                    ])
-                    ->icons([
-                        'heroicon-o-exclamation-triangle' => 'TidakAktif',
-                        'heroicon-o-wrench-screwdriver' => 'DalamPerbaikan',
-                    ]),
+                    ->formatStateUsing(fn($state) => match ($state) {
+                        'aktif' => 'Aktif',
+                        'Tidak Aktif' => 'Tidak Aktif',
+                        'DalamPerbaikan' => 'Dalam Perbaikan',
+                        default => $state,
+                    })
+                    ->color(fn(string $state): string => match ($state) {
+                        'aktif' => 'success',
+                        'Tidak Aktif' => 'warning',
+                        'DalamPerbaikan' => 'danger',
+                        default => 'gray',
+                    })
+                    ->icon(fn(string $state): string => match ($state) {
+                        'Tidak Aktif' => 'heroicon-o-exclamation-triangle',
+                        'DalamPerbaikan' => 'heroicon-o-wrench-screwdriver',
+                        default => 'heroicon-o-information-circle',
+                    }),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -86,10 +96,10 @@ class LaporanMobilResource extends Resource
                     ->label('Status Mobil')
                     ->options([
                         'aktif' => 'Aktif',
-                        'tidakaktif' => 'TidakAktif',
-                        'dalamperbaikan' => 'DalamPerbaikan',
+                        'Tidak Aktif' => 'Tidak Aktif',
+                        'dalamperbaikan' => 'Dalam Perbaikan',
                     ])
-                    ->default(['TidakAktif', 'DalamPerbaikan']),
+                    ->default(['Tidak Aktif', 'DalamPerbaikan']),
             ])
             ->actions([
                 ActionGroup::make([
@@ -111,13 +121,13 @@ class LaporanMobilResource extends Resource
                         ])
                         ->action(function (Model $record, array $data) {
                             /** @var Mobil $record */
-                            $record->status_mobil = 'proses';
+                            $record->status_mobil = 'ProsesPelaporan';
                             $record->save();
 
                             \App\Models\Riwayat::create([
                                 'riwayatable_id' => $record->id,
                                 'riwayatable_type' => get_class($record),
-                                'status' => 'proses',
+                                'status_mobil' => 'ProsesPelaporan',
                                 'user_id' => auth()->id(),
                                 'tanggal_cek' => now()->toDateString(),
                                 'aksi' => $data['aksi'],

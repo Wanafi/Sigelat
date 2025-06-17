@@ -11,6 +11,7 @@ class Gelar extends Model
 
     protected $fillable = [
         'mobil_id',
+        'alat_ids',
         'status',
         'tanggal_cek',
         'user_id',
@@ -32,7 +33,11 @@ class Gelar extends Model
     }
 
     public function getStatusGelarAttribute($value)
-{
-    return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
-}
+    {
+        return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
+    }
+
+    protected $casts = [
+        'alat_ids' => 'array',
+    ];
 }

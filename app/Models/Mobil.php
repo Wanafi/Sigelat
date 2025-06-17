@@ -29,6 +29,7 @@ public function getStatusMobilAttribute($value)
 
     protected $fillable = [
         'nomor_plat',
+        'nama_tim',
         'merk_mobil',
         'no_unit',
         'status_mobil',

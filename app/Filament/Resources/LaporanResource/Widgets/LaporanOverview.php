@@ -30,7 +30,7 @@ class LaporanOverview extends BaseWidget
                 ->color('danger')
                 ->url(route('filament.admin.resources.laporan-alats.index')),
         
-            stat::make('Aktivitas Operasional Mobil', $this->getTidakaktifPerbaikanCount())
+            stat::make('Aktivitas Operasional Mobil', $this->getTidakAktifPerbaikanCount())
                 ->description('Laporan Mobil')
                 ->descriptionIcon('heroicon-o-truck')
                 ->color('warning')
@@ -50,10 +50,10 @@ class LaporanOverview extends BaseWidget
         return Alat::whereIn('status_alat', ['rusak', 'hilang'])->count();
     }
 
-    protected function getTidakaktifPerbaikanCount()
+    protected function getTidakAktifPerbaikanCount()
     {
         // Asumsi bahwa ada kolom 'status' dengan nilai 'rusak' atau 'Hilang'
-        return Mobil::whereIn('status_mobil', ['TidakAktif', 'DalamPerbaikan'])->count();
+        return Mobil::whereIn('status_mobil', ['Tidak Aktif', 'DalamPerbaikan'])->count();
     }
 
     protected function gettidaklengkapprosesCount()

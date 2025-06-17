@@ -12,11 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('mobils', function (Blueprint $table) {
-            $table->enum('status_mobil', ['Aktif', 'Tidak Aktif', 'DalamPerbaikan', 'ProsesPelaporan'])
-                ->default('Aktif')
-                ->change();
+            $table->string('nama_tim')->nullable();
         });
     }
+
 
     /**
      * Reverse the migrations.
@@ -24,9 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('mobils', function (Blueprint $table) {
-            $table->enum('status_mobil', ['Aktif', 'Tidak Aktif', 'DalamPerbaikan'])
-                ->default('Aktif')
-                ->change();
+            //
         });
     }
 };

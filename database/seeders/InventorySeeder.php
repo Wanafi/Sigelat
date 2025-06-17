@@ -20,9 +20,10 @@ class InventorySeeder extends Seeder
         for ($i = 1; $i <= 13; $i++) {
             $mobil = Mobil::create([
                 'nomor_plat' => 'DA ' . rand(1000, 9999) . ' XX',
+                'nama_tim' => $faker->randomElement(['Ops', 'Har', 'Assessment', 'Raw']),
                 'merk_mobil' => $faker->randomElement(['Hilux', 'Innova', 'Carry']),
                 'no_unit' => $faker->randomElement(['Unit12', 'Unit13', 'Unit14']),
-                'status_mobil' => $faker->randomElement(['Aktif', 'TidakAktif', 'DalamPerbaikan']),
+                'status_mobil' => $faker->randomElement(['Aktif', 'Tidak Aktif', 'Dalam Perbaikan']),
             ]);
             $mobilList[] = $mobil->id;
         }
@@ -46,7 +47,7 @@ class InventorySeeder extends Seeder
         // Pastikan ada user
         $userIDs = User::pluck('id')->toArray();
         if (empty($userIDs)) {
-            $user = \App\Models\User::factory()->create(); // pastikan ada factory
+            $user = User::factory()->create(); // pastikan ada factory
             $userIDs[] = $user->id;
         }
 
@@ -58,7 +59,7 @@ class InventorySeeder extends Seeder
                 'mobil_id' => $faker->randomElement($mobilList),
                 'user_id' => $faker->randomElement($userIDs),
                 'alat_ids' => json_encode($randomAlatIds),
-                'status' => $faker->randomElement(['Lengkap', 'TidakLengkap', 'Proses']),
+                'status' => $faker->randomElement(['Lengkap', 'Tidak Lengkap', 'Proses']),
                 'tanggal_cek' => $faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d'),
             ]);
         }

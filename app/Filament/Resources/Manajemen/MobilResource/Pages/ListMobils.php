@@ -19,11 +19,11 @@ class ListMobils extends ListRecords
                 ->modifyQueryUsing(fn($query) => $query->where('status_mobil', 'aktif'))
                 ->badge(Mobil::query()->where('status_mobil', 'aktif')->count()),
             'Tidak Aktif' => Tab::make()
-                ->modifyQueryUsing(fn($query) => $query->where('status_mobil', 'tidakaktif'))
-                ->badge(Mobil::query()->where('status_mobil', 'tidakaktif')->count()),
+                ->modifyQueryUsing(fn($query) => $query->where('status_mobil', 'Tidak Aktif'))
+                ->badge(Mobil::query()->where('status_mobil', 'Tidak Aktif')->count()),
             'Dalam Perbaikan' => Tab::make()
-                ->modifyQueryUsing(fn($query) => $query->where('status_mobil', 'DalamPerbaikan'))
-                ->badge(Mobil::query()->where('status_mobil', 'DalamPerbaikan')->count()),
+                ->modifyQueryUsing(fn($query) => $query->where('status_mobil', 'Dalam Perbaikan'))
+                ->badge(Mobil::query()->where('status_mobil', 'Dalam Perbaikan')->count()),
         ];
     }
 

@@ -24,42 +24,47 @@ class AlatPerMobilChart extends BarChartWidget
         ];
     }
 
-    protected function getData(): array
-    {
-        $mobils = Mobil::with('alats')->get();
-        $labels = $mobils->pluck('nomor_plat')->toArray();
-        $kondisiLabels = ['Hilang', 'Rusak'];
-
-        $defaultColors = [
-            "#0071BC", // Biru PLN
-            "#FFD200", // Kuning PLN
-            "#EF4136", // Merah PLN
-            "#4CAF50", // Hijau (stabil)
-            "#FF9800", // Oranye (semangat)
-            "#9E9E9E", // Abu-abu netral
-            "#00BCD4", // Cyan (segar)
-            "#8E24AA", // Ungu
-            "#D81B60", // Pink tua
-            "#795548", // Coklat
-        ];
-
-        $datasets = [];
-
-        foreach ($kondisiLabels as $index => $kondisi) {
-            $datasets[] = [
-                'label' => ucfirst($kondisi),
-                'backgroundColor' => $defaultColors[$index % count($defaultColors)],
-                'borderColor' => 'transparent',
-                'borderWidth' => 0,
-                'data' => $mobils->map(fn($mobil) => $mobil->alats->where('status_alat', $kondisi)->count())->toArray(),
-            ];
-        }
-
+protected function getData(): array
+{
+    $mobils = Mobil::with('alats')->get();
+    
+    // Gabungkan nomor_plat dengan nama_tim
+    $labels = $mobils->map(function ($mobil) {
+        $namaTim = $mobil->nama_tim ?? 'Tidak Diketahui';
         return [
-            'labels' => $labels,
-            'datasets' => $datasets,
+        $mobil->nomor_plat,
+        "({$mobil->nama_tim})",
+    ];
+    })->toArray();
+
+    $kondisiLabels = ['Hilang', 'Rusak'];
+
+    $defaultColors = [
+        "#0071BC", "#FFD200", "#EF4136", "#4CAF50",
+        "#FF9800", "#9E9E9E", "#00BCD4", "#8E24AA",
+        "#D81B60", "#795548",
+    ];
+
+    $datasets = [];
+
+    foreach ($kondisiLabels as $index => $kondisi) {
+        $datasets[] = [
+            'label' => ucfirst($kondisi),
+            'backgroundColor' => $defaultColors[$index % count($defaultColors)],
+            'borderColor' => 'transparent',
+            'borderWidth' => 0,
+            'data' => $mobils->map(
+                fn($mobil) => $mobil->alats->where('status_alat', $kondisi)->count()
+            )->toArray(),
         ];
     }
+
+    return [
+        'labels' => $labels,
+        'datasets' => $datasets,
+    ];
+}
+
 
     protected function getOptions(): array
     {
@@ -71,6 +76,7 @@ class AlatPerMobilChart extends BarChartWidget
                 'x' => ['stacked' => true],
                 'y' => ['stacked' => true],
             ],
+            
         ];
     }
 }

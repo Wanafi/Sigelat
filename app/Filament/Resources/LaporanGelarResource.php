@@ -17,6 +17,7 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Filters\SelectFilter;
 use App\Filament\Resources\LaporanGelarResource\Pages;
+use Filament\Notifications\Notification;
 
 class LaporanGelarResource extends Resource
 {
@@ -54,7 +55,7 @@ class LaporanGelarResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('tanggal_cek')
                     ->label('Tanggal Cek')
                     ->date()
@@ -79,7 +80,7 @@ class LaporanGelarResource extends Resource
                         'heroicon-o-clock' => 'Proses',
                     ]),
 
-                
+
             ])
             ->filters([
                 SelectFilter::make('status')
@@ -93,7 +94,7 @@ class LaporanGelarResource extends Resource
                         'proses' => 'Proses',
                     ]),
             ])
-            
+
             ->actions([
                 ActionGroup::make([
                     ViewAction::make(),
@@ -102,7 +103,7 @@ class LaporanGelarResource extends Resource
                     DeleteAction::make()
                         ->color('danger'),
                 ])->icon('heroicon-m-ellipsis-horizontal'),
-            
+
                 Tables\Actions\Action::make('konfirmasi')
                     ->label('Konfirmasi')
                     ->icon('heroicon-o-check-circle')
@@ -111,7 +112,7 @@ class LaporanGelarResource extends Resource
                         Forms\Components\TextInput::make('aksi')
                             ->label('Aksi')
                             ->required(),
-            
+
                         Forms\Components\Textarea::make('catatan')
                             ->label('Catatan')
                             ->rows(3)
@@ -121,22 +122,31 @@ class LaporanGelarResource extends Resource
                         /** @var Gelar $record */
                         $record->status = 'Proses';
                         $record->save();
-            
+
                         \App\Models\Riwayat::create([
                             'riwayatable_id' => $record->id,
                             'riwayatable_type' => get_class($record),
-                            'status' => 'proses',
+                            'status' => 'Proses',
                             'user_id' => auth()->id(),
                             'tanggal_cek' => now()->toDateString(),
                             'aksi' => $data['aksi'],
                             'catatan' => $data['catatan'],
                         ]);
-            
+
+                        $record->delete(); // ⬅️ Ini menghapus data mobil dari database
+
+                        Notification::make()
+                            ->title('Berhasil')
+                            ->body('Laporan Mobil dikonfirmasi dan dihapus.')
+                            ->success()
+                            ->send();
+
+
                         session()->flash('message', 'Laporan Gelar berhasil diproses!');
                     })
-                    ->visible(fn ($record) => $record->status !== 'Proses'),
+                    ->visible(fn($record) => $record->status !== 'Proses'),
             ])
-            
+
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

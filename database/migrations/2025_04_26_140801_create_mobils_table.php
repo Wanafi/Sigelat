@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nomor_plat');
             $table->Enum ('merk_mobil', ['Hilux','Innova','Carry']);
             $table->Enum ('no_unit', ['Unit12','Unit13','Unit14']);
-            $table->Enum ('status_mobil', ['Aktif','TidakAktif','DalamPerbaikan']);
+            $table->Enum ('status_mobil', ['Aktif','Tidak Aktif','Dalam Perbaikan', 'Proses']);
             $table->timestamps();
 
         });

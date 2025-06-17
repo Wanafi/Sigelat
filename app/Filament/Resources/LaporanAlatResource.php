@@ -120,10 +120,10 @@ class LaporanAlatResource extends Resource
                             $record->status_alat = 'proses';
                             $record->save();
 
-                            \App\Models\Riwayat::create([
+                            Riwayat::create([
                                 'riwayatable_id' => $record->id,
                                 'riwayatable_type' => get_class($record),
-                                'status' => 'proses',
+                                'status_penggunaan' => 'proses',
                                 'user_id' => auth()->id(),
                                 'tanggal_cek' => now()->toDateString(),
                                 'aksi' => $data['aksi'],

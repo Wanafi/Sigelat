@@ -55,6 +55,20 @@ class MobilResource extends Resource
                         ->required()
                         ->placeholder('Contoh: DA 1234 XX')
                         ->prefixIcon('heroicon-o-identification'),
+
+                    Select::make('nama_tim')
+                        ->label('Nama Tim Armada')
+                        ->options([
+                            'Ops' => 'Ops',
+                            'Har' => 'Har',
+                            'Assessment' => 'Assessment',
+                            'Raw' => 'Raw',
+                        ])
+                        ->required()
+                        ->searchable()
+                        ->native(false) // agar tampil lebih menarik
+                        ->columnSpanFull(),
+
                     Select::make('merk_mobil')
                         ->label('Merk Mobil')
                         ->prefixIcon('heroicon-o-truck')
@@ -84,7 +98,7 @@ class MobilResource extends Resource
                         ->prefixIcon('heroicon-o-truck')
                         ->options([
                             'Aktif' => 'Aktif',
-                            'TidakAktif' => 'Tidak Aktif',
+                            'Tidak Aktif' => 'Tidak Aktif',
                             'DalamPerbaikan' => 'Dalam Perbaikan',
                         ])
                         ->placeholder('Pilih Status'),
@@ -98,19 +112,35 @@ class MobilResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('nomor_plat')
                     ->searchable(),
+                TextColumn::make('nama_tim')
+                    ->label('Tim Armada')
+                    ->badge()
+                    ->colors([
+                        'info' => 'Ops',
+                        'success' => 'Har',
+                        'warning' => 'Assessment',
+                        'danger' => 'Raw',
+                    ])
+                    ->icons([
+                        'heroicon-o-rocket-launch' => 'Ops',
+                        'heroicon-o-cog-6-tooth' => 'Har',
+                        'heroicon-o-clipboard-document-check' => 'Assessment',
+                        'heroicon-o-beaker' => 'Raw',
+                    ]),
+
                 Tables\Columns\TextColumn::make('merk_mobil'),
                 Tables\Columns\TextColumn::make('no_unit'),
                 BadgeColumn::make('status_mobil')
                     ->label('Status')
                     ->colors([
                         'success' => 'Aktif',
-                        'warning' => 'TidakAktif',
-                        'danger' => 'DalamPerbaikan',
+                        'warning' => 'Tidak Aktif',
+                        'danger' => 'Dalam Perbaikan',
                     ])
                     ->icons([
                         'heroicon-o-check-circle' => 'Aktif',
-                        'heroicon-o-exclamation-triangle' => 'TidakAktif',
-                        'heroicon-o-wrench-screwdriver' => 'DalamPerbaikan',
+                        'heroicon-o-exclamation-triangle' => 'Tidak Aktif',
+                        'heroicon-o-wrench-screwdriver' => 'Dalam Perbaikan',
                     ]),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -166,6 +196,11 @@ class MobilResource extends Resource
                 infoSection::make('Informasi Mobil')
                     ->schema([
                         TextEntry::make('nomor_plat')->label('Nomor Plat')->icon('heroicon-m-identification')->copyable(),
+                        TextEntry::make('nama_tim')
+                            ->label('Tim Armada')
+                            ->badge()
+                            ->icon('heroicon-m-users'),
+
                         TextEntry::make('status_mobil')->label('Status Mobil')->badge()->icon('heroicon-m-truck')->copyable(),
                         TextEntry::make('no_unit')->label('No. Unit')->badge()->icon('heroicon-m-truck')->copyable(),
                         TextEntry::make('merk_mobil')->label('Merk Mobil')->badge()->icon('heroicon-m-truck')->copyable(),
