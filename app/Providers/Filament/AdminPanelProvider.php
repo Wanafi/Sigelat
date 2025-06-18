@@ -65,6 +65,9 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->plugins([
+                FilamentShieldPlugin::make(),
+            ])
             ->authMiddleware([
                 Authenticate::class,
             ])
@@ -74,6 +77,9 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Resources\Manajemen\GelarResource::class,
                 \App\Filament\Resources\Laporan\RiwayatResource::class,
                 // Tambahkan resource lainnya di sini
-            ]);
+            ])
+            ->plugins([
+                FilamentShieldPlugin::make(),
+]);
     }
 }
