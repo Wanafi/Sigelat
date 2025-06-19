@@ -51,7 +51,7 @@ class GelarResource extends Resource
                 Section::make()
                     ->schema([
                         Select::make('mobil_id')
-                            ->label('Mobil')
+                            ->label('Nomor Plat')
                             ->options(Mobil::all()->pluck('nomor_plat', 'id'))
                             ->required()
                             ->searchable()
@@ -110,7 +110,7 @@ class GelarResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('mobil.nomor_plat')
-                    ->label('Mobil'),
+                    ->label('Nomor Plat'),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Pelapor')
                     ->sortable()
