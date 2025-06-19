@@ -2,7 +2,6 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Alat;
 use App\Models\Mobil;
 use Filament\Widgets\BarChartWidget;
 
@@ -20,51 +19,55 @@ class AlatPerMobilChart extends BarChartWidget
     public function getExtraAttributes(): array
     {
         return [
-            'class' => 'w-full', // tambahan untuk memastikan lebar penuh
+            'class' => 'w-full',
         ];
     }
 
-protected function getData(): array
-{
-    $mobils = Mobil::with('alats')->get();
-    
-    // Gabungkan nomor_plat dengan nama_tim
-    $labels = $mobils->map(function ($mobil) {
-        $namaTim = $mobil->nama_tim ?? 'Tidak Diketahui';
+    protected function getData(): array
+    {
+        $mobils = Mobil::with('detail_alats')->get();
+
+        $labels = $mobils->map(function ($mobil) {
+            $namaTim = $mobil->nama_tim ?? 'Tidak Diketahui';
+            return [$mobil->nomor_plat, "({$namaTim})"]; // array = baris terpisah
+        })->toArray();
+
+
+        $kondisiLabels = ['Hilang', 'Rusak'];
+        $defaultColors = [
+            "#EF4136",
+            "#FFD200",
+            "#4CAF50",
+            "#0071BC",
+            "#FF9800",
+            "#9E9E9E",
+            "#00BCD4",
+            "#8E24AA",
+            "#D81B60",
+            "#795548",
+        ];
+
+        $datasets = [];
+
+        foreach ($kondisiLabels as $index => $kondisi) {
+            $datasets[] = [
+                'label' => ucfirst($kondisi),
+                'backgroundColor' => $defaultColors[$index % count($defaultColors)],
+                'borderColor' => 'transparent',
+                'borderWidth' => 0,
+                'data' => $mobils->map(function ($mobil) use ($kondisi) {
+                    return $mobil->detail_alats
+                        ? $mobil->detail_alats->where('kondisi', $kondisi)->count()
+                        : 0;
+                })->toArray(),
+            ];
+        }
+
         return [
-        $mobil->nomor_plat,
-        "({$mobil->nama_tim})",
-    ];
-    })->toArray();
-
-    $kondisiLabels = ['Hilang', 'Rusak'];
-
-    $defaultColors = [
-        "#0071BC", "#FFD200", "#EF4136", "#4CAF50",
-        "#FF9800", "#9E9E9E", "#00BCD4", "#8E24AA",
-        "#D81B60", "#795548",
-    ];
-
-    $datasets = [];
-
-    foreach ($kondisiLabels as $index => $kondisi) {
-        $datasets[] = [
-            'label' => ucfirst($kondisi),
-            'backgroundColor' => $defaultColors[$index % count($defaultColors)],
-            'borderColor' => 'transparent',
-            'borderWidth' => 0,
-            'data' => $mobils->map(
-                fn($mobil) => $mobil->alats->where('status_alat', $kondisi)->count()
-            )->toArray(),
+            'labels' => $labels,
+            'datasets' => $datasets,
         ];
     }
-
-    return [
-        'labels' => $labels,
-        'datasets' => $datasets,
-    ];
-}
-
 
     protected function getOptions(): array
     {
@@ -76,7 +79,6 @@ protected function getData(): array
                 'x' => ['stacked' => true],
                 'y' => ['stacked' => true],
             ],
-            
         ];
     }
 }

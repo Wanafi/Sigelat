@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Manajemen;
 
 use Filament\Forms;
 use App\Models\Alat;
+use App\Models\Mobil;
 use Filament\Tables;
 use BaconQrCode\Writer;
 use Filament\Forms\Form;
@@ -29,6 +30,7 @@ use Filament\Infolists\Components\Section;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\HtmlEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -51,12 +53,11 @@ class AlatResource extends Resource
     protected static ?string $modelLabel = 'Tools List';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationGroup = 'Manajemen';
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
     }
-
-
 
     public static function form(Form $form): Form
     {
@@ -109,21 +110,22 @@ class AlatResource extends Resource
                                 'Bagus' => 'heroicon-o-check-circle',
                                 'Rusak' => 'heroicon-o-exclamation-triangle',
                                 'Hilang' => 'heroicon-o-wrench-screwdriver',
-                            ])->required(),
+                            ])
+                            ->required(),
                     ]),
                 FormSection::make('Mobil')
-                    ->description('Pilih Mobil untuk alat ini (opsional)')
+                    ->description('Pilih Mobil yang pernah memakai alat ini')
                     ->schema([
-                        Select::make('mobil_id')
-                            ->relationship('mobil', 'nomor_plat')
-                            ->searchable()
-                            ->prefixIcon('heroicon-o-truck')
-                            ->preload()
+                        Select::make('mobils')
                             ->label('Nomor Plat Mobil')
-                            ->placeholder('Belum ditempatkan')
-                            ->nullable()
+                            ->relationship('mobils', 'nomor_plat')
+                            ->searchable()
+                            ->preload()
+                            ->multiple() // Jika alat bisa lebih dari 1 mobil
+                            ->placeholder('Belum ditempatkan'),
                     ])
                     ->collapsed(),
+
             ]);
     }
 
@@ -131,21 +133,11 @@ class AlatResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('kode_barcode')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('nama_alat')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('kategori_alat')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('merek_alat')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('tanggal_pembelian')
-                    ->date()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('kode_barcode')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('nama_alat')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('kategori_alat')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('merek_alat')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('tanggal_pembelian')->date()->sortable(),
                 BadgeColumn::make('status_alat')
                     ->label('Status')
                     ->sortable()
@@ -159,42 +151,37 @@ class AlatResource extends Resource
                         'heroicon-o-exclamation-triangle' => 'Rusak',
                         'heroicon-o-wrench-screwdriver' => 'Hilang',
                     ]),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                SelectFilter::make('Mobil')
-                    ->preload()
-                    ->relationship('Mobil', 'nomor_plat'),
+                SelectFilter::make('status_alat')
+                    ->label('Filter Status')
+                    ->options([
+                        'Bagus' => 'Bagus',
+                        'Rusak' => 'Rusak',
+                        'Hilang' => 'Hilang',
+                    ])
             ])
             ->actions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make()
-                        ->color('warning'),
-                    DeleteAction::make()
-                        ->color('danger'),
+                    EditAction::make()->color('warning'),
+                    DeleteAction::make()->color('danger'),
                 ])->icon('heroicon-m-ellipsis-horizontal'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
+
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
@@ -205,14 +192,8 @@ class AlatResource extends Resource
                             Grid::make(2)
                                 ->schema([
                                     Section::make([
-                                        TextEntry::make('kode_barcode')
-                                            ->icon('heroicon-m-qr-code')
-                                            ->copyable(),
+                                        TextEntry::make('kode_barcode')->icon('heroicon-m-qr-code')->copyable(),
                                         TextEntry::make('nama_alat'),
-                                        TextEntry::make('mobil.nomor_plat')
-                                            ->label('Mobil')
-                                            ->icon('heroicon-m-truck')
-                                            ->formatStateUsing(fn($state) => $state ?? 'Belum Ditempatkan'),
                                         TextEntry::make('status_alat')
                                             ->badge()
                                             ->colors([
@@ -225,33 +206,25 @@ class AlatResource extends Resource
                                                 'heroicon-o-exclamation-triangle' => 'Rusak',
                                                 'heroicon-o-wrench-screwdriver' => 'Hilang',
                                             ]),
+                                        TextEntry::make('mobils')
+                                            ->label('Pernah Digunakan di Mobil')
+                                            ->icon('heroicon-m-truck')
+                                            ->formatStateUsing(fn($record) => $record->mobils->pluck('nomor_plat')->join(', '))
+                                            ->visible(fn($record) => $record->mobils->isNotEmpty()),
                                     ])->columns(2),
                                     Section::make([
                                         TextEntry::make('merek_alat'),
-                                        TextEntry::make('kategori_alat')
-                                            ->badge(),
+                                        TextEntry::make('kategori_alat')->badge(),
                                     ])->columns(2),
                                 ]),
                             TextEntry::make('qrcode')
                                 ->label('QR Code')
                                 ->html()
                                 ->state(function ($record) {
-                                    // 1. Setup renderer
-                                    $renderer = new ImageRenderer(
-                                        new RendererStyle(200), // ukuran QR
-                                        new SvgImageBackEnd()
-                                    );
-
-                                    // 2. Buat Writer
+                                    $renderer = new ImageRenderer(new RendererStyle(200), new SvgImageBackEnd());
                                     $writer = new Writer($renderer);
-
-                                    // 3. Generate SVG QR Code
                                     $qrSvg = $writer->writeString($record->kode_barcode ?? 'default');
-
-                                    // 4. Convert ke base64
                                     $base64 = base64_encode($qrSvg);
-
-                                    // 5. Return <img> tag
                                     return '<img src="data:image/svg+xml;base64,' . $base64 . '" style="width: 300px; height: 300px;" />';
                                 })
                                 ->hiddenLabel(),
@@ -259,10 +232,7 @@ class AlatResource extends Resource
                     ]),
                 Section::make('Deskripsi Alat')
                     ->schema([
-                        TextEntry::make('spesifikasi')
-                            ->prose()
-                            ->markdown()
-                            ->hiddenLabel(),
+                        TextEntry::make('spesifikasi')->prose()->markdown()->hiddenLabel(),
                     ])
                     ->collapsible(),
             ]);

@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Http\Middleware\TrustProxies;
+
 return [
     'shield_resource' => [
         'should_register_navigation' => true,
@@ -23,13 +25,13 @@ return [
     'super_admin' => [
         'enabled' => true,
         'name' => 'super_admin',
-        'define_via_gate' => false,
+        'define_via_gate' => true,
         'intercept_gate' => 'before', // after
     ],
 
     'panel_user' => [
         'enabled' => true,
-        'name' => 'panel_user',
+        'name' => 'admin',
     ],
 
     'permission_prefixes' => [

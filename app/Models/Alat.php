@@ -8,10 +8,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Alat extends Model
 {
     use HasFactory;
-    public function mobil()
+    public function detail_alats()
     {
-        return $this->belongsTo(Mobil::class, 'mobil_id');
+        return $this->hasMany(DetailAlat::class);
     }
+
+    public function mobils()
+    {
+        return $this->belongsToMany(Mobil::class, 'detail_alats', 'alat_id', 'mobil_id')
+            ->withPivot(['kondisi', 'keterangan']) // hapus 'gelar_id'
+            ->withTimestamps();
+    }
+
 
     public function riwayats()
     {
@@ -19,14 +27,14 @@ class Alat extends Model
     }
 
     public function riwayatable()
-{
-    return $this->morphTo();
-}
+    {
+        return $this->morphTo();
+    }
 
-public function getStatusAlatAttribute($value)
-{
-    return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
-}
+    public function getStatusAlatAttribute($value)
+    {
+        return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
+    }
 
     protected $fillable = [
         'kode_barcode',

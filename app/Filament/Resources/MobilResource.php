@@ -208,12 +208,15 @@ class MobilResource extends Resource
                     ])
                     ->columns(2),
 
-                infoSection::make('Daftar Alat di Mobil')
+                InfoSection::make('Daftar Alat di Mobil')
                     ->schema([
                         RepeatableEntry::make('alats')
+                            ->label('Alat yang Digunakan')
                             ->schema([
                                 TextEntry::make('nama_alat')->label('Nama Alat')->icon('heroicon-m-wrench-screwdriver'),
                                 TextEntry::make('kode_barcode')->label('Kode Alat')->icon('heroicon-m-qr-code'),
+                                TextEntry::make('pivot.kondisi')->label('Kondisi')->badge(),
+                                TextEntry::make('pivot.keterangan')->label('Keterangan'),
                             ])
                             ->columns(2),
                     ])

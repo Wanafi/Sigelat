@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\DetailAlat;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -14,18 +15,27 @@ class Mobil extends Model
     }
     public function alats()
     {
-        return $this->hasMany(Alat::class);
+        return $this->belongsToMany(Alat::class, 'detail_alats', 'mobil_id', 'alat_id')
+            ->withPivot(['kondisi', 'keterangan']) // hapus 'gelar_id'
+            ->withTimestamps();
     }
 
-    public function riwayatable()
-{
-    return $this->morphTo();
-}
 
-public function getStatusMobilAttribute($value)
-{
-    return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
-}
+
+    public function riwayatable()
+    {
+        return $this->morphTo();
+    }
+
+    public function getStatusMobilAttribute($value)
+    {
+        return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
+    }
+
+    public function detail_alats()
+    {
+        return $this->hasMany(DetailAlat::class);
+    }
 
     protected $fillable = [
         'nomor_plat',

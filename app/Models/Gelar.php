@@ -37,6 +37,12 @@ class Gelar extends Model
         return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
     }
 
+    public function pelaksanas()
+    {
+        return $this->belongsToMany(User::class, 'pelaksanas');
+    }
+
+
     protected $casts = [
         'alat_ids' => 'array',
     ];
