@@ -105,6 +105,7 @@ class GelarResource extends Resource
                         Repeater::make('detail_alats')
                             ->label('Detail Alat')
                             ->schema([
+                                TextInput::make('alat_id')->label('ID Alat')->hidden(),
                                 TextInput::make('nama_alat')
                                     ->label('Nama Alat')
                                     ->disabled(),
@@ -116,7 +117,14 @@ class GelarResource extends Resource
                                         'Hilang' => 'Hilang',
                                     ])
                                     ->required()
-                                    ->reactive(),
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $get) {
+                                        $alatId = $get('alat_id');
+                                        if ($alatId && in_array($state, ['Bagus', 'Rusak', 'Hilang'])) {
+                                            \App\Models\Alat::where('id', $alatId)->update(['status_alat' => $state]);
+                                        }
+                                    }),
+
                                 TextInput::make('keterangan')
                                     ->label('Keterangan')
                                     ->nullable(),
@@ -138,23 +146,30 @@ class GelarResource extends Resource
     public static function afterCreate(Gelar $record): void
     {
         $alatDetail = request()->input('data.detail_alats', []);
-        $pelaksanaIds = request()->input('data.pelaksana_id', []);
+        $pelaksanaIds = request()->input('data.pelaksanas_id', []);
+
+        $statusGelar = 'Lengkap';
 
         foreach ($alatDetail as $alat) {
-            if (isset($alat['alat_id'], $alat['kondisi'])) {
-                DB::table('detail_alats')->insert([
-                    'gelar_id' => $record->id,
-                    'mobil_id' => $record->mobil_id,
-                    'alat_id' => $alat['alat_id'],
-                    'kondisi' => $alat['kondisi'],
-                    'keterangan' => $alat['keterangan'] ?? null,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+            if (!isset($alat['alat_id'], $alat['kondisi'])) {
+                continue;
+            }
 
-                Alat::where('id', $alat['alat_id'])->update([
-                    'status_alat' => $alat['kondisi'],
-                ]);
+            DB::table('detail_alats')->insert([
+                'mobil_id' => $record->mobil_id,
+                'alat_id' => $alat['alat_id'],
+                'kondisi' => $alat['kondisi'],
+                'keterangan' => $alat['keterangan'] ?? null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            Alat::where('id', $alat['alat_id'])->update([
+                'status_alat' => $alat['kondisi'],
+            ]);
+
+            if ($alat['kondisi'] === 'Hilang') {
+                $statusGelar = 'Tidak Lengkap';
             }
         }
 
@@ -162,16 +177,12 @@ class GelarResource extends Resource
             $record->pelaksanas()->sync($pelaksanaIds);
         }
 
-        if (collect($alatDetail)->pluck('kondisi')->contains('Hilang')) {
-            $record->update(['status' => 'Tidak Lengkap']);
-        } else {
-            $record->update(['status' => 'Lengkap']);
-        }
+        $record->update(['status' => $statusGelar]);
     }
 
     public static function afterSave(Gelar $record): void
     {
-        DB::table('detail_alats')->where('gelar_id', $record->id)->delete();
+        DB::table('detail_alats')->where('mobil_id', $record->mobil_id)->delete();
         self::afterCreate($record);
     }
 
