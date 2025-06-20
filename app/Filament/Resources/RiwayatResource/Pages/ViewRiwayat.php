@@ -6,6 +6,9 @@ use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\Laporan\RiwayatResource;
+use App\Models\Alat;
+use App\Models\Mobil;
+use App\Models\Gelar;
 
 class ViewRiwayat extends ViewRecord
 {
@@ -19,32 +22,34 @@ class ViewRiwayat extends ViewRecord
     }
 
     public function infolist(Infolist $infolist): Infolist
-{
-    $record = $this->record;
-    $related = $record->riwayatable;
+    {
+        $record = $this->record;
+        $related = $record->riwayatable;
 
-    $items = [
-        TextEntry::make('user.name')->label('Pelapor'),
-        TextEntry::make('status')->label('Status'),
-        TextEntry::make('tanggal_cek')->label('Tanggal Cek'),
-        TextEntry::make('aksi')->label('Aksi'),
-        TextEntry::make('catatan')->label('Catatan'),
-    ];
+        $items = [
+            TextEntry::make('user.name')->label('Pelapor'),
+            TextEntry::make('status')->label('Status'),
+            TextEntry::make('tanggal_cek')->label('Tanggal Cek')->date(),
+            TextEntry::make('aksi')->label('Aksi'),
+            TextEntry::make('catatan')->label('Catatan'),
+        ];
 
-    if ($related instanceof \App\Models\Gelar) {
-        $items[] = TextEntry::make('riwayatable.mobil.nomor_plat')->label('Nomor Plat Mobil');
-        $items[] = TextEntry::make('riwayatable.lokasi')->label('Lokasi');
-    } elseif ($related instanceof \App\Models\Mobil) {
-        $items[] = TextEntry::make('riwayatable.nomor_plat')->label('Nomor Plat');
-        $items[] = TextEntry::make('riwayatable.keterangan')->label('Keterangan Mobil');
-    } elseif ($related instanceof \App\Models\Alat) {
-        $items[] = TextEntry::make('riwayatable.nama')->label('Nama Alat');
-        $items[] = TextEntry::make('riwayatable.kondisi')->label('Kondisi Alat');
-    } else {
-        $items[] = TextEntry::make('riwayatable_type')->label('Jenis Laporan');
+        if ($related instanceof Gelar) {
+            $items[] = TextEntry::make('riwayatable.mobil.nomor_plat')->label('Nomor Plat Mobil');
+            $items[] = TextEntry::make('riwayatable.status')->label('Status Gelar');
+            $items[] = TextEntry::make('riwayatable.tanggal_cek')->label('Tanggal Gelar')->date();
+        } elseif ($related instanceof Mobil) {
+            $items[] = TextEntry::make('riwayatable.nomor_plat')->label('Nomor Plat Mobil');
+            $items[] = TextEntry::make('riwayatable.merk_mobil')->label('Merk');
+            $items[] = TextEntry::make('riwayatable.status_mobil')->label('Status Mobil');
+        } elseif ($related instanceof Alat) {
+            $items[] = TextEntry::make('riwayatable.nama_alat')->label('Nama Alat');
+            $items[] = TextEntry::make('riwayatable.kode_barcode')->label('Kode Alat');
+            $items[] = TextEntry::make('riwayatable.status_alat')->label('Status Alat');
+        } else {
+            $items[] = TextEntry::make('riwayatable_type')->label('Jenis Laporan');
+        }
+
+        return $infolist->schema($items);
     }
-
-    return $infolist->schema($items);
-}
-
 }

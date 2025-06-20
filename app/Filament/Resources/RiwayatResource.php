@@ -8,12 +8,13 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\Action;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\Laporan\RiwayatResource\Pages;
 
@@ -21,19 +22,21 @@ class RiwayatResource extends Resource
 {
     protected static ?string $model = Riwayat::class;
 
+    protected static ?string $navigationIcon = 'heroicon-m-clock';
+    protected static ?string $navigationGroup = 'Laporan';
+    protected static ?int $navigationSort = 3;
+    protected static ?string $navigationLabel = 'Riwayat Konfirmasi';
+
     public static function shouldRegisterNavigation(): bool
     {
         return true;
     }
 
-    protected static ?string $navigationIcon = 'heroicon-m-clock';
-    protected static ?string $navigationGroup = 'Laporan';
-    protected static ?int $navigationSort = 3;
-    protected static ?string $navigationLabel = 'Riwayat Konfirmasi';
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
     }
+
     public static function form(Form $form): Form
     {
         return $form->schema([]);
@@ -46,8 +49,8 @@ class RiwayatResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Pelapor')
                     ->sortable()
-                    ->toggleable()  // Menambahkan toggleable untuk kolom yang bisa disembunyikan
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('tanggal_cek')
                     ->label('Tanggal Cek')
@@ -57,14 +60,14 @@ class RiwayatResource extends Resource
 
                 Tables\Columns\BadgeColumn::make('riwayatable_type')
                     ->label('Jenis Laporan')
-                    ->formatStateUsing(fn($state) => class_basename($state))
                     ->getStateUsing(function ($record) {
-                        if ($record->riwayatable_type === 'App\\Models\\Mobil') return 'Mobil';
-                        if ($record->riwayatable_type === 'App\\Models\\Alat') return 'Alat';
-                        if ($record->riwayatable_type === 'App\\Models\\Gelar') return 'Gelar';
-                        return 'Lainnya';
+                        return match ($record->riwayatable_type) {
+                            'App\\Models\\Mobil' => 'Mobil',
+                            'App\\Models\\Alat' => 'Alat',
+                            'App\\Models\\Gelar' => 'Gelar',
+                            default => 'Lainnya',
+                        };
                     })
-
                     ->colors([
                         'info' => 'Mobil',
                         'success' => 'Alat',
@@ -79,15 +82,15 @@ class RiwayatResource extends Resource
 
                 Tables\Columns\TextColumn::make('aksi')
                     ->label('Aksi')
-                    ->searchable(false)  // Menonaktifkan pencarian di kolom aksi
-                    ->toggleable()
-                    ->getStateUsing(fn($record) => $record->aksi ? $record->aksi : '-'),  // Menambahkan nilai default jika kosong
+                    ->getStateUsing(fn($record) => $record->aksi ?: '-')
+                    ->searchable(false)
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('catatan')
                     ->label('Catatan')
-                    ->placeholder('-')
+                    ->default('-')
                     ->searchable(false)
-                    ->toggleable(),  // Menambahkan toggleable
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
@@ -100,51 +103,42 @@ class RiwayatResource extends Resource
                         'heroicon-o-check-circle' => 'Selesai',
                         'heroicon-o-clock' => 'Proses',
                     ])
-                    ->sortable()  // Menambahkan sortable agar user bisa mengurutkan berdasarkan status
+                    ->sortable()
                     ->toggleable(),
             ])
             ->actions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make()
-                        ->color('warning'),
-                    DeleteAction::make()
-                        ->color('danger'),
+                    EditAction::make()->color('warning'),
+                    DeleteAction::make()->color('danger'),
                 ])->icon('heroicon-m-ellipsis-horizontal'),
-                Tables\Actions\Action::make('Selesai')
-                    // ->label('Tandai Selesai')
+
+                Action::make('Selesai')
+                    ->label('Tandai Selesai')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
+                    ->requiresConfirmation()
                     ->action(function (Model $record) {
-                        // Mengubah status menjadi selesai
                         $record->status = 'Selesai';
                         $record->save();
 
-                        if ($record->riwayatable_type === \App\Models\Alat::class) {
+                        if ($record->riwayatable_type === \App\Models\Alat::class && $record->riwayatable) {
                             $alat = $record->riwayatable;
-                            if ($alat) {
-                                $alat->status_alat = 'Bagus';
-                                $alat->save();
-                            }
+                            $alat->status_alat = 'Bagus';
+                            $alat->save();
                         }
 
-                        // Menampilkan pesan bahwa laporan telah selesai
-                        session()->flash('message', 'Laporan berhasil ditandai sebagai selesai!');
+                        session()->flash('message', 'Laporan berhasil ditandai sebagai selesai.');
                     }),
             ])
-
             ->bulkActions([
-                Tables\Actions\BulkAction::make('delete')
+                BulkAction::make('delete')
                     ->label('Hapus')
                     ->icon('heroicon-o-trash')
-                    ->action(function ($records) {
-                        // Mengambil ID dari setiap record dan menghapusnya
-                        Riwayat::destroy($records->pluck('id'));  // Menggunakan pluck untuk mengambil ID dari collection
-                    }),
+                    ->requiresConfirmation()
+                    ->action(fn($records) => Riwayat::destroy($records->pluck('id'))),
             ]);
     }
-
-
 
     public static function getPages(): array
     {

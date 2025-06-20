@@ -9,19 +9,19 @@ use App\Models\Riwayat;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Filament\Pages\Actions\Action;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
 use Illuminate\Database\Eloquent\Model;
-use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Notifications\Notification;
 use Filament\Tables\Filters\SelectFilter;
 use App\Filament\Resources\LaporanGelarResource\Pages;
-use Filament\Notifications\Notification;
 
 class LaporanGelarResource extends Resource
 {
     protected static ?string $model = Gelar::class;
+
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?string $navigationLabel = 'Laporkan Gelar';
     protected static ?string $pluralLabel = 'Daftar Laporan Gelar Alat';
@@ -34,10 +34,7 @@ class LaporanGelarResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                //
-            ]);
+        return $form->schema([]);
     }
 
     public static function table(Table $table): Table
@@ -46,12 +43,6 @@ class LaporanGelarResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('mobil.nomor_plat')
                     ->label('Nomor Plat')
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(),
-
-                Tables\Columns\TextColumn::make('user.name')
-                    ->label('Pelapor')
                     ->sortable()
                     ->searchable()
                     ->toggleable(),
@@ -66,42 +57,36 @@ class LaporanGelarResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable()
                     ->colors([
                         'success' => 'Lengkap',
-                        'warning' => 'TidakLengkap',
+                        'warning' => 'Tidak Lengkap',
                         'gray' => 'Proses',
                     ])
                     ->icons([
                         'heroicon-o-check-circle' => 'Lengkap',
                         'heroicon-o-exclamation-triangle' => 'Tidak Lengkap',
                         'heroicon-o-clock' => 'Proses',
-                    ]),
-
-
+                    ])
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->searchable()
-                    ->preload()
                     ->label('Filter Status')
                     ->indicator('Filter By')
+                    ->searchable()
                     ->options([
                         'Lengkap' => 'Lengkap',
                         'Tidak Lengkap' => 'Tidak Lengkap',
-                        'proses' => 'Proses',
+                        'Proses' => 'Proses',
                     ]),
             ])
-
             ->actions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make()
-                        ->color('warning'),
-                    DeleteAction::make()
-                        ->color('danger'),
+                    EditAction::make()->color('warning'),
+                    DeleteAction::make()->color('danger'),
                 ])->icon('heroicon-m-ellipsis-horizontal'),
 
                 Tables\Actions\Action::make('konfirmasi')
@@ -119,11 +104,10 @@ class LaporanGelarResource extends Resource
                             ->required(),
                     ])
                     ->action(function (Model $record, array $data) {
-                        /** @var Gelar $record */
-                        $record->status = 'Proses';
-                        $record->save();
+                        // Tandai gelar sebagai 'Proses'
+                        $record->update(['status' => 'Proses']);
 
-                        \App\Models\Riwayat::create([
+                        Riwayat::create([
                             'riwayatable_id' => $record->id,
                             'riwayatable_type' => get_class($record),
                             'status' => 'Proses',
@@ -133,20 +117,16 @@ class LaporanGelarResource extends Resource
                             'catatan' => $data['catatan'],
                         ]);
 
-                        $record->delete(); // ⬅️ Ini menghapus data mobil dari database
-
                         Notification::make()
                             ->title('Berhasil')
-                            ->body('Laporan Mobil dikonfirmasi dan dihapus.')
+                            ->body('Laporan Gelar berhasil dikonfirmasi.')
                             ->success()
                             ->send();
 
-
-                        session()->flash('message', 'Laporan Gelar berhasil diproses!');
+                        session()->flash('message', 'Laporan Gelar berhasil diproses.');
                     })
                     ->visible(fn($record) => $record->status !== 'Proses'),
             ])
-
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -156,9 +136,7 @@ class LaporanGelarResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

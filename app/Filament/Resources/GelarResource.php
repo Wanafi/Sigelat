@@ -6,9 +6,7 @@ use Filament\Forms;
 use App\Models\Alat;
 use App\Models\Gelar;
 use App\Models\Mobil;
-use App\Models\User;
-use Filament\Forms\Set;
-use Filament\Forms\Form;
+use Illuminate\Support\Facades\DB;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
@@ -23,10 +21,10 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Actions\DeleteBulkAction;
 use App\Filament\Resources\Manajemen\GelarResource\Pages;
-use App\Filament\Resources\Manajemen\GelarResource\Pages\EditGelar;
-use App\Filament\Resources\Manajemen\GelarResource\Pages\ListGelars;
-use App\Filament\Resources\Manajemen\GelarResource\Pages\CreateGelar;
-use Illuminate\Support\Facades\DB;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\Section as InfoSection;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
 
 class GelarResource extends Resource
 {
@@ -44,7 +42,7 @@ class GelarResource extends Resource
         return static::getModel()::count();
     }
 
-    public static function form(Form $form): Form
+    public static function form(Forms\Form $form): Forms\Form
     {
         return $form
             ->schema([
@@ -52,23 +50,18 @@ class GelarResource extends Resource
                     ->schema([
                         Select::make('mobil_id')
                             ->label('Nomor Plat Mobil')
-                            ->options(Mobil::all()->pluck('nomor_plat', 'id'))
+                            ->relationship('mobil', 'nomor_plat')
                             ->required()
                             ->searchable()
-                            ->prefixIcon('heroicon-o-truck')
                             ->preload()
-                            ->placeholder('Pilih Mobil')
                             ->live()
-                            ->afterStateUpdated(function (Set $set, $state) {
-                                $alatList = DB::table('detail_alats')
-                                    ->join('alats', 'detail_alats.alat_id', '=', 'alats.id')
-                                    ->where('detail_alats.mobil_id', $state)
-                                    ->select('alats.id as alat_id', 'alats.nama_alat', 'alats.status_alat')
+                            ->afterStateUpdated(function (\Filament\Forms\Set $set, $state) {
+                                $alatList = \App\Models\Alat::where('mobil_id', $state)
                                     ->get()
                                     ->map(fn($alat) => [
-                                        'alat_id' => $alat->alat_id,
+                                        'alat_id' => $alat->id,
                                         'nama_alat' => $alat->nama_alat,
-                                        'kondisi' => $alat->status_alat ?? 'Bagus',
+                                        'kondisi' => $alat->status_alat,
                                         'keterangan' => null,
                                     ])
                                     ->toArray();
@@ -83,8 +76,7 @@ class GelarResource extends Resource
                                 'Tidak Lengkap' => 'Tidak Lengkap',
                             ])
                             ->default('Tidak Lengkap')
-                            ->required()
-                            ->reactive(),
+                            ->required(),
 
                         DatePicker::make('tanggal_cek')
                             ->label('Tanggal Cek')
@@ -94,21 +86,21 @@ class GelarResource extends Resource
                         Select::make('pelaksanas_id')
                             ->label('Petugas Pelaksana')
                             ->multiple()
-                            ->relationship('pelaksanas', 'name')
-                            ->preload()
+                            ->options(
+                                \App\Models\User::pluck('name', 'id')
+                            )
                             ->searchable()
+                            ->preload()
                             ->required(),
                     ])->columns(2),
 
-                Section::make('Detail Alat di Mobil')
+                Section::make('Daftar Alat di Mobil')
                     ->schema([
                         Repeater::make('detail_alats')
                             ->label('Detail Alat')
                             ->schema([
                                 TextInput::make('alat_id')->label('ID Alat')->hidden(),
-                                TextInput::make('nama_alat')
-                                    ->label('Nama Alat')
-                                    ->disabled(),
+                                TextInput::make('nama_alat')->label('Nama Alat')->disabled(),
                                 Select::make('kondisi')
                                     ->label('Kondisi Alat')
                                     ->options([
@@ -125,16 +117,72 @@ class GelarResource extends Resource
                                         }
                                     }),
 
-                                TextInput::make('keterangan')
-                                    ->label('Keterangan')
-                                    ->nullable(),
+                                TextInput::make('keterangan')->label('Keterangan'),
                             ])
                             ->columns(3)
                             ->disableItemCreation()
                             ->disableItemDeletion()
                             ->disableItemMovement()
                             ->visible(fn($get) => filled($get('detail_alats'))),
+                    ]),
+            ]);
+    }
+
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                InfoSection::make('Informasi Kegiatan')
+                    ->schema([
+                        TextEntry::make('mobil.nomor_plat')
+                            ->label('Nomor Plat Mobil')
+                            ->icon('heroicon-m-truck'),
+
+                        TextEntry::make('tanggal_cek')
+                            ->label('Tanggal Cek')
+                            ->icon('heroicon-m-calendar-days')
+                            ->date(),
+
+                        TextEntry::make('status')
+                            ->label('Status')
+                            ->badge()
+                            ->colors([
+                                'success' => 'Lengkap',
+                                'warning' => 'Tidak Lengkap',
+                            ])
+                            ->icons([
+                                'heroicon-o-check-circle' => 'Lengkap',
+                                'heroicon-o-exclamation-triangle' => 'Tidak Lengkap',
+                            ]),
+
+                        TextEntry::make('pelaksanas')
+                            ->label('Pelaksana')
+                            ->icon('heroicon-m-user-group')
+                            ->state(fn($record) => $record->pelaksanas->pluck('name')->join(', ')),
                     ])->columns(2),
+
+                InfoSection::make('Daftar Alat di Mobil')
+                    ->schema([
+                        RepeatableEntry::make('detail_alats')
+                            ->label('Daftar Alat')
+                            ->state(fn($record) => $record->detail_alats()
+                                ->with('alat')
+                                ->get()
+                                ->map(fn($detail) => [
+                                    'nama_alat' => $detail->alat->nama_alat ?? '-',
+                                    'kode_barcode' => $detail->alat->kode_barcode ?? '-',
+                                    'kondisi' => $detail->status_alat,
+                                    'keterangan' => $detail->keterangan,
+                                ])->toArray())
+                            ->schema([
+                                TextEntry::make('nama_alat')->label('Nama Alat'),
+                                TextEntry::make('kode_barcode')->label('Kode Barcode'),
+                                TextEntry::make('kondisi')->label('Kondisi'),
+                                TextEntry::make('keterangan')->label('Keterangan')->columnSpanFull(),
+                            ])
+                            ->columns(2),
+                    ]),
             ]);
     }
 
@@ -145,27 +193,17 @@ class GelarResource extends Resource
 
     public static function afterCreate(Gelar $record): void
     {
-        $alatDetail = request()->input('data.detail_alats', []);
+        $alatList = request()->input('data.alat_list', []);
         $pelaksanaIds = request()->input('data.pelaksanas_id', []);
-
         $statusGelar = 'Lengkap';
 
-        foreach ($alatDetail as $alat) {
-            if (!isset($alat['alat_id'], $alat['kondisi'])) {
-                continue;
-            }
+        foreach ($alatList as $alat) {
+            if (!isset($alat['alat_id'], $alat['kondisi'])) continue;
 
-            DB::table('detail_alats')->insert([
-                'mobil_id' => $record->mobil_id,
-                'alat_id' => $alat['alat_id'],
-                'kondisi' => $alat['kondisi'],
-                'keterangan' => $alat['keterangan'] ?? null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            Alat::where('id', $alat['alat_id'])->update([
+            // ✅ Update status_alat di tabel alats
+            \App\Models\Alat::where('id', $alat['alat_id'])->update([
                 'status_alat' => $alat['kondisi'],
+                'mobil_id' => $record->mobil_id,
             ]);
 
             if ($alat['kondisi'] === 'Hilang') {
@@ -182,9 +220,11 @@ class GelarResource extends Resource
 
     public static function afterSave(Gelar $record): void
     {
-        DB::table('detail_alats')->where('mobil_id', $record->mobil_id)->delete();
+        // cukup panggil ulang afterCreate agar semua logic tetap berlaku
         self::afterCreate($record);
     }
+
+
 
     public static function table(Tables\Table $table): Tables\Table
     {
@@ -220,7 +260,7 @@ class GelarResource extends Resource
                     ->indicator('Filter By')
                     ->options([
                         'Lengkap' => 'Lengkap',
-                        'TidakLengkap' => 'Tidak Lengkap',
+                        'Tidak Lengkap' => 'Tidak Lengkap',
                     ]),
             ])
             ->actions([
@@ -247,10 +287,5 @@ class GelarResource extends Resource
             'create' => Pages\CreateGelar::route('/create'),
             'edit' => Pages\EditGelar::route('/{record}/edit'),
         ];
-    }
-
-    protected function getHeaderWidgets(): array
-    {
-        return [];
     }
 }

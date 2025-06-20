@@ -18,26 +18,14 @@ return new class extends Migration
 
         Schema::create('pelaksanas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('gelar_id')->constrained('gelars')->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('gelar_id')->constrained('gelars')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // ✅ kolom + FK
             $table->timestamps();
-        });
-
-        Schema::create('detail_alats', function (Blueprint $table) {
-            $table->foreignId('mobil_id')->constrained('mobils')->cascadeOnDelete();
-            $table->foreignId('alat_id')->constrained('alats')->cascadeOnDelete();
-            $table->enum('kondisi', ['Bagus', 'Rusak', 'Hilang']);
-            $table->text('keterangan')->nullable();
-            $table->timestamps();
-
-            // Composite Primary Key (alat x mobil)
-            $table->primary(['mobil_id', 'alat_id']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('detail_alats');
         Schema::dropIfExists('pelaksanas');
         Schema::dropIfExists('detail_gelars');
     }

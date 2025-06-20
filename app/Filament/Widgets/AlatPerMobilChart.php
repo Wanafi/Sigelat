@@ -8,7 +8,6 @@ use Filament\Widgets\BarChartWidget;
 class AlatPerMobilChart extends BarChartWidget
 {
     protected static ?string $heading = 'Distribusi Kondisi Alat Per Mobil';
-
     protected static ?string $maxWidth = '7xl';
 
     public function getColumnSpan(): int|string|array
@@ -25,26 +24,18 @@ class AlatPerMobilChart extends BarChartWidget
 
     protected function getData(): array
     {
-        $mobils = Mobil::with('detail_alats')->get();
+        // Ambil semua mobil beserta relasi alats
+        $mobils = Mobil::with('alats')->get();
 
         $labels = $mobils->map(function ($mobil) {
             $namaTim = $mobil->nama_tim ?? 'Tidak Diketahui';
-            return [$mobil->nomor_plat, "({$namaTim})"]; // array = baris terpisah
+            return [$mobil->nomor_plat, "({$namaTim})"];
         })->toArray();
-
 
         $kondisiLabels = ['Hilang', 'Rusak'];
         $defaultColors = [
-            "#EF4136",
-            "#FFD200",
-            "#4CAF50",
-            "#0071BC",
-            "#FF9800",
-            "#9E9E9E",
-            "#00BCD4",
-            "#8E24AA",
-            "#D81B60",
-            "#795548",
+            "#EF4136", "#FFD200", "#4CAF50", "#0071BC", "#FF9800",
+            "#9E9E9E", "#00BCD4", "#8E24AA", "#D81B60", "#795548",
         ];
 
         $datasets = [];
@@ -56,8 +47,8 @@ class AlatPerMobilChart extends BarChartWidget
                 'borderColor' => 'transparent',
                 'borderWidth' => 0,
                 'data' => $mobils->map(function ($mobil) use ($kondisi) {
-                    return $mobil->detail_alats
-                        ? $mobil->detail_alats->where('kondisi', $kondisi)->count()
+                    return $mobil->alats
+                        ? $mobil->alats->where('status_alat', $kondisi)->count()
                         : 0;
                 })->toArray(),
             ];

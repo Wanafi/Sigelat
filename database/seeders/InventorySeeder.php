@@ -16,7 +16,7 @@ class InventorySeeder extends Seeder
     {
         $faker = \Faker\Factory::create('id_ID');
 
-        // 1. Seed Mobil (maksimal 13 data)
+        // 1. Seed Mobil (maks 13)
         $mobilList = [];
         for ($i = 1; $i <= 13; $i++) {
             $mobil = Mobil::create([
@@ -24,39 +24,43 @@ class InventorySeeder extends Seeder
                 'nama_tim' => $faker->randomElement(['Ops', 'Har', 'Assessment', 'Raw']),
                 'merk_mobil' => $faker->randomElement(['Hilux', 'Innova', 'Carry']),
                 'no_unit' => $faker->randomElement(['Unit12', 'Unit13', 'Unit14']),
-                'status_mobil' => $faker->randomElement(['Aktif', 'Tidak Aktif', 'DalamPerbaikan']),
+                'status_mobil' => $faker->randomElement(['Aktif', 'Tidak Aktif', 'Dalam Perbaikan']),
             ]);
             $mobilList[] = $mobil->id;
         }
 
-        // 2. Seed Alat (254 data)
-        $alatIDs = [];
-        for ($i = 1; $i <= 254; $i++) {
-            $alat = Alat::create([
-                'kode_barcode' => 'ALAT-' . strtoupper(Str::random(8)),
-                'nama_alat' => ucfirst($faker->words(2, true)),
-                'kategori_alat' => $faker->randomElement(['Pengukuran', 'Keamanan', 'Listrik', 'Instalasi']),
-                'merek_alat' => $faker->randomElement(['Fluke', 'Kyoritsu', 'Hioki', 'UNI-T']),
-                'spesifikasi' => $faker->sentence(6),
-                'tanggal_pembelian' => $faker->dateTimeBetween('-5 years', 'now')->format('Y-m-d'),
-                'status_alat' => 'Bagus',
-            ]);
-            $alatIDs[] = $alat->id;
-        }
-
-        // 3. Pastikan ada user
+        // 2. Seed User (jika belum ada)
         $userIDs = User::pluck('id')->toArray();
         if (empty($userIDs)) {
             $user = User::factory()->create();
             $userIDs[] = $user->id;
         }
 
-        // 4. Seed Gelar dan relasi
+        // 3. Seed Alat (254), langsung ditugaskan ke mobil
+        $alatIDs = [];
+        for ($i = 1; $i <= 254; $i++) {
+            $alat = Alat::create([
+                'kode_barcode' => 'QR-' . strtoupper(Str::random(8)),
+                'nama_alat' => ucfirst($faker->words(2, true)),
+                'kategori_alat' => $faker->randomElement(['distribusi','pemeliharaan','proteksi','pengukuran','energi_terbarukan','pendukung']),
+                'merek_alat' => $faker->randomElement(['Fluke', 'Kyoritsu', 'Hioki', 'UNI-T']),
+                'spesifikasi' => $faker->sentence(6),
+                'tanggal_pembelian' => $faker->dateTimeBetween('-5 years', 'now')->format('Y-m-d'),
+                'status_alat' => 'Bagus',
+                'mobil_id' => $faker->randomElement($mobilList), // ← langsung dipasang ke mobil
+            ]);
+            $alatIDs[] = $alat->id;
+        }
+
+        // 4. Seed Gelar + relasinya
         for ($i = 1; $i <= 35; $i++) {
             $mobilId = $faker->randomElement($mobilList);
+            $userId = $faker->randomElement($userIDs);
+
             $gelar = Gelar::create([
                 'mobil_id' => $mobilId,
-                'status' => 'Lengkap', // default
+                'user_id' => $userId,
+                'status' => 'Lengkap',
                 'tanggal_cek' => $faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d'),
             ]);
 
@@ -66,18 +70,7 @@ class InventorySeeder extends Seeder
             foreach ($alatDipakai as $alatId) {
                 $kondisi = $faker->randomElement(['Bagus', 'Rusak', 'Hilang']);
 
-                // Insert ke detail_alats
-                DB::table('detail_alats')->updateOrInsert([
-                    'mobil_id' => $mobilId,
-                    'alat_id' => $alatId,
-                ], [
-                    'kondisi' => $kondisi,
-                    'keterangan' => $faker->sentence(3),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-
-                // Insert ke detail_gelars
+                // detail_gelars
                 DB::table('detail_gelars')->insert([
                     'gelar_id' => $gelar->id,
                     'alat_id' => $alatId,
@@ -95,8 +88,8 @@ class InventorySeeder extends Seeder
 
             $gelar->update(['status' => $statusGelar]);
 
-            // Relasi pelaksana
-            $pelaksana = collect($userIDs)->random(min(count($userIDs), rand(1, 3)))->values();
+            // pelaksanas
+            $pelaksana = collect($userIDs)->random(rand(1, min(3, count($userIDs))));
             foreach ($pelaksana as $userId) {
                 DB::table('pelaksanas')->insert([
                     'gelar_id' => $gelar->id,

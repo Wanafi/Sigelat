@@ -27,8 +27,8 @@ class ListGelars extends ListRecords
                 ->modifyQueryUsing(fn($query) => $query->where('status', 'lengkap'))
                 ->badge(Gelar::query()->where('status', 'lengkap')->count()),
             'Tidak Lengkap' => Tab::make()
-                ->modifyQueryUsing(fn($query) => $query->where('status', 'tidaklengkap'))
-                ->badge(Gelar::query()->where('status', 'tidaklengkap')->count()),
+                ->modifyQueryUsing(fn($query) => $query->where('status', 'tidak lengkap'))
+                ->badge(Gelar::query()->where('status', 'tidak lengkap')->count()),
             ];
     }
 }

@@ -59,6 +59,6 @@ class LaporanOverview extends BaseWidget
     protected function gettidaklengkapprosesCount()
     {
         // Asumsi bahwa ada kolom 'status' dengan nilai 'rusak' atau 'Hilang'
-        return Gelar::whereIn('status', ['TidakLengkap'])->count();
+        return Gelar::whereIn('status', ['Tidak Lengkap'])->count();
     }
 }

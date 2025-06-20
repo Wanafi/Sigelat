@@ -3,30 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class DetailAlat extends Model
+class DetailGelar extends Model
 {
-    protected $table = 'detail_alats';
-
-    protected $primaryKey = null;
-    public $incrementing = false; // karena pakai composite key
+    use HasFactory;
 
     protected $fillable = [
         'gelar_id',
-        'mobil_id',
         'alat_id',
-        'kondisi',
-        'keterangan',
+        'status_alat',
     ];
 
     public function gelar()
     {
         return $this->belongsTo(Gelar::class);
-    }
-
-    public function mobil()
-    {
-        return $this->belongsTo(Mobil::class);
     }
 
     public function alat()

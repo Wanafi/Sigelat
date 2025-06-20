@@ -78,7 +78,20 @@ class AlatResource extends Resource
                     ->description('Deskripsikan Alat Yang Ingin DiCatat')
                     ->schema([
                         TextInput::make('nama_alat')->required()->maxLength(255),
-                        TextInput::make('kategori_alat')->required(),
+                        Select::make('kategori_alat')
+                            ->label('Kategori Alat')
+                            ->required()
+                            ->options([
+                                'distribusi' => 'Distribusi',
+                                'pemeliharaan' => 'Pemeliharaan',
+                                'proteksi' => 'Proteksi',
+                                'pengukuran' => 'Pengukuran',
+                                'energi_terbarukan' => 'Energi Terbarukan',
+                                'pendukung' => 'Pendukung',
+                            ])
+                            ->searchable()
+                            ->native(false)
+                            ->placeholder('Pilih Kategori'),
                         TextInput::make('merek_alat')->required(),
                         MarkdownEditor::make('spesifikasi')
                             ->placeholder('Tulis spesifikasi alat di sini...')
@@ -116,16 +129,14 @@ class AlatResource extends Resource
                 FormSection::make('Mobil')
                     ->description('Pilih Mobil yang pernah memakai alat ini')
                     ->schema([
-                        Select::make('mobils')
+                        Select::make('mobil_id')
                             ->label('Nomor Plat Mobil')
-                            ->relationship('mobils', 'nomor_plat')
+                            ->relationship('mobil', 'nomor_plat')
                             ->searchable()
                             ->preload()
-                            ->multiple() // Jika alat bisa lebih dari 1 mobil
                             ->placeholder('Belum ditempatkan'),
                     ])
                     ->collapsed(),
-
             ]);
     }
 
@@ -206,11 +217,10 @@ class AlatResource extends Resource
                                                 'heroicon-o-exclamation-triangle' => 'Rusak',
                                                 'heroicon-o-wrench-screwdriver' => 'Hilang',
                                             ]),
-                                        TextEntry::make('mobils')
-                                            ->label('Pernah Digunakan di Mobil')
+                                        TextEntry::make('mobil.nomor_plat')
+                                            ->label('Digunakan di Mobil')
                                             ->icon('heroicon-m-truck')
-                                            ->formatStateUsing(fn($record) => $record->mobils->pluck('nomor_plat')->join(', '))
-                                            ->visible(fn($record) => $record->mobils->isNotEmpty()),
+                                            ->visible(fn($record) => $record->mobil !== null),
                                     ])->columns(2),
                                     Section::make([
                                         TextEntry::make('merek_alat'),

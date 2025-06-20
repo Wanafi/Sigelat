@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('mobil_id')->constrained('mobils')->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->json('alat_ids');
+            $table->json('alat_ids')->nullable()->change();
             $table->enum('status', ['Lengkap', 'Tidak Lengkap']);
             $table->date('tanggal_cek');
             $table->timestamps();

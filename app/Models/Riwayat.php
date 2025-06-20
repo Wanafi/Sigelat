@@ -10,33 +10,28 @@ class Riwayat extends Model
     use HasFactory;
 
     protected $fillable = [
-        'riwayatable_id',
+        'alat_id',
         'riwayatable_type',
-        'status',
+        'riwayatable_id',
+        'user_id',
         'tanggal_cek',
+        'status',
         'aksi',
         'catatan',
-        'user_id',
     ];
 
-    /**
-     * Relasi polymorphic ke Gelar, Mobil, atau Alat.
-     */
+    public function alat()
+    {
+        return $this->belongsTo(Alat::class);
+    }
+
     public function riwayatable()
     {
         return $this->morphTo();
     }
 
-    /**
-     * Relasi ke pengguna (pelapor).
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
-    public function getStatusRiwayatAttribute($value)
-{
-    return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
-}
 }

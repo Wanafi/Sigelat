@@ -2,12 +2,10 @@
 
 namespace App\Filament\Resources\Manajemen;
 
-
 use App\Filament\Resources\Manajemen\MobilResource\Pages\EditMobil;
 use App\Filament\Resources\Manajemen\MobilResource\Pages\ViewMobil;
 use App\Filament\Resources\Manajemen\MobilResource\Pages\ListMobils;
 use App\Filament\Resources\Manajemen\MobilResource\Pages\CreateMobil;
-
 
 use Filament\Forms;
 use Filament\Tables;
@@ -27,9 +25,8 @@ use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Infolists\Components\TextEntry;
-use App\Filament\Resources\MobilResource\Pages;
 use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\Section as infosection;
+use Filament\Infolists\Components\Section as InfoSection;
 
 class MobilResource extends Resource
 {
@@ -39,6 +36,7 @@ class MobilResource extends Resource
     protected static ?string $modelLabel = 'Car List';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationGroup = 'Manajemen';
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
@@ -50,7 +48,6 @@ class MobilResource extends Resource
             Section::make('Informasi Mobil')
                 ->description('Lengkapi detail mobil dengan benar.')
                 ->schema([
-
                     TextInput::make('nomor_plat')
                         ->label('Nomor Plat')
                         ->required()
@@ -67,7 +64,7 @@ class MobilResource extends Resource
                         ])
                         ->required()
                         ->searchable()
-                        ->native(false) // agar tampil lebih menarik
+                        ->native(false)
                         ->columnSpanFull(),
 
                     Select::make('merk_mobil')
@@ -100,7 +97,7 @@ class MobilResource extends Resource
                         ->options([
                             'Aktif' => 'Aktif',
                             'Tidak Aktif' => 'Tidak Aktif',
-                            'DalamPerbaikan' => 'Dalam Perbaikan',
+                            'Dalam Perbaikan' => 'Dalam Perbaikan',
                         ])
                         ->placeholder('Pilih Status'),
                 ])->columns(2),
@@ -111,8 +108,7 @@ class MobilResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nomor_plat')
-                    ->searchable(),
+                TextColumn::make('nomor_plat')->searchable(),
                 TextColumn::make('nama_tim')
                     ->label('Tim Armada')
                     ->badge()
@@ -128,9 +124,8 @@ class MobilResource extends Resource
                         'heroicon-o-clipboard-document-check' => 'Assessment',
                         'heroicon-o-beaker' => 'Raw',
                     ]),
-
-                Tables\Columns\TextColumn::make('merk_mobil'),
-                Tables\Columns\TextColumn::make('no_unit'),
+                TextColumn::make('merk_mobil'),
+                TextColumn::make('no_unit'),
                 BadgeColumn::make('status_mobil')
                     ->label('Status')
                     ->colors([
@@ -143,14 +138,8 @@ class MobilResource extends Resource
                         'heroicon-o-exclamation-triangle' => 'Tidak Aktif',
                         'heroicon-o-wrench-screwdriver' => 'Dalam Perbaikan',
                     ]),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('no_unit')
@@ -177,10 +166,8 @@ class MobilResource extends Resource
             ->actions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make()
-                        ->color('warning'),
-                    DeleteAction::make()
-                        ->color('danger'),
+                    EditAction::make()->color('warning'),
+                    DeleteAction::make()->color('danger'),
                 ])->icon('heroicon-m-ellipsis-horizontal'),
             ])
             ->bulkActions([
@@ -194,19 +181,14 @@ class MobilResource extends Resource
     {
         return $infolist
             ->schema([
-                infoSection::make('Informasi Mobil')
+                InfoSection::make('Informasi Mobil')
                     ->schema([
                         TextEntry::make('nomor_plat')->label('Nomor Plat')->icon('heroicon-m-identification')->copyable(),
-                        TextEntry::make('nama_tim')
-                            ->label('Tim Armada')
-                            ->badge()
-                            ->icon('heroicon-m-users'),
-
+                        TextEntry::make('nama_tim')->label('Tim Armada')->badge()->icon('heroicon-m-users'),
                         TextEntry::make('status_mobil')->label('Status Mobil')->badge()->icon('heroicon-m-truck')->copyable(),
                         TextEntry::make('no_unit')->label('No. Unit')->badge()->icon('heroicon-m-truck')->copyable(),
                         TextEntry::make('merk_mobil')->label('Merk Mobil')->badge()->icon('heroicon-m-truck')->copyable(),
-                    ])
-                    ->columns(2),
+                    ])->columns(2),
 
                 InfoSection::make('Daftar Alat di Mobil')
                     ->schema([
@@ -215,8 +197,7 @@ class MobilResource extends Resource
                             ->schema([
                                 TextEntry::make('nama_alat')->label('Nama Alat')->icon('heroicon-m-wrench-screwdriver'),
                                 TextEntry::make('kode_barcode')->label('Kode Alat')->icon('heroicon-m-qr-code'),
-                                TextEntry::make('pivot.kondisi')->label('Kondisi')->badge(),
-                                TextEntry::make('pivot.keterangan')->label('Keterangan'),
+                                TextEntry::make('status_alat')->label('Status')->badge(),
                             ])
                             ->columns(2),
                     ])
@@ -225,9 +206,7 @@ class MobilResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

@@ -11,16 +11,10 @@ class Gelar extends Model
 
     protected $fillable = [
         'mobil_id',
-        'alat_ids',
+        'user_id',
         'status',
         'tanggal_cek',
-        'user_id',
     ];
-
-    public function riwayats()
-    {
-        return $this->morphMany(Riwayat::class, 'riwayatable');
-    }
 
     public function mobil()
     {
@@ -32,18 +26,18 @@ class Gelar extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function getStatusGelarAttribute($value)
+    public function detailGelars()
     {
-        return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
+        return $this->hasMany(DetailGelar::class);
     }
 
     public function pelaksanas()
     {
-        return $this->belongsToMany(User::class, 'pelaksanas');
+        return $this->hasMany(Pelaksana::class);
     }
 
-
-    protected $casts = [
-        'alat_ids' => 'array',
-    ];
+    public function riwayats()
+    {
+        return $this->morphMany(Riwayat::class, 'riwayatable');
+    }
 }

@@ -13,9 +13,17 @@ return new class extends Migration
     {
         Schema::create('alats', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('mobil_id')->constrained('mobils')->onDelete('cascade');
             $table->string('kode_barcode')->unique();
             $table->string('nama_alat');
-            $table->string('kategori_alat');
+            $table->enum('kategori_alat', [
+                'distribusi',
+                'pemeliharaan',
+                'proteksi',
+                'pengukuran',
+                'energi_terbarukan',
+                'pendukung'
+            ]);
             $table->string('merek_alat');
             $table->text('spesifikasi');
             $table->date('tanggal_pembelian');

@@ -8,35 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Alat extends Model
 {
     use HasFactory;
-    public function detail_alats()
-    {
-        return $this->hasMany(DetailAlat::class);
-    }
-
-    public function mobils()
-    {
-        return $this->belongsToMany(Mobil::class, 'detail_alats', 'alat_id', 'mobil_id')
-            ->withPivot(['kondisi', 'keterangan']) // hapus 'gelar_id'
-            ->withTimestamps();
-    }
-
-
-    public function riwayats()
-    {
-        return $this->morphMany(Riwayat::class, 'riwayatable');
-    }
-
-    public function riwayatable()
-    {
-        return $this->morphTo();
-    }
-
-    public function getStatusAlatAttribute($value)
-    {
-        return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
-    }
 
     protected $fillable = [
+        'mobil_id',
         'kode_barcode',
         'nama_alat',
         'kategori_alat',
@@ -44,6 +18,20 @@ class Alat extends Model
         'spesifikasi',
         'tanggal_pembelian',
         'status_alat',
-        'mobil_id',
     ];
+
+    public function mobil()
+    {
+        return $this->belongsTo(Mobil::class);
+    }
+
+    public function detailGelars()
+    {
+        return $this->hasMany(DetailGelar::class);
+    }
+
+    public function riwayats()
+    {
+        return $this->hasMany(Riwayat::class);
+    }
 }
