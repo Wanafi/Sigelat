@@ -36,11 +36,8 @@ class Gelar extends Model
         return $this->hasMany(\App\Models\Pelaksana::class);
     }
 
-
-
-    // Detail alat dalam gelar (status alat per gelar)
-    public function detail_alats()
+    public function detailAlats()
     {
-        return $this->hasMany(DetailGelar::class);
+        return $this->hasMany(\App\Models\DetailGelar::class);
     }
 }

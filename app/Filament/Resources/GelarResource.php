@@ -120,59 +120,91 @@ class GelarResource extends Resource
 
     public static function afterCreate(Gelar $record): void
     {
-        $alatList = request()->input('data.detail_alats', []);
-        $pelaksanaIds = request()->input('data.pelaksana_ids', []);
+        $formData = request()->input('data', []);
+        $alatList = $formData['detail_alats'] ?? [];
+        $pelaksanaIds = $formData['pelaksana_ids'] ?? [];
         $statusGelar = 'Lengkap';
 
+        // Simpan ke detail_gelars dan update status alat
         foreach ($alatList as $alat) {
-            if (!isset($alat['alat_id'], $alat['kondisi'])) continue;
+            if (!isset($alat['alat_id'], $alat['kondisi'])) {
+                continue;
+            }
 
-            Alat::where('id', $alat['alat_id'])->update([
-                'status_alat' => $alat['kondisi'],
-                'mobil_id' => $record->mobil_id,
+            // Simpan ke detail_gelars
+            DB::table('detail_gelars')->insert([
+                'gelar_id' => $record->id,
+                'alat_id' => $alat['alat_id'],
+                'kondisi' => $alat['kondisi'],
+                'keterangan' => $alat['keterangan'] ?? null,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
+            // Update status alat
+            Alat::where('id', $alat['alat_id'])->update([
+                'status_alat' => $alat['kondisi'],
+            ]);
+
+            // Tentukan status kegiatan
             if ($alat['kondisi'] === 'Hilang') {
                 $statusGelar = 'Tidak Lengkap';
             }
         }
 
+        // Update status kegiatan gelar
         $record->update(['status' => $statusGelar]);
 
-        if (!empty($pelaksanaIds)) {
-            foreach ($pelaksanaIds as $userId) {
-                Pelaksana::create([
-                    'gelar_id' => $record->id,
-                    'user_id' => $userId,
-                ]);
-            }
+        // Simpan ke pelaksanas
+        foreach ($pelaksanaIds as $userId) {
+            Pelaksana::create([
+                'gelar_id' => $record->id,
+                'user_id' => $userId,
+            ]);
         }
+        dd(request()->input('data'));
     }
+
 
     public static function afterSave(Gelar $record): void
     {
+        DB::table('detail_gelars')->where('gelar_id', $record->id)->delete();
         Pelaksana::where('gelar_id', $record->id)->delete();
+
         self::afterCreate($record);
     }
 
+
     public static function infolist(Infolist $infolist): Infolist
     {
-        return $infolist
-            ->schema([
-                InfoSection::make('Informasi Kegiatan')
-                    ->schema([
-                        TextEntry::make('mobil.nomor_plat')->label('Nomor Plat Mobil')->icon('heroicon-m-truck'),
-                        TextEntry::make('tanggal_cek')->label('Tanggal Cek')->icon('heroicon-m-calendar-days')->date(),
-                        TextEntry::make('status')->label('Status')->badge()->colors([
-                            'success' => 'Lengkap',
-                            'warning' => 'Tidak Lengkap',
+        return $infolist->schema([
+            InfoSection::make('Informasi Kegiatan')
+                ->schema([
+                    TextEntry::make('mobil.nomor_plat')->label('Nomor Plat Mobil')->icon('heroicon-m-truck'),
+                    TextEntry::make('tanggal_cek')->label('Tanggal Cek')->icon('heroicon-m-calendar-days')->date(),
+                    TextEntry::make('status')->label('Status')->badge()->colors([
+                        'success' => 'Lengkap',
+                        'warning' => 'Tidak Lengkap',
+                    ]),
+                    TextEntry::make('pelaksanas')
+                        ->label('Pelaksana')
+                        ->icon('heroicon-m-user-group')
+                        ->state(fn($record) => $record->pelaksanas->map(fn($p) => $p->user->name)->join(', ')),
+                ])
+                ->columns(2),
+
+            InfoSection::make('Daftar Alat yang Diperiksa')
+                ->schema([
+                    RepeatableEntry::make('detailAlats')
+                        ->label('Detail Alat')
+                        ->schema([
+                            TextEntry::make('alat.nama_alat')->label('Nama Alat'),
+                            TextEntry::make('status_alat')->label('Kondisi'),
+                            TextEntry::make('keterangan')->label('Keterangan')->default('-'),
                         ]),
-                        TextEntry::make('pelaksanas')
-                            ->label('Pelaksana')
-                            ->icon('heroicon-m-user-group')
-                            ->state(fn($record) => $record->pelaksanas->map(fn($p) => $p->user->name)->join(', ')),
-                    ])->columns(2),
-            ]);
+                ])
+                ->visible(fn($record) => $record->detailAlats()->exists()),
+        ]);
     }
 
     public static function table(Table $table): Table

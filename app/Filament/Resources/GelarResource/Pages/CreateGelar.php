@@ -2,35 +2,58 @@
 
 namespace App\Filament\Resources\Manajemen\GelarResource\Pages;
 
-use App\Models\Alat;
 use App\Models\Gelar;
-use Filament\Actions;
-use Illuminate\Support\Facades\Auth;
-use App\Filament\Resources\Manajemen\GelarResource;
+use App\Models\Alat;
+use App\Models\Pelaksana;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\DB;
+use App\Filament\Resources\Manajemen\GelarResource;
 
 class CreateGelar extends CreateRecord
 {
     protected static string $resource = GelarResource::class;
 
-    // Metode untuk memodifikasi data sebelum disimpan
-    protected function mutateFormDataBeforeCreate(array $data): array
+    protected function handleRecordCreation(array $data): Gelar
     {
-        $data['user_id'] = Auth::id(); // Ambil ID user yang sedang login
-        if (isset($data['alat_ids'])) {
-            $alatDipilih = is_array($data['alat_ids']) ? count($data['alat_ids']) : count(json_decode($data['alat_ids'], true));
-            $totalAlat = Alat::count();
-            $data['status'] = ($alatDipilih === $totalAlat) ? 'Lengkap' : 'Tidak Lengkap';
-    
-            // Jika perlu encode JSON alat_ids
-            $data['alat_ids'] = json_encode($data['alat_ids']);
+        // Buat data utama gelar
+        $gelar = Gelar::create($data);
+
+        // 🧪 Debug untuk memastikan data masuk
+        // dd($data);
+
+        // Simpan Pelaksana
+        foreach ($data['pelaksana_ids'] ?? [] as $userId) {
+            Pelaksana::create([
+                'gelar_id' => $gelar->id,
+                'user_id' => $userId,
+            ]);
         }
-        return $data;
-    }
 
-    protected function getCreatedNotificationTitle(): ?string
-    {
-        return 'Kegiatan Telah Tercatat';
-    }
+        // Simpan Detail Alat & update status_alat
+        $statusGelar = 'Lengkap';
+        foreach ($data['detail_alats'] ?? [] as $alat) {
+            if (!isset($alat['alat_id'], $alat['kondisi'])) continue;
 
+            DB::table('detail_gelars')->insert([
+                'gelar_id' => $gelar->id,
+                'alat_id' => $alat['alat_id'],
+                'status_alat' => $alat['kondisi'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            Alat::where('id', $alat['alat_id'])->update([
+                'status_alat' => $alat['kondisi'],
+            ]);
+
+            if ($alat['kondisi'] === 'Hilang') {
+                $statusGelar = 'Tidak Lengkap';
+            }
+        }
+
+        // Update status gelar berdasarkan alat
+        $gelar->update(['status' => $statusGelar]);
+
+        return $gelar;
+    }
 }
