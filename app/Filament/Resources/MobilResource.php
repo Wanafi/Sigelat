@@ -2,18 +2,15 @@
 
 namespace App\Filament\Resources\Manajemen;
 
-use App\Filament\Resources\Manajemen\MobilResource\Pages\EditMobil;
-use App\Filament\Resources\Manajemen\MobilResource\Pages\ViewMobil;
-use App\Filament\Resources\Manajemen\MobilResource\Pages\ListMobils;
-use App\Filament\Resources\Manajemen\MobilResource\Pages\CreateMobil;
-
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Mobil;
 use Filament\Forms\Form;
+
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\EditAction;
@@ -24,9 +21,15 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section as InfoSection;
+use App\Filament\Resources\Manajemen\MobilResource\Pages\EditMobil;
+use App\Filament\Resources\Manajemen\MobilResource\Pages\ViewMobil;
+use App\Filament\Resources\Manajemen\MobilResource\Pages\ListMobils;
+use App\Filament\Resources\Manajemen\MobilResource\Pages\CreateMobil;
 
 class MobilResource extends Resource
 {
@@ -43,66 +46,113 @@ class MobilResource extends Resource
     }
 
     public static function form(Form $form): Form
-    {
-        return $form->schema([
-            Section::make('Informasi Mobil')
-                ->description('Lengkapi detail mobil dengan benar.')
-                ->schema([
-                    TextInput::make('nomor_plat')
-                        ->label('Nomor Plat')
-                        ->required()
-                        ->placeholder('Contoh: DA 1234 XX')
-                        ->prefixIcon('heroicon-o-identification'),
+{
+    return $form->schema([
+        Section::make('Informasi Umum Mobil')
+            ->description('Masukkan data mobil dinas operasional secara lengkap.')
+            ->schema([
 
-                    Select::make('nama_tim')
-                        ->label('Nama Tim Armada')
-                        ->options([
-                            'Ops' => 'Ops',
-                            'Har' => 'Har',
-                            'Assessment' => 'Assessment',
-                            'Raw' => 'Raw',
-                        ])
-                        ->required()
-                        ->searchable()
-                        ->native(false)
-                        ->columnSpanFull(),
+                Forms\Components\Grid::make()
+                    ->columns([
+                        'default' => 12,
+                        'sm' => 12,
+                        'md' => 12,
+                        'lg' => 12,
+                        'xl' => 12,
+                        '2xl' => 12,
+                    ])
+                    ->schema([
 
-                    Select::make('merk_mobil')
-                        ->label('Merk Mobil')
-                        ->prefixIcon('heroicon-o-truck')
-                        ->required()
-                        ->options([
-                            'Hilux' => 'Hilux',
-                            'Innova' => 'Innova',
-                            'Carry' => 'Carry',
-                        ])
-                        ->searchable()
-                        ->placeholder('Pilih Merk Mobil'),
+                        // Baris 1
+                        TextInput::make('nomor_plat')
+                            ->label('Nomor Plat Mobil')
+                            ->placeholder('Contoh: DA 1234 XX')
+                            ->required()
+                            ->columnSpan(4)
+                            ->prefixIcon('heroicon-o-identification'),
 
-                    Select::make('no_unit')
-                        ->label('Nomor Unit')
-                        ->required()
-                        ->prefixIcon('heroicon-o-numbered-list')
-                        ->options([
-                            'Unit12' => 'Unit 12',
-                            'Unit13' => 'Unit 13',
-                            'Unit14' => 'Unit 14',
-                        ])
-                        ->placeholder('Pilih Nomor Unit'),
+                        Select::make('nama_tim')
+                            ->label('Tim Armada')
+                            ->required()
+                            ->searchable()
+                            ->prefixIcon('heroicon-o-users')
+                            ->options([
+                                'Ops' => 'Ops',
+                                'Har' => 'Har',
+                                'Assessment' => 'Assessment',
+                                'Raw' => 'Raw',
+                            ])
+                            ->placeholder('Pilih Tim')
+                            ->native(false)
+                            ->columnSpan(4),
 
-                    Select::make('status_mobil')
-                        ->label('Status Mobil')
-                        ->required()
-                        ->prefixIcon('heroicon-o-truck')
-                        ->options([
-                            'Aktif' => 'Aktif',
-                            'Tidak Aktif' => 'Tidak Aktif',
-                            'Dalam Perbaikan' => 'Dalam Perbaikan',
-                        ])
-                        ->placeholder('Pilih Status'),
-                ])->columns(2),
-        ]);
-    }
+                        ToggleButtons::make('status_mobil')
+                            ->label('Status Operasional')
+                            ->options([
+                                'Aktif' => 'Aktif',
+                                'Tidak Aktif' => 'Tidak Aktif',
+                                'Dalam Perbaikan' => 'Dalam Perbaikan',
+                            ])
+                            ->icons([
+                                'Aktif' => 'heroicon-o-check-circle',
+                                'Tidak Aktif' => 'heroicon-o-x-circle',
+                                'Dalam Perbaikan' => 'heroicon-o-wrench-screwdriver',
+                            ])
+                            ->colors([
+                                'Aktif' => 'success',
+                                'Tidak Aktif' => 'warning',
+                                'Dalam Perbaikan' => 'danger',
+                            ])
+                            ->inline()
+                            ->required()
+                            ->columnSpan(4),
+
+                        // Baris 2
+                        Select::make('merk_mobil')
+                            ->label('Merk Mobil')
+                            ->options(Mobil::distinct()->pluck('merk_mobil', 'merk_mobil'))
+                            ->searchable()
+                            ->placeholder('Pilih atau Tambahkan Merk')
+                            ->prefixIcon('heroicon-o-truck')
+                            ->required()
+                            ->columnSpan(6)
+                            ->createOptionForm([
+                                TextInput::make('merk_mobil')
+                                    ->label('Merk Mobil Baru')
+                                    ->required(),
+                            ])
+                            ->createOptionAction(fn(Action $action) => $action
+                                ->modalHeading('Tambah Merk Mobil')
+                                ->modalSubmitActionLabel('Simpan')
+                                ->modalWidth('md'))
+                            ->createOptionUsing(fn(array $data) => $data['merk_mobil']),
+
+                        Select::make('no_unit')
+                            ->label('Nomor Unit Mobil')
+                            ->options(Mobil::distinct()->pluck('no_unit', 'no_unit'))
+                            ->searchable()
+                            ->placeholder('Pilih atau Tambahkan No. Unit')
+                            ->prefixIcon('heroicon-o-hashtag')
+                            ->required()
+                            ->columnSpan(6)
+                            ->createOptionForm([
+                                TextInput::make('no_unit')
+                                    ->label('Nomor Unit Baru')
+                                    ->required(),
+                            ])
+                            ->createOptionAction(fn(Action $action) => $action
+                                ->modalHeading('Tambah Nomor Unit')
+                                ->modalSubmitActionLabel('Simpan')
+                                ->modalWidth('md'))
+                            ->createOptionUsing(fn(array $data) => $data['no_unit']),
+
+                    ]),
+            ])
+            ->columns(1)
+            ->columnSpanFull(),
+    ]);
+}
+
 
     public static function table(Table $table): Table
     {
@@ -157,11 +207,6 @@ class MobilResource extends Resource
                     ->preload()
                     ->label('Filter Merek')
                     ->indicator('Filter By')
-                    ->options([
-                        'Hilux' => 'Hilux',
-                        'Innova' => 'Innova',
-                        'Carry' => 'Carry',
-                    ])
             ])
             ->actions([
                 ActionGroup::make([
@@ -177,32 +222,91 @@ class MobilResource extends Resource
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
-    {
-        return $infolist
-            ->schema([
-                InfoSection::make('Informasi Mobil')
-                    ->schema([
-                        TextEntry::make('nomor_plat')->label('Nomor Plat')->icon('heroicon-m-identification')->copyable(),
-                        TextEntry::make('nama_tim')->label('Tim Armada')->badge()->icon('heroicon-m-users'),
-                        TextEntry::make('status_mobil')->label('Status Mobil')->badge()->icon('heroicon-m-truck')->copyable(),
-                        TextEntry::make('no_unit')->label('No. Unit')->badge()->icon('heroicon-m-truck')->copyable(),
-                        TextEntry::make('merk_mobil')->label('Merk Mobil')->badge()->icon('heroicon-m-truck')->copyable(),
-                    ])->columns(2),
+public static function infolist(Infolist $infolist): Infolist
+{
+    return $infolist
+        ->schema([
+            InfoSection::make('📝 Informasi Umum Mobil')
+                ->description('Berisi identitas utama dari kendaraan operasional.')
+                ->schema([
+                    TextEntry::make('nomor_plat')
+                        ->label('Nomor Plat')
+                        ->icon('heroicon-m-identification')
+                        ->copyable(),
 
-                InfoSection::make('Daftar Alat di Mobil')
-                    ->schema([
-                        RepeatableEntry::make('alats')
-                            ->label('Alat yang Digunakan')
-                            ->schema([
-                                TextEntry::make('nama_alat')->label('Nama Alat')->icon('heroicon-m-wrench-screwdriver'),
-                                TextEntry::make('kode_barcode')->label('Kode Alat')->icon('heroicon-m-qr-code'),
-                                TextEntry::make('status_alat')->label('Status')->badge(),
-                            ])
-                            ->columns(2),
-                    ])
-            ]);
-    }
+                    TextEntry::make('merk_mobil')
+                        ->label('Merk Mobil')
+                        ->icon('heroicon-m-truck')
+                        ->copyable(),
+
+                    TextEntry::make('no_unit')
+                        ->label('Nomor Unit')
+                        ->icon('heroicon-m-hashtag')
+                        ->copyable(),
+
+                    TextEntry::make('nama_tim')
+                        ->label('Tim Armada')
+                        ->icon('heroicon-m-user-group')
+                        ->badge(),
+                    
+                    TextEntry::make('status_mobil')
+                        ->label('Status Operasional')
+                        ->badge()
+                        ->icon('heroicon-m-shield-check')
+                        ->colors([
+                            'success' => 'Aktif',
+                            'warning' => 'Tidak Aktif',
+                            'danger' => 'Dalam Perbaikan',
+                        ])
+                        ->icons([
+                            'Aktif' => 'heroicon-o-check-circle',
+                            'Tidak Aktif' => 'heroicon-o-exclamation-triangle',
+                            'Dalam Perbaikan' => 'heroicon-o-wrench-screwdriver',
+                        ])
+                        ->copyable(),
+                ])
+                ->columns([
+                    'md' => 2,
+                    'lg' => 3,
+                ]),
+
+            InfoSection::make('🧰 Daftar Alat di Kendaraan')
+                ->description('Data seluruh alat yang terdaftar di mobil ini.')
+                ->schema([
+                    RepeatableEntry::make('alats')
+                        ->label('Alat Terdaftar')
+                        ->schema([
+                            TextEntry::make('nama_alat')
+                                ->label('Nama Alat')
+                                ->icon('heroicon-m-wrench-screwdriver'),
+
+                            TextEntry::make('kode_barcode')
+                                ->label('Kode Barcode')
+                                ->icon('heroicon-m-qr-code'),
+
+                            TextEntry::make('status_alat')
+                                ->label('Status')
+                                ->badge()
+                                ->colors([
+                                    'primary' => 'Bagus',
+                                    'warning' => 'Hilang',
+                                    'danger' => 'Rusak',
+                                ])
+                                ->icons([
+                                    'Bagus' => 'heroicon-o-check-circle',
+                                    'Hilang' => 'heroicon-o-no-symbol',
+                                    'Rusak' => 'heroicon-o-exclamation-circle',
+                                ]),
+                        ])
+                        ->columns([
+                            'md' => 3,
+                            'lg' => 3,
+                        ]),
+                ]),
+        ]);
+}
+
+
 
     public static function getRelations(): array
     {

@@ -105,12 +105,14 @@ class LaporanGelarResource extends Resource
                     ])
                     ->action(function (Model $record, array $data) {
                         // Tandai gelar sebagai 'Proses'
-                        $record->update(['status' => 'Proses']);
+                        $record->status = 'Lengkap'; // atau 'Tidak Lengkap'
+                        $record->save();
+
 
                         Riwayat::create([
                             'riwayatable_id' => $record->id,
                             'riwayatable_type' => get_class($record),
-                            'status' => 'Proses',
+                            'status' => 'Lengkap',
                             'user_id' => auth()->id(),
                             'tanggal_cek' => now()->toDateString(),
                             'aksi' => $data['aksi'],

@@ -16,28 +16,31 @@ class Gelar extends Model
         'tanggal_cek',
     ];
 
+    // Mobil yang digunakan dalam gelar
     public function mobil()
     {
         return $this->belongsTo(Mobil::class);
     }
 
+    // User yang membuat entri gelar (opsional)
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function detailGelars()
-    {
-        return $this->hasMany(DetailGelar::class);
-    }
+    // Pelaksana kegiatan (melalui tabel pelaksanas)
+    // App\Models\Gelar.php
 
     public function pelaksanas()
     {
-        return $this->hasMany(Pelaksana::class);
+        return $this->hasMany(\App\Models\Pelaksana::class);
     }
 
-    public function riwayats()
+
+
+    // Detail alat dalam gelar (status alat per gelar)
+    public function detail_alats()
     {
-        return $this->morphMany(Riwayat::class, 'riwayatable');
+        return $this->hasMany(DetailGelar::class);
     }
 }

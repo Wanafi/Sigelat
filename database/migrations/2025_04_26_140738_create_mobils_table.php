@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('mobils', function (Blueprint $table) {
             $table->id();
             $table->string('nomor_plat');
-            $table->Enum ('merk_mobil', ['Hilux','Innova','Carry']);
-            $table->Enum ('no_unit', ['Unit12','Unit13','Unit14']);
+            $table->string('merk_mobil');
+            $table->string('no_unit');
             $table->string('nama_tim')->nullable();
             $table->Enum ('status_mobil', ['Aktif','Tidak Aktif','Dalam Perbaikan']);
             $table->timestamps();

@@ -96,12 +96,12 @@ class RiwayatResource extends Resource
                     ->label('Status')
                     ->badge()
                     ->colors([
-                        'success' => 'Selesai',
                         'gray' => 'Proses',
+                        'success' => 'Selesai',
                     ])
                     ->icons([
-                        'heroicon-o-check-circle' => 'Selesai',
                         'heroicon-o-clock' => 'Proses',
+                        'heroicon-o-check-circle' => 'Selesai',
                     ])
                     ->sortable()
                     ->toggleable(),
@@ -113,7 +113,7 @@ class RiwayatResource extends Resource
                     DeleteAction::make()->color('danger'),
                 ])->icon('heroicon-m-ellipsis-horizontal'),
 
-                Action::make('Selesai')
+                Action::make('markAsSelesai')
                     ->label('Tandai Selesai')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
@@ -122,6 +122,7 @@ class RiwayatResource extends Resource
                         $record->status = 'Selesai';
                         $record->save();
 
+                        // Jika riwayat untuk alat, update status_alat menjadi Bagus
                         if ($record->riwayatable_type === \App\Models\Alat::class && $record->riwayatable) {
                             $alat = $record->riwayatable;
                             $alat->status_alat = 'Bagus';
@@ -129,7 +130,8 @@ class RiwayatResource extends Resource
                         }
 
                         session()->flash('message', 'Laporan berhasil ditandai sebagai selesai.');
-                    }),
+                    })
+                    ->visible(fn($record) => $record->status !== 'Selesai'),
             ])
             ->bulkActions([
                 BulkAction::make('delete')
