@@ -107,7 +107,10 @@ class GelarResource extends Resource
                                         Alat::where('id', $alatId)->update(['status_alat' => $state]);
                                     }
                                 }),
-                            TextInput::make('keterangan')->label('Keterangan'),
+                            TextInput::make('keterangan')
+                                ->placeholder('Opsional, isi jika ada catatan khusus')
+                                ->label('Keterangan')
+                                ->columnSpanFull(),
                         ])
                         ->columns(3)
                         ->disableItemCreation()
@@ -212,7 +215,16 @@ class GelarResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('mobil.nomor_plat')->label('Nomor Plat'),
-                Tables\Columns\TextColumn::make('status')->label('Status')->badge(),
+                Tables\Columns\TextColumn::make('status')->label('Status')
+                    ->badge()
+                    ->colors([
+                        'success' => 'Lengkap',
+                        'warning' => 'Tidak Lengkap',
+                    ])
+                    ->icons([
+                        'heroicon-o-check-circle' => 'Lengkap',
+                        'heroicon-o-exclamation-triangle' => 'Tidak Lengkap',
+                    ]),
                 Tables\Columns\TextColumn::make('tanggal_cek')->label('Tanggal Cek')->date(),
             ])
             ->actions([
