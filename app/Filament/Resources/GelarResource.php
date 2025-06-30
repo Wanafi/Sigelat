@@ -254,4 +254,14 @@ class GelarResource extends Resource
     {
         return static::getModel()::count();
     }
+
+        public static function getLabel(): string
+    {
+        return 'Daftar Kegiatan Gelar Alat';
+    }
+
+    public static function getPluralLabel(): string
+    {
+        return 'Daftar Kegiatan Gelar Alat';
+    }
 }

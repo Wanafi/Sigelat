@@ -28,6 +28,9 @@ class LaporanAlatResource extends Resource
 
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?string $navigationLabel = 'Laporkan Alat';
+    
+    protected static ?string $modelLabel = 'Laporan Daftar Alat';
+
     protected static ?string $navigationIcon = 'heroicon-m-rectangle-stack';
 
     public static function shouldRegisterNavigation(): bool

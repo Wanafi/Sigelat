@@ -27,6 +27,8 @@ class LaporanMobilResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-m-rectangle-stack';
     protected static ?string $navigationGroup = 'Laporan';
+        protected static ?string $modelLabel = 'Laporan Daftar Mobil';
+
     protected static ?string $navigationLabel = 'Laporkan Mobil';
 
     public static function shouldRegisterNavigation(): bool

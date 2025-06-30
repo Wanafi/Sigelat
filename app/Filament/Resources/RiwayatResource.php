@@ -25,6 +25,8 @@ class RiwayatResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-m-clock';
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?int $navigationSort = 3;
+        protected static ?string $modelLabel = 'Riwayat / Aktifitas';
+
     protected static ?string $navigationLabel = 'Riwayat Konfirmasi';
 
     public static function shouldRegisterNavigation(): bool
@@ -148,5 +150,15 @@ class RiwayatResource extends Resource
             'index' => Pages\ListRiwayats::route('/'),
             'view' => Pages\ViewRiwayat::route('/{record}'),
         ];
+    }
+
+        public static function getLabel(): string
+    {
+        return 'Riwayat / Aktifitas';
+    }
+
+    public static function getPluralLabel(): string
+    {
+        return 'Riwayat / Aktifitas';
     }
 }

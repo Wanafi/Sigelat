@@ -36,7 +36,7 @@ class MobilResource extends Resource
     protected static ?string $model = Mobil::class;
     protected static ?string $navigationIcon = 'heroicon-m-truck';
     protected static ?string $navigationLabel = 'Daftar Mobil';
-    protected static ?string $modelLabel = 'Car List';
+    protected static ?string $modelLabel = 'Daftar Mobil';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationGroup = 'Manajemen';
 
@@ -336,5 +336,15 @@ class MobilResource extends Resource
             'view' => ViewMobil::route('/{record}'),
             'edit' => EditMobil::route('/{record}/edit'),
         ];
+    }
+
+        public static function getLabel(): string
+    {
+        return 'Daftar Mobil';
+    }
+
+    public static function getPluralLabel(): string
+    {
+        return 'Daftar Mobil';
     }
 }

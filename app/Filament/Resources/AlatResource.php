@@ -50,7 +50,7 @@ class AlatResource extends Resource
     protected static ?string $model = Alat::class;
     protected static ?string $navigationIcon = 'heroicon-m-wrench-screwdriver';
     protected static ?string $navigationLabel = 'Daftar Alat';
-    protected static ?string $modelLabel = 'Tools List';
+    protected static ?string $modelLabel = 'Daftar Alat';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationGroup = 'Manajemen';
 
@@ -256,5 +256,15 @@ class AlatResource extends Resource
             'view' => ViewAlat::route('/{record}'),
             'edit' => EditAlat::route('/{record}/edit'),
         ];
+    }
+
+        public static function getLabel(): string
+    {
+        return 'Daftar Alat';
+    }
+
+    public static function getPluralLabel(): string
+    {
+        return 'Daftar Alat';
     }
 }

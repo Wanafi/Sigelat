@@ -21,7 +21,7 @@ class UserResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-m-user-circle';
     protected static ?string $navigationLabel = 'Daftar Pengguna';
     protected static ?string $navigationGroup = 'User & Role';
-    protected static ?string $modelLabel = 'User List';
+    protected static ?string $modelLabel = 'Daftar Pengguna';
 
 
     public static function form(Form $form): Form
@@ -95,5 +95,16 @@ class UserResource extends Resource
             'view' => Pages\ViewUser::route('/{record}'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+
+
+    public static function getLabel(): string
+    {
+        return 'Daftar Pengguna';
+    }
+
+    public static function getPluralLabel(): string
+    {
+        return 'Daftar Pengguna';
     }
 }
