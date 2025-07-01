@@ -231,13 +231,23 @@ class AlatResource extends Resource
                                 ->label('QR Code')
                                 ->html()
                                 ->state(function ($record) {
-                                    $renderer = new ImageRenderer(new RendererStyle(200), new SvgImageBackEnd());
-                                    $writer = new Writer($renderer);
-                                    $qrSvg = $writer->writeString($record->kode_barcode ?? 'default');
+                                    // Ganti URL ini ke URL publik (scan)
+                                    $url = 'https://sigelat.loca.lt/scan/' . $record->kode_barcode;
+
+                                    $renderer = new \BaconQrCode\Renderer\ImageRenderer(
+                                        new \BaconQrCode\Renderer\RendererStyle\RendererStyle(200),
+                                        new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
+                                    );
+
+                                    $writer = new \BaconQrCode\Writer($renderer);
+                                    $qrSvg = $writer->writeString($url);
                                     $base64 = base64_encode($qrSvg);
-                                    return '<img src="data:image/svg+xml;base64,' . $base64 . '" style="width: 300px; height: 300px;" />';
+
+                                    return '<img src="data:image/svg+xml;base64,' . $base64 . '" width="300" height="300">';
                                 })
                                 ->hiddenLabel(),
+
+
                         ])
                     ]),
                 Section::make('Deskripsi Alat')
@@ -258,7 +268,7 @@ class AlatResource extends Resource
         ];
     }
 
-        public static function getLabel(): string
+    public static function getLabel(): string
     {
         return 'Daftar Alat';
     }
