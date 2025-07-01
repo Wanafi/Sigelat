@@ -4,6 +4,8 @@ use App\Models\Alat;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Http\Controllers\ScanController;
+
 
 Route::get('/scan/{kode}', function ($kode) {
     $alat = Alat::where('kode_barcode', $kode)->firstOrFail();
@@ -39,3 +41,4 @@ Route::put('/scan/{alat}/update-status', function (Request $request, Alat $alat)
 
     return back()->with('success', 'Status alat berhasil diperbarui.');
 })->name('scan.barcode.update-status');
+
