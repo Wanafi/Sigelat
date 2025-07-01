@@ -2,24 +2,20 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
 use App\Models\Alat;
 use App\Models\Riwayat;
+use Filament\Forms;
 use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action;
+use Filament\Tables\Table;
+use Filament\Forms\Form;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\Actions;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Actions\ActionGroup;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Tables\Filters\MultiSelectFilter;
 use App\Filament\Resources\LaporanAlatResource\Pages;
 
 class LaporanAlatResource extends Resource
@@ -28,110 +24,102 @@ class LaporanAlatResource extends Resource
 
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?string $navigationLabel = 'Laporkan Alat';
-    
     protected static ?string $modelLabel = 'Laporan Daftar Alat';
-
     protected static ?string $navigationIcon = 'heroicon-m-rectangle-stack';
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false; // hanya muncul ketika digunakan
-    }
-
-    public static function form(Form $form): Form
-    {
-        return $form->schema([]);
-    }
+    public static function canCreate(): bool { return false; }
+    public static function canEdit(Model $record): bool { return false; }
+    public static function canDelete(Model $record): bool { return false; }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('kode_barcode')->label('Kode Barcode')->searchable(),
-                TextColumn::make('nama_alat')->label('Nama Alat')->searchable(),
-                TextColumn::make('kategori_alat')->label('Kategori'),
-                TextColumn::make('merek_alat')->label('Merek'),
-                TextColumn::make('mobil.nomor_plat')
-                    ->label('Lokasi')
-                    ->default('Gudang')
-                    ->placeholder('Gudang'),
-                BadgeColumn::make('status_alat')
+                Tables\Columns\TextColumn::make('kode_barcode')->label('Kode Barcode')->searchable(),
+                Tables\Columns\TextColumn::make('nama_alat')->label('Nama Alat')->searchable(),
+                Tables\Columns\TextColumn::make('kategori_alat')->label('Kategori'),
+                Tables\Columns\TextColumn::make('merek_alat')->label('Merek'),
+                Tables\Columns\TextColumn::make('mobil.nomor_plat')->label('Lokasi')->default('Gudang'),
+                Tables\Columns\BadgeColumn::make('status_alat')
                     ->label('Status Alat')
                     ->colors([
                         'success' => 'Bagus',
                         'danger' => 'Rusak',
                         'warning' => 'Hilang',
-                    ])
-                    ->icons([
-                        'heroicon-o-check-circle' => 'Bagus',
-                        'heroicon-o-exclamation-triangle' => 'Rusak',
-                        'heroicon-o-no-symbol' => 'Hilang',
-                    ])
-                    ->toggleable(),
-                TextColumn::make('tanggal_pembelian')
+                    ]),
+                Tables\Columns\TextColumn::make('tanggal_pembelian')
                     ->label('Tanggal Pembelian')
                     ->date('d M Y'),
             ])
             ->filters([
-                MultiSelectFilter::make('status_alat')
-                    ->label('Filter Status Alat')
+                Tables\Filters\MultiSelectFilter::make('status_alat')
+                    ->label('Filter Status')
                     ->options([
                         'Bagus' => 'Bagus',
                         'Rusak' => 'Rusak',
                         'Hilang' => 'Hilang',
                     ])
-                    ->placeholder('Semua Status')
-                    ->searchable()
                     ->default(['Rusak', 'Hilang']),
             ])
-            ->defaultSort('nama_alat')
             ->actions([
-                ActionGroup::make([
-                    ViewAction::make(),
-                    EditAction::make()->color('warning'),
-                    Action::make('konfirmasi')
-                        ->label('Konfirmasi')
-                        ->icon('heroicon-o-check-circle')
-                        ->color('success')
-                        ->form([
-                            TextInput::make('aksi')
-                                ->label('Aksi')
-                                ->required(),
-                            Textarea::make('catatan')
-                                ->label('Catatan')
-                                ->rows(3)
-                                ->required(),
-                        ])
-                        ->action(function (Model $record, array $data) {
-                            Riwayat::create([
-                                'riwayatable_id' => $record->id,
-                                'riwayatable_type' => get_class($record),
-                                'status' => 'Proses',
-                                'user_id' => auth()->id(),
-                                'tanggal_cek' => now()->toDateString(),
-                                'aksi' => $data['aksi'],
-                                'catatan' => $data['catatan'],
-                            ]);
-
-                            session()->flash('message', 'Laporan Alat berhasil dikonfirmasi!');
-                        })
-                        ->visible(fn($record) => $record->status_alat !== 'Bagus'),
-                ])
+                Tables\Actions\ViewAction::make(),
             ]);
     }
 
-    public static function getRelations(): array
+    public static function infolist(Infolist $infolist): Infolist
     {
-        return [];
+        return $infolist->schema([
+            Section::make('Informasi Alat')
+                ->schema([
+                    TextEntry::make('nama_alat')->label('Nama Alat'),
+                    TextEntry::make('kategori_alat')->label('Kategori'),
+                    TextEntry::make('merek_alat')->label('Merek'),
+                    TextEntry::make('kode_barcode')->label('Kode Barcode'),
+                    TextEntry::make('mobil.nomor_plat')->label('Lokasi')->default('Gudang'),
+                    TextEntry::make('status_alat')
+                        ->label('Status')
+                        ->badge()
+                        ->color(fn($state) => match ($state) {
+                            'Bagus' => 'success',
+                            'Rusak' => 'danger',
+                            'Hilang' => 'warning',
+                            default => 'gray',
+                        }),
+                ])
+                ->columns(2),
+
+            Actions::make([
+                Actions\Action::make('konfirmasi')
+                    ->label('Konfirmasi Perbaikan')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn($record) => $record->status_alat !== 'Bagus')
+                    ->form([
+                        TextInput::make('aksi')->label('Tindakan')->required(),
+                        Textarea::make('catatan')->label('Catatan')->required(),
+                    ])
+                    ->action(function (Model $record, array $data) {
+                        $record->update(['status_alat' => 'Bagus']);
+
+                        Riwayat::create([
+                            'riwayatable_id' => $record->id,
+                            'riwayatable_type' => get_class($record),
+                            'user_id' => auth()->id(),
+                            'status' => 'Selesai',
+                            'aksi' => $data['aksi'],
+                            'catatan' => $data['catatan'],
+                            'tanggal_cek' => now(),
+                        ]);
+                    }),
+            ]),
+        ]);
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListLaporanAlats::route('/'),
-            'create' => Pages\CreateLaporanAlat::route('/create'),
             'view' => Pages\ViewLaporanAlat::route('/{record}'),
-            'edit' => Pages\EditLaporanAlat::route('/{record}/edit'),
         ];
     }
 }

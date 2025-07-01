@@ -2,21 +2,23 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
 use App\Models\Gelar;
 use App\Models\Riwayat;
+use Filament\Forms;
+use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Model;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\ActionGroup;
 use Filament\Notifications\Notification;
-use Filament\Tables\Filters\SelectFilter;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use App\Filament\Resources\LaporanGelarResource\Pages;
+use Filament\Infolists\Components\Actions;
+use Filament\Infolists\Components\Actions\Action;
 
 class LaporanGelarResource extends Resource
 {
@@ -27,10 +29,9 @@ class LaporanGelarResource extends Resource
     protected static ?string $pluralLabel = 'Laporan Daftar Kegiatan Gelar Alat';
     protected static ?string $navigationIcon = 'heroicon-m-rectangle-stack';
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
+    public static function canCreate(): bool { return false; }
+    public static function canEdit(Model $record): bool { return false; }
+    public static function canDelete(Model $record): bool { return false; }
 
     public static function form(Form $form): Form
     {
@@ -44,19 +45,16 @@ class LaporanGelarResource extends Resource
                 Tables\Columns\TextColumn::make('mobil.nomor_plat')
                     ->label('Nomor Plat')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(),
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('tanggal_cek')
                     ->label('Tanggal Cek')
                     ->date()
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(),
+                    ->searchable(),
 
-                Tables\Columns\TextColumn::make('status')
+                Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
-                    ->badge()
                     ->colors([
                         'success' => 'Lengkap',
                         'warning' => 'Tidak Lengkap',
@@ -68,86 +66,120 @@ class LaporanGelarResource extends Resource
                         'heroicon-o-clock' => 'Proses',
                     ])
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(),
+                    ->searchable(),
             ])
             ->filters([
-                SelectFilter::make('status')
+                Tables\Filters\SelectFilter::make('status')
                     ->label('Filter Status')
-                    ->indicator('Filter By')
                     ->searchable()
                     ->options([
+                        'Proses' => 'Proses',
                         'Lengkap' => 'Lengkap',
                         'Tidak Lengkap' => 'Tidak Lengkap',
-                        'Proses' => 'Proses',
                     ]),
             ])
             ->actions([
-                ActionGroup::make([
-                    ViewAction::make(),
-                    EditAction::make()->color('warning'),
-                    DeleteAction::make()->color('danger'),
-                ])->icon('heroicon-m-ellipsis-horizontal'),
+                Tables\Actions\ViewAction::make(),
 
                 Tables\Actions\Action::make('konfirmasi')
                     ->label('Konfirmasi')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->form([
-                        Forms\Components\TextInput::make('aksi')
-                            ->label('Aksi')
+                        TextInput::make('aksi')
+                            ->label('Tindakan')
                             ->required(),
 
-                        Forms\Components\Textarea::make('catatan')
+                        Textarea::make('catatan')
                             ->label('Catatan')
-                            ->rows(3)
-                            ->required(),
+                            ->required()
+                            ->rows(3),
                     ])
                     ->action(function (Model $record, array $data) {
-                        // Tandai gelar sebagai 'Proses'
-                        $record->status = 'Lengkap'; // atau 'Tidak Lengkap'
-                        $record->save();
-
+                        $record->update(['status' => 'Lengkap']);
 
                         Riwayat::create([
                             'riwayatable_id' => $record->id,
                             'riwayatable_type' => get_class($record),
-                            'status' => 'Lengkap',
                             'user_id' => auth()->id(),
-                            'tanggal_cek' => now()->toDateString(),
+                            'status' => 'Selesai',
+                            'tanggal_cek' => now(),
                             'aksi' => $data['aksi'],
                             'catatan' => $data['catatan'],
                         ]);
 
                         Notification::make()
                             ->title('Berhasil')
-                            ->body('Laporan Gelar berhasil dikonfirmasi.')
+                            ->body('Laporan Gelar telah dikonfirmasi.')
                             ->success()
                             ->send();
-
-                        session()->flash('message', 'Laporan Gelar berhasil diproses.');
-                    })
-                    ->visible(fn($record) => $record->status !== 'Proses'),
+                    }),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->bulkActions([]);
     }
 
-    public static function getRelations(): array
-    {
-        return [];
-    }
+public static function infolist(Infolist $infolist): Infolist
+{
+    return $infolist->schema([
+        Section::make('Informasi Kegiatan Gelar')
+            ->schema([
+                TextEntry::make('mobil.nomor_plat')->label('Nomor Plat'),
+                TextEntry::make('tanggal_cek')->label('Tanggal Cek')->date(),
+                TextEntry::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn($state) => match ($state) {
+                        'Lengkap' => 'success',
+                        'Tidak Lengkap' => 'warning',
+                        'Proses' => 'gray',
+                        default => 'gray',
+                    }),
+            ])
+            ->columns(2),
 
+        // Konfirmasi ditaruh di bawah pakai Actions::make
+        Actions::make([
+            Action::make('konfirmasi')
+                ->label('Konfirmasi Kegiatan')
+                ->icon('heroicon-o-check-circle')
+                ->color('success')
+                ->form([
+                    TextInput::make('aksi')
+                        ->label('Tindakan')
+                        ->required(),
+
+                    Textarea::make('catatan')
+                        ->label('Catatan')
+                        ->required()
+                        ->rows(3),
+                ])
+                ->action(function (Model $record, array $data) {
+                    $record->update(['status' => 'Lengkap']);
+
+                    Riwayat::create([
+                        'riwayatable_id' => $record->id,
+                        'riwayatable_type' => get_class($record),
+                        'user_id' => auth()->id(),
+                        'status' => 'Selesai',
+                        'tanggal_cek' => now(),
+                        'aksi' => $data['aksi'],
+                        'catatan' => $data['catatan'],
+                    ]);
+
+                    Notification::make()
+                        ->title('Berhasil')
+                        ->body('Konfirmasi kegiatan gelar berhasil.')
+                        ->success()
+                        ->send();
+                }),
+        ]),
+    ]);
+}
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListLaporanGelars::route('/'),
-            'create' => Pages\CreateLaporanGelar::route('/create'),
             'view' => Pages\ViewLaporanGelar::route('/{record}'),
-            'edit' => Pages\EditLaporanGelar::route('/{record}/edit'),
         ];
     }
 }
