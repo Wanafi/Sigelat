@@ -120,13 +120,13 @@ class MobilResource extends Resource
                                 ->label('Merk Mobil')
                                 ->options(Mobil::distinct()->pluck('merk_mobil', 'merk_mobil'))
                                 ->searchable()
-                                ->placeholder('Pilih atau Tambahkan Merk')
+                                ->placeholder('Pilih atau Tambahkan Merek')
                                 ->prefixIcon('heroicon-o-truck')
                                 ->required()
                                 ->columnSpan(4)
                                 ->createOptionForm([
                                     TextInput::make('merk_mobil')
-                                        ->label('Merk Mobil Baru')
+                                        ->label('Merek Mobil Baru')
                                         ->required(),
                                 ])
                                 ->createOptionAction(fn(Action $action) => $action
@@ -182,15 +182,15 @@ class MobilResource extends Resource
                         'heroicon-o-clipboard-document-check' => 'Assessment',
                         'heroicon-o-beaker' => 'Raw',
                     ]),
-                TextColumn::make('merk_mobil'),
+                TextColumn::make('merk_mobil')->label('Merek Mobil'),
                 TextColumn::make('no_seri')->label('Nomor Seri')->searchable(),
                 TextColumn::make('no_unit'),
                 BadgeColumn::make('status_mobil')
                     ->label('Status')
                     ->colors([
                         'success' => 'Aktif',
-                        'warning' => 'Tidak Aktif',
-                        'danger' => 'Dalam Perbaikan',
+                        'danger' => 'Tidak Aktif',
+                        'warning' => 'Dalam Perbaikan',
                     ])
                     ->icons([
                         'heroicon-o-check-circle' => 'Aktif',
@@ -244,7 +244,7 @@ class MobilResource extends Resource
                             ->copyable(),
 
                         TextEntry::make('merk_mobil')
-                            ->label('Merk Mobil')
+                            ->label('Merek Mobil')
                             ->icon('heroicon-m-truck')
                             ->copyable(),
 
@@ -270,8 +270,8 @@ class MobilResource extends Resource
                             ->icon('heroicon-m-shield-check')
                             ->colors([
                                 'success' => 'Aktif',
-                                'warning' => 'Tidak Aktif',
-                                'danger' => 'Dalam Perbaikan',
+                                'danger' => 'Tidak Aktif',
+                                'warning' => 'Dalam Perbaikan',
                             ])
                             ->icons([
                                 'Aktif' => 'heroicon-o-check-circle',

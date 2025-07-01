@@ -8,13 +8,7 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Illuminate\Database\Eloquent\Model;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Actions\BulkAction;
-use Filament\Tables\Actions\Action;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\Laporan\RiwayatResource\Pages;
 
@@ -25,8 +19,7 @@ class RiwayatResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-m-clock';
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?int $navigationSort = 3;
-        protected static ?string $modelLabel = 'Riwayat / Aktifitas';
-
+    protected static ?string $modelLabel = 'Riwayat / Aktifitas';
     protected static ?string $navigationLabel = 'Riwayat Konfirmasi';
 
     public static function shouldRegisterNavigation(): bool
@@ -37,6 +30,11 @@ class RiwayatResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
     }
 
     public static function form(Form $form): Form
@@ -85,13 +83,11 @@ class RiwayatResource extends Resource
                 Tables\Columns\TextColumn::make('aksi')
                     ->label('Aksi')
                     ->getStateUsing(fn($record) => $record->aksi ?: '-')
-                    ->searchable(false)
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('catatan')
                     ->label('Catatan')
                     ->default('-')
-                    ->searchable(false)
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('status')
@@ -109,39 +105,9 @@ class RiwayatResource extends Resource
                     ->toggleable(),
             ])
             ->actions([
-                ActionGroup::make([
-                    ViewAction::make(),
-                    EditAction::make()->color('warning'),
-                    DeleteAction::make()->color('danger'),
-                ])->icon('heroicon-m-ellipsis-horizontal'),
-
-                Action::make('markAsSelesai')
-                    ->label('Tandai Selesai')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->requiresConfirmation()
-                    ->action(function (Model $record) {
-                        $record->status = 'Selesai';
-                        $record->save();
-
-                        // Jika riwayat untuk alat, update status_alat menjadi Bagus
-                        if ($record->riwayatable_type === \App\Models\Alat::class && $record->riwayatable) {
-                            $alat = $record->riwayatable;
-                            $alat->status_alat = 'Bagus';
-                            $alat->save();
-                        }
-
-                        session()->flash('message', 'Laporan berhasil ditandai sebagai selesai.');
-                    })
-                    ->visible(fn($record) => $record->status !== 'Selesai'),
+                ViewAction::make(), // Hanya tombol View
             ])
-            ->bulkActions([
-                BulkAction::make('delete')
-                    ->label('Hapus')
-                    ->icon('heroicon-o-trash')
-                    ->requiresConfirmation()
-                    ->action(fn($records) => Riwayat::destroy($records->pluck('id'))),
-            ]);
+            ->bulkActions([]); // Tidak ada bulk actions
     }
 
     public static function getPages(): array
@@ -152,7 +118,7 @@ class RiwayatResource extends Resource
         ];
     }
 
-        public static function getLabel(): string
+    public static function getLabel(): string
     {
         return 'Riwayat / Aktifitas';
     }
