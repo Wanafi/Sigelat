@@ -1,44 +1,50 @@
 <?php
 
-use App\Models\Alat;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
-use App\Http\Controllers\ScanController;
+use App\Models\Alat;
 
-
-Route::get('/scan/{kode}', function ($kode) {
+Route::get('/scan/{kode}', function ($kode, Request $request) {
     $alat = Alat::where('kode_barcode', $kode)->firstOrFail();
-
-    if (Auth::check() && Auth::user()->is_admin) {
-        return redirect()->route('filament.admin.resources.manajemen/alats.view', ['record' => $alat->id]);
-    }
-
     return view('scan.alat-info', ['alat' => $alat]);
 })->name('scan.barcode');
 
-Route::put('/scan/update/{id}', function (Request $request, $id) {
-    $alat = \App\Models\Alat::findOrFail($id);
+// ✅ Verifikasi password admin sebelum bisa update status
+Route::post('/scan/verifikasi/{id}', function (Request $request, $id) {
+    $alat = Alat::findOrFail($id);
 
-    if (!Auth::check() || !Auth::user()->is_admin) {
-        abort(403);
-    }
-
-    $alat->update([
-        'status_alat' => $request->status_alat,
-        'spesifikasi' => $request->spesifikasi,
+    $request->validate([
+        'akses_password' => 'required',
     ]);
 
-    return redirect()->route('scan.barcode', ['kode' => $alat->kode_barcode])->with('success', 'Alat berhasil diperbarui');
-})->name('scan.barcode.update');
+    // Password admin
+    $passwordBenar = 'plnadmin123';
 
+    if ($request->akses_password === $passwordBenar) {
+        session(['akses_diizinkan' => true]);
+        return redirect()->route('scan.barcode', ['kode' => $alat->kode_barcode])
+                         ->with('success', 'Akses admin berhasil.');
+    } else {
+        return redirect()->route('scan.barcode', ['kode' => $alat->kode_barcode])
+                         ->with('akses_error', 'Password salah.');
+    }
+})->name('scan.barcode.verifikasi');
+
+// ✅ Update status alat (hanya jika sudah akses)
 Route::put('/scan/{alat}/update-status', function (Request $request, Alat $alat) {
     $request->validate([
         'status' => 'required|in:Bagus,Rusak,Hilang',
     ]);
 
-    $alat->update(['status_alat' => $request->status]);
+    if (!session('akses_diizinkan')) {
+        abort(403, 'Tidak memiliki akses untuk memperbarui status.');
+    }
+
+    $alat->update([
+        'status_alat' => $request->status,
+    ]);
 
     return back()->with('success', 'Status alat berhasil diperbarui.');
 })->name('scan.barcode.update-status');
-
