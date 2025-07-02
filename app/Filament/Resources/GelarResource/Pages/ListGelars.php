@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\Manajemen\GelarResource\Pages;
+namespace App\Filament\Resources\GelarResource\Pages;
 
 use App\Models\Gelar;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\ListRecords\Tab;
-use App\Filament\Resources\Manajemen\GelarResource;
+use App\Filament\Resources\GelarResource;
 
 class ListGelars extends ListRecords
 {

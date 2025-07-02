@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Manajemen;
+namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
@@ -26,10 +26,10 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section as InfoSection;
-use App\Filament\Resources\Manajemen\MobilResource\Pages\EditMobil;
-use App\Filament\Resources\Manajemen\MobilResource\Pages\ViewMobil;
-use App\Filament\Resources\Manajemen\MobilResource\Pages\ListMobils;
-use App\Filament\Resources\Manajemen\MobilResource\Pages\CreateMobil;
+use App\Filament\Resources\MobilResource\Pages\EditMobil;
+use App\Filament\Resources\MobilResource\Pages\ViewMobil;
+use App\Filament\Resources\MobilResource\Pages\ListMobils;
+use App\Filament\Resources\MobilResource\Pages\CreateMobil;
 
 class MobilResource extends Resource
 {

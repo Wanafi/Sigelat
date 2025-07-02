@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Manajemen;
+namespace App\Filament\Resources;
 
 use Filament\Forms;
 use App\Models\Alat;
@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\DB;
+use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
@@ -24,10 +25,14 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Infolists\Components\TextEntry;
+use App\Filament\Resources\GelarResource\Pages;
 use Filament\Infolists\Components\RepeatableEntry;
-use App\Filament\Resources\Manajemen\GelarResource\Pages;
+use App\Filament\Resources\GelarResource\Pages\Formulir;
+use App\Filament\Resources\GelarResource\Pages\ViewGelar;
 use Filament\Infolists\Components\Section as InfoSection;
-use App\Filament\Resources\Manajemen\GelarResource\Pages\ViewGelar;
+use App\Filament\Resources\GelarResource\Pages\EditGelar;
+use App\Filament\Resources\GelarResource\Pages\ListGelars;
+use App\Filament\Resources\GelarResource\Pages\CreateGelar;
 
 class GelarResource extends Resource
 {
@@ -129,13 +134,11 @@ class GelarResource extends Resource
         $pelaksanaIds = $formData['pelaksana_ids'] ?? [];
         $statusGelar = 'Lengkap';
 
-        // Simpan ke detail_gelars dan update status alat
         foreach ($alatList as $alat) {
             if (!isset($alat['alat_id'], $alat['kondisi'])) {
                 continue;
             }
 
-            // Simpan ke detail_gelars
             DB::table('detail_gelars')->insert([
                 'gelar_id' => $record->id,
                 'alat_id' => $alat['alat_id'],
@@ -145,30 +148,26 @@ class GelarResource extends Resource
                 'updated_at' => now(),
             ]);
 
-            // Update status alat
             Alat::where('id', $alat['alat_id'])->update([
                 'status_alat' => $alat['kondisi'],
             ]);
 
-            // Tentukan status kegiatan
             if ($alat['kondisi'] === 'Hilang') {
                 $statusGelar = 'Tidak Lengkap';
             }
         }
 
-        // Update status kegiatan gelar
         $record->update(['status' => $statusGelar]);
 
-        // Simpan ke pelaksanas
         foreach ($pelaksanaIds as $userId) {
             Pelaksana::create([
                 'gelar_id' => $record->id,
                 'user_id' => $userId,
             ]);
         }
+
         dd(request()->input('data'));
     }
-
 
     public static function afterSave(Gelar $record): void
     {
@@ -177,7 +176,6 @@ class GelarResource extends Resource
 
         self::afterCreate($record);
     }
-
 
     public static function infolist(Infolist $infolist): Infolist
     {
@@ -202,32 +200,19 @@ class GelarResource extends Resource
                     RepeatableEntry::make('detailAlats')
                         ->label('Detail Alat')
                         ->schema([
-                            TextEntry::make('alat.nama_alat')
-                                ->label('Nama Alat')
-                                ->weight('bold'),
-
-                            TextEntry::make('status_alat')
-                                ->label('Kondisi')
-                                ->badge()
-                                ->color(fn(string $state): string => match ($state) {
-                                    'Bagus' => 'success',
-                                    'Rusak' => 'warning',
-                                    'Hilang' => 'danger',
-                                    default => 'gray',
-                                }),
-
-                            TextEntry::make('keterangan')
-                                ->label('Keterangan')
-                                ->placeholder('-')
-                                ->default('-')
-                                ->color('gray'),
+                            TextEntry::make('alat.nama_alat')->label('Nama Alat')->weight('bold'),
+                            TextEntry::make('status_alat')->label('Kondisi')->badge()->color(fn(string $state): string => match ($state) {
+                                'Bagus' => 'success',
+                                'Rusak' => 'warning',
+                                'Hilang' => 'danger',
+                                default => 'gray',
+                            }),
+                            TextEntry::make('keterangan')->label('Keterangan')->placeholder('-')->default('-')->color('gray'),
                         ])
                         ->columns(3)
                         ->visible(fn($record) => $record->detailAlats()->exists())
-                        ->contained() // memberi bingkai kecil per item, seperti "card"
-                        ->columnSpanFull(), // jika ingin tampil selebar halaman
-
-
+                        ->contained()
+                        ->columnSpanFull(),
                 ])
                 ->visible(fn($record) => $record->detailAlats()->exists()),
         ]);
@@ -252,6 +237,10 @@ class GelarResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
+                    Action::make("form_gelat")
+                        ->label(__('Cetak Form'))
+                        ->icon('heroicon-s-printer')
+                        ->color('success'),
                     ViewAction::make(),
                     EditAction::make()->color('warning'),
                     DeleteAction::make()->color('danger'),
@@ -262,10 +251,11 @@ class GelarResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListGelars::route('/'),
-            'create' => Pages\CreateGelar::route('/create'),
+            'index' => ListGelars::route('/'),
+            'create' => CreateGelar::route('/create'),
             'view' => ViewGelar::route('/{record}'),
-            'edit' => Pages\EditGelar::route('/{record}/edit'),
+            'edit' => EditGelar::route('/{record}/edit'),
+            'formulir' => Formulir::route('/{record}/edit'),
         ];
     }
 

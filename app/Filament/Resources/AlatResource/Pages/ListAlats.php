@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\Manajemen\AlatResource\Pages;
+namespace App\Filament\Resources\AlatResource\Pages;
 
 use Filament\Actions;
-use App\Filament\Resources\Manajemen\AlatResource;
+use App\Filament\Resources\AlatResource;
 use App\Models\Alat;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\ListRecords\Tab;

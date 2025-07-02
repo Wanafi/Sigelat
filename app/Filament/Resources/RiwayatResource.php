@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Laporan;
+namespace App\Filament\Resources;
 
 use Filament\Tables;
 use App\Models\Riwayat;
@@ -10,7 +10,7 @@ use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Infolists\Components\TextEntry;
-use App\Filament\Resources\Laporan\RiwayatResource\Pages;
+use App\Filament\Resources\RiwayatResource\Pages;
 
 class RiwayatResource extends Resource
 {

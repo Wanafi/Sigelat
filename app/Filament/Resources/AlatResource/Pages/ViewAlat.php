@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Manajemen\AlatResource\Pages;
+namespace App\Filament\Resources\AlatResource\Pages;
 
-use App\Filament\Resources\Manajemen\AlatResource;
+use App\Filament\Resources\AlatResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
 

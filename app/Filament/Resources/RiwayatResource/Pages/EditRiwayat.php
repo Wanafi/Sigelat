@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Laporan\RiwayatResource\Pages;
+namespace App\Filament\Resources\RiwayatResource\Pages;
 
-use App\Filament\Resources\Laporan\RiwayatResource;
+use App\Filament\Resources\RiwayatResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 

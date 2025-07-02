@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Manajemen\MobilResource\Pages;
+namespace App\Filament\Resources\MobilResource\Pages;
 
-use App\Filament\Resources\Manajemen\MobilResource;
+use App\Filament\Resources\MobilResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
 

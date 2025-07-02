@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\LaporanResource\Widgets;
 
-use App\Filament\Resources\Manajemen\MobilResource;
+use App\Filament\Resources\MobilResource;
 use App\Models\Alat;
 use App\Models\Gelar;
 use App\Models\Mobil;

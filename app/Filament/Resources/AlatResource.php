@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Manajemen;
+namespace App\Filament\Resources;
 
 use Filament\Forms;
 use App\Models\Alat;
@@ -39,11 +39,11 @@ use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use Filament\Forms\Components\Section as FormSection;
-use App\Filament\Resources\Manajemen\AlatResource\Pages\EditAlat;
-use App\Filament\Resources\Manajemen\AlatResource\Pages\ViewAlat;
-use App\Filament\Resources\Manajemen\AlatResource\Pages\ListAlats;
-use App\Filament\Resources\Manajemen\AlatResource\Pages\CreateAlat;
-use App\Filament\Resources\Manajemen\AlatResource\RelationManagers;
+use App\Filament\Resources\AlatResource\Pages\EditAlat;
+use App\Filament\Resources\AlatResource\Pages\ViewAlat;
+use App\Filament\Resources\AlatResource\Pages\ListAlats;
+use App\Filament\Resources\AlatResource\Pages\CreateAlat;
+use App\Filament\Resources\AlatResource\RelationManagers;
 
 class AlatResource extends Resource
 {

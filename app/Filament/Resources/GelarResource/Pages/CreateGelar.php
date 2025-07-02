@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Filament\Resources\Manajemen\GelarResource\Pages;
+namespace App\Filament\Resources\GelarResource\Pages;
 
 use App\Models\Gelar;
 use App\Models\Alat;
 use App\Models\Pelaksana;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\DB;
-use App\Filament\Resources\Manajemen\GelarResource;
+use App\Filament\Resources\GelarResource;
 
 class CreateGelar extends CreateRecord
 {

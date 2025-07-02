@@ -72,10 +72,10 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->resources([
-                \App\Filament\Resources\Manajemen\AlatResource::class,
-                \App\Filament\Resources\Manajemen\MobilResource::class,
-                \App\Filament\Resources\Manajemen\GelarResource::class,
-                \App\Filament\Resources\Laporan\RiwayatResource::class,
+                \App\Filament\Resources\AlatResource::class,
+                \App\Filament\Resources\MobilResource::class,
+                \App\Filament\Resources\GelarResource::class,
+                \App\Filament\Resources\RiwayatResource::class,
                 // Tambahkan resource lainnya di sini
             ])
             ->plugins([

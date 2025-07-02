@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Filament\Resources\Laporan\RiwayatResource\Pages;
+namespace App\Filament\Resources\RiwayatResource\Pages;
 
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Infolists\Components\TextEntry;
-use App\Filament\Resources\Laporan\RiwayatResource;
+use App\Filament\Resources\RiwayatResource;
 use App\Models\Alat;
 use App\Models\Mobil;
 use App\Models\Gelar;

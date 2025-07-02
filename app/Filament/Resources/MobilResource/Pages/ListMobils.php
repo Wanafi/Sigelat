@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\Manajemen\MobilResource\Pages;
+namespace App\Filament\Resources\MobilResource\Pages;
 
 use App\Models\Mobil;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\ListRecords\Tab;
-use App\Filament\Resources\Manajemen\MobilResource;
+use App\Filament\Resources\MobilResource;
 
 class ListMobils extends ListRecords
 {
