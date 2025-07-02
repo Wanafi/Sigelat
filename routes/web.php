@@ -1,10 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Http\Request;
 use App\Models\Alat;
+use App\Models\Gelar;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
 Route::get('/scan/{kode}', function ($kode, Request $request) {
     $alat = Alat::where('kode_barcode', $kode)->firstOrFail();
@@ -48,3 +51,10 @@ Route::put('/scan/{alat}/update-status', function (Request $request, Alat $alat)
 
     return back()->with('success', 'Status alat berhasil diperbarui.');
 })->name('scan.barcode.update-status');
+
+
+
+Route::get('/admin/gelars/{id}/formulir', function ($id) {
+    $gelar = Gelar::with(['mobil.alats', 'detailGelars.alat'])->findOrFail($id);
+    return view('filament.resources.gelar-resource.pages.formulir', compact('gelar'));
+})->name('admin.gelars.formulir');

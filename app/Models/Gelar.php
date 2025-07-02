@@ -40,4 +40,9 @@ class Gelar extends Model
     {
         return $this->hasMany(\App\Models\DetailGelar::class);
     }
+
+    public function detailGelars()
+    {
+        return $this->hasMany(\App\Models\DetailGelar::class);
+    }
 }

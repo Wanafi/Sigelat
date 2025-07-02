@@ -240,7 +240,8 @@ class GelarResource extends Resource
                     Action::make("form_gelat")
                         ->label(__('Cetak Form'))
                         ->icon('heroicon-s-printer')
-                        ->color('success'),
+                        ->color('success')
+                        ->url(fn($record)=>self::getUrl("formulir", [ 'record' => $record->id])),
                     ViewAction::make(),
                     EditAction::make()->color('warning'),
                     DeleteAction::make()->color('danger'),
@@ -255,7 +256,7 @@ class GelarResource extends Resource
             'create' => CreateGelar::route('/create'),
             'view' => ViewGelar::route('/{record}'),
             'edit' => EditGelar::route('/{record}/edit'),
-            'formulir' => Formulir::route('/{record}/edit'),
+            'formulir' => Formulir::route('/{record}/formulir'),
         ];
     }
 
