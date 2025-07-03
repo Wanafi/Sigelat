@@ -4,13 +4,12 @@
         .page-a4 {
             width: 210mm;
             min-height: 297mm;
-            margin: auto;
-            padding: 20mm 25mm;
             background-color: white;
-            display: flex;
-            flex-direction: column;
             font-family: Arial, sans-serif;
             font-size: 10pt;
+            display: flex;
+            flex-direction: column;
+            padding: 5mm 10mm; /* Padding internal, bukan margin luar */
         }
 
         .header, .info, .signature {
@@ -19,7 +18,6 @@
 
         .table-wrapper {
             flex-grow: 1;
-            overflow: hidden;
         }
 
         table {
@@ -30,7 +28,7 @@
 
         th, td {
             border: 1px solid #999;
-            padding: 3px 6px;
+            padding: 4px 6px;
             word-break: break-word;
         }
 
@@ -40,7 +38,7 @@
         }
 
         .signature {
-            margin-top: 20px;
+            margin-top: 30px;
             display: flex;
             justify-content: space-between;
             text-align: center;
@@ -49,13 +47,12 @@
         @media print {
             @page {
                 size: A4;
-                margin: 20mm 25mm;
+                margin: 0; /* Biarkan browser mengatur margin bawaannya */
             }
 
             html, body {
-                height: auto;
-                margin: 0 !important;
-                padding: 0 !important;
+                margin: 0;
+                padding: 0;
             }
 
             body * {
@@ -68,26 +65,32 @@
 
             #print-area {
                 position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                margin: 0;
-                background-color: white;
+                inset: 0;
+                box-shadow: none;
+                background: white;
+            }
+
+            /* Sembunyikan elemen UI */
+            header,
+            [data-id="header"],
+            .fi-sidebar,
+            .fi-topbar {
+                display: none !important;
             }
         }
     </style>
 
     {{-- ✅ HEADER --}}
     <div class="header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #004c97; padding-bottom: 10px;">
-        <img src="{{ asset('images/plnt.png') }}" alt="Logo PLN" style="height: 60px;">
+        <img src="{{ asset('images/plnt.png') }}" alt="Logo PLN" style="height: 40px;">
         <div style="text-align: right;">
-            <div style="font-size: 12pt; font-style: italic;">PT PLN (Persero)</div>
-            <div style="font-size: 13pt; font-weight: bold;">ULP Ahmad Yani Banjarmasin</div>
-            <div style="font-size: 11pt; color: #004c97;">Laporan Kegiatan Gelar Alat Operasional</div>
+            <div style="font-size: 9pt; font-style: italic;">PT PLN (Persero)</div>
+            <div style="font-size: 9pt; font-style: italic;;">ULP Ahmad Yani Banjarmasin</div>
+            <div style="font-size: 9pt; font-style: italic;;">Laporan Kegiatan Gelar Alat Operasional</div>
         </div>
     </div>
 
-    {{-- ✅ INFO --}}
+    {{-- ✅ INFORMASI --}}
     <div class="info" style="margin-top: 10px;">
         <p><strong>Tanggal Pemeriksaan:</strong> {{ \Carbon\Carbon::parse($gelar->tanggal_cek)->translatedFormat('d F Y') }}</p>
         <p><strong>Nomor Kendaraan:</strong> {{ $gelar->mobil->nomor_plat ?? '-' }}</p>
@@ -135,7 +138,6 @@
         </div>
     </div>
 </div>
-        
 
 
     {{-- JS Trigger Print --}}
