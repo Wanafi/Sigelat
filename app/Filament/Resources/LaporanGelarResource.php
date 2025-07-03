@@ -29,9 +29,18 @@ class LaporanGelarResource extends Resource
     protected static ?string $pluralLabel = 'Laporan Daftar Kegiatan Gelar Alat';
     protected static ?string $navigationIcon = 'heroicon-m-rectangle-stack';
 
-    public static function canCreate(): bool { return false; }
-    public static function canEdit(Model $record): bool { return false; }
-    public static function canDelete(Model $record): bool { return false; }
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+    public static function canEdit(Model $record): bool
+    {
+        return false;
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return false;
+    }
 
     public static function form(Form $form): Form
     {
@@ -118,68 +127,73 @@ class LaporanGelarResource extends Resource
             ->bulkActions([]);
     }
 
-public static function infolist(Infolist $infolist): Infolist
-{
-    return $infolist->schema([
-        Section::make('Informasi Kegiatan Gelar')
-            ->schema([
-                TextEntry::make('mobil.nomor_plat')->label('Nomor Plat'),
-                TextEntry::make('tanggal_cek')->label('Tanggal Cek')->date(),
-                TextEntry::make('status')
-                    ->label('Status')
-                    ->badge()
-                    ->color(fn($state) => match ($state) {
-                        'Lengkap' => 'success',
-                        'Tidak Lengkap' => 'warning',
-                        'Proses' => 'gray',
-                        default => 'gray',
-                    }),
-            ])
-            ->columns(2),
-
-        // Konfirmasi ditaruh di bawah pakai Actions::make
-        Actions::make([
-            Action::make('konfirmasi')
-                ->label('Konfirmasi Kegiatan')
-                ->icon('heroicon-o-check-circle')
-                ->color('success')
-                ->form([
-                    TextInput::make('aksi')
-                        ->label('Tindakan')
-                        ->required(),
-
-                    Textarea::make('catatan')
-                        ->label('Catatan')
-                        ->required()
-                        ->rows(3),
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist->schema([
+            Section::make('Informasi Kegiatan Gelar')
+                ->schema([
+                    TextEntry::make('mobil.nomor_plat')->label('Nomor Plat'),
+                    TextEntry::make('tanggal_cek')->label('Tanggal Cek')->date(),
+                    TextEntry::make('status')
+                        ->label('Status')
+                        ->badge()
+                        ->color(fn($state) => match ($state) {
+                            'Lengkap' => 'success',
+                            'Tidak Lengkap' => 'warning',
+                            'Proses' => 'gray',
+                            default => 'gray',
+                        }),
                 ])
-                ->action(function (Model $record, array $data) {
-                    $record->update(['status' => 'Lengkap']);
+                ->columns(2),
 
-                    Riwayat::create([
-                        'riwayatable_id' => $record->id,
-                        'riwayatable_type' => get_class($record),
-                        'user_id' => auth()->id(),
-                        'status' => 'Selesai',
-                        'tanggal_cek' => now(),
-                        'aksi' => $data['aksi'],
-                        'catatan' => $data['catatan'],
-                    ]);
+            // Konfirmasi ditaruh di bawah pakai Actions::make
+            Actions::make([
+                Action::make('konfirmasi')
+                    ->label('Konfirmasi Kegiatan')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->form([
+                        TextInput::make('aksi')
+                            ->label('Tindakan')
+                            ->required(),
 
-                    Notification::make()
-                        ->title('Berhasil')
-                        ->body('Konfirmasi kegiatan gelar berhasil.')
-                        ->success()
-                        ->send();
-                }),
-        ]),
-    ]);
-}
+                        Textarea::make('catatan')
+                            ->label('Catatan')
+                            ->required()
+                            ->rows(3),
+                    ])
+                    ->action(function (Model $record, array $data) {
+                        $record->update(['status' => 'Lengkap']);
+
+                        Riwayat::create([
+                            'riwayatable_id' => $record->id,
+                            'riwayatable_type' => get_class($record),
+                            'user_id' => auth()->id(),
+                            'status' => 'Selesai',
+                            'tanggal_cek' => now(),
+                            'aksi' => $data['aksi'],
+                            'catatan' => $data['catatan'],
+                        ]);
+
+                        Notification::make()
+                            ->title('Berhasil')
+                            ->body('Konfirmasi kegiatan gelar berhasil.')
+                            ->success()
+                            ->send();
+                    }),
+            ]),
+        ]);
+    }
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListLaporanGelars::route('/'),
             'view' => Pages\ViewLaporanGelar::route('/{record}'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 }

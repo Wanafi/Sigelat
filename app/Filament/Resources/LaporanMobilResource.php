@@ -30,9 +30,18 @@ class LaporanMobilResource extends Resource
     protected static ?string $modelLabel = 'Laporan Daftar Mobil';
     protected static ?string $navigationIcon = 'heroicon-m-rectangle-stack';
 
-    public static function canCreate(): bool { return false; }
-    public static function canEdit(Model $record): bool { return false; }
-    public static function canDelete(Model $record): bool { return false; }
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+    public static function canEdit(Model $record): bool
+    {
+        return false;
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return false;
+    }
 
     public static function table(Table $table): Table
     {
@@ -132,5 +141,10 @@ class LaporanMobilResource extends Resource
             'index' => Pages\ListLaporanMobils::route('/'),
             'view' => Pages\ViewLaporanMobil::route('/{record}'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 }

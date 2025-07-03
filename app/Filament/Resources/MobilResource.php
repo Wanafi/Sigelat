@@ -235,7 +235,7 @@ class MobilResource extends Resource
     {
         return $infolist
             ->schema([
-                InfoSection::make('📝 Informasi Umum Mobil')
+                InfoSection::make('Informasi Umum Mobil')
                     ->description('Berisi identitas utama dari kendaraan operasional.')
                     ->schema([
                         TextEntry::make('nomor_plat')
@@ -285,7 +285,7 @@ class MobilResource extends Resource
                         'lg' => 3,
                     ]),
 
-                InfoSection::make('🧰 Daftar Alat di Kendaraan')
+                InfoSection::make('Daftar Alat di Kendaraan')
                     ->description('Data seluruh alat yang terdaftar di mobil ini.')
                     ->schema([
                         RepeatableEntry::make('alats')

@@ -122,4 +122,9 @@ class LaporanAlatResource extends Resource
             'view' => Pages\ViewLaporanAlat::route('/{record}'),
         ];
     }
+
+        public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 }
