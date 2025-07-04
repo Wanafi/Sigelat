@@ -34,4 +34,9 @@ class Riwayat extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function riwayatableRiwayatTerbaru()
+    {
+        return $this->morphOne(\App\Models\Riwayat::class, 'riwayatable')->latestOfMany();
+    }
 }

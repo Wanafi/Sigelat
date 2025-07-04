@@ -53,9 +53,13 @@ class User extends Authenticatable
     }
 
     public function getStatusUserAttribute($value)
-{
-    return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
-}
+    {
+        return ucfirst($value); // Mengubah 'proses' menjadi 'Proses'
+    }
 
-
+    public function getRoleAttribute()
+    {
+        return $this->roles->pluck('name')->first(); // kalau multiple role
+        // return $this->role; // kalau single role
+    }
 }

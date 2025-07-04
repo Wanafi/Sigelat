@@ -38,8 +38,9 @@
             }
 
             thead th {
-        background-color:rgb(255, 230, 0); /* hanya header tabel */
-    }
+                background-color: rgb(255, 230, 0);
+                /* hanya header tabel */
+            }
 
             .left-align {
                 text-align: left;
@@ -159,26 +160,79 @@
         </table>
 
         {{-- ✅ TANDA TANGAN --}}
-        <div class="signature-section">
-            <div class="signature-box">
-                Pemeriksa,<br><br><br><br>
-                <u>____________________</u><br>
-                (Nama Pemeriksa)
+        @php
+        $riwayat = $gelar->riwayatableRiwayatTerbaru ?? null;
+        @endphp
+
+        @if ($gelar->riwayats()->exists())
+        @php
+        $riwayat = $gelar->riwayats()->with('user')->latest()->first();
+        $tanggalCetak = \Carbon\Carbon::parse($riwayat->tanggal_cek)->translatedFormat('d F Y');
+        @endphp
+
+        <div style="margin-top: 5px; font-size: 8pt;">
+            {{-- Header lokasi & tanggal --}}
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <div style="text-align: left;">
+                    PT PLN (Persero) UP3 Banjarmasin<br>
+                    ULP AHMAD YANI
+                </div>
+                <div style="text-align: right;">
+                    Banjarmasin, {{ $tanggalCetak }}<br>
+                    PT PLN Nusa Daya UL Banjarmasin<br>
+                    ULP AHMAD YANI
+                </div>
             </div>
-            <div class="signature-box">
-                Petugas Mobil,<br><br><br><br>
-                <u>____________________</u><br>
-                (Nama Petugas)
+
+            {{-- Tanda tangan --}}
+            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                {{-- Kiri --}}
+                <div style="width: 48%; text-align: center;">
+                    <div style="margin-bottom: 40px;">
+                        {{-- <img src="{{ asset('images/ttd_budi.png') }}" style="height: 35px;"> --}}
+                    <div style="width: 45%; font-size: 8pt;">
+                        <strong style="display: block;">NAUFAL NAJWAN</strong>
+                        <div style="border-top: 1px solid #000; width: 200%; margin-top: 2px;"></div>
+                        <div style="margin-top: 2px;">Team Leader K3LK</div>
+                    </div>
+                    </div>
+                    <div>
+                        {{-- <img src="{{ asset('images/ttd_fahrul.png') }}" style="height: 35px;"> --}}
+                    <div style="width: 45%; font-size: 8pt;">
+                        <strong style="display: block;">NAUFAL NAJWAN</strong>
+                        <div style="border-top: 1px solid #000; width: 200%; margin-top: 2px;"></div>
+                        <div style="margin-top: 2px;">Team Leader K3LK</div>
+                    </div>
+                    </div>
+                </div>
+
+                {{-- Kanan --}}
+                <div style="width: 48%; text-align: center;">
+                    <div style="margin-bottom: 40px;">
+                        {{-- <img src="{{ asset('images/ttd_nari.png') }}" style="height: 35px;"> --}}
+                    <div style="width: 45%; font-size: 8pt;">
+                        <strong style="display: block;">NAUFAL NAJWAN</strong>
+                        <div style="border-top: 1px solid #000; width: 200%; margin-top: 2px;"></div>
+                        <div style="margin-top: 2px;">Team Leader K3LK</div>
+                    </div>
+                    </div>
+                    <div style="width: 45%; font-size: 8pt;">
+                        <strong style="display: block;">NAUFAL NAJWAN</strong>
+                        <div style="border-top: 1px solid #000; width: 200%; margin-top: 2px;"></div>
+                        <div style="margin-top: 2px;">Team Leader K3LK</div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+        @endif
 
-    {{-- ✅ JS Print Trigger --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Livewire.on('triggerPrint', () => {
-                window.print();
+
+        {{-- ✅ JS Print Trigger --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Livewire.on('triggerPrint', () => {
+                    window.print();
+                });
             });
-        });
-    </script>
+        </script>
 </x-filament-panels::page>

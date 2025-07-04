@@ -50,4 +50,13 @@ class Gelar extends Model
     {
         return $this->riwayats()->exists();
     }
+
+    public function getRiwayatableRiwayatTerbaruAttribute()
+    {
+        return \App\Models\Riwayat::where('riwayatable_type', self::class)
+            ->where('riwayatable_id', $this->id)
+            ->latest('created_at')
+            ->with('user')
+            ->first();
+    }
 }

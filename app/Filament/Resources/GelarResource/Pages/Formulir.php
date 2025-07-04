@@ -23,18 +23,18 @@ class Formulir extends Page
                 ->label('Cetak')
                 ->icon('heroicon-o-printer')
                 ->action(fn() => $this->dispatch('triggerPrint')),
-
-            // Action::make('download')
-            //     ->label('Download PDF')
-            //     ->icon('heroicon-o-arrow-down-tray')
-            //     ->url(route('gelar.formulir.download', ['id' => $this->gelar->id]))
-            //     ->openUrlInNewTab(),
         ];
     }
+
     public function mount($record): void
     {
-        $this->gelar = Gelar::with(['mobil.alats', 'detailGelars.alat'])->findOrFail($record);
-        $this->record = Gelar::with('detailGelars.alat')->findOrFail($record);
+        $this->gelar = Gelar::with([
+            'mobil.alats',
+            'detailGelars.alat',
+            'riwayats.user'
+        ])->findOrFail($record);
+
+        $this->record = $this->gelar;
     }
 
     protected function getViewData(): array
