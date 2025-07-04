@@ -21,12 +21,11 @@ use App\Filament\Resources\LaporanAlatResource\Pages;
 class LaporanAlatResource extends Resource
 {
     protected static ?string $model = Alat::class;
-
     protected static ?string $navigationGroup = 'Laporan';
-    protected static ?string $navigationLabel = 'Laporkan Alat';
+    protected static ?string $navigationLabel = 'Laporan Alat';
     protected static ?string $modelLabel = 'Laporan Daftar Alat';
     protected static ?string $navigationIcon = 'heroicon-m-rectangle-stack';
-
+    protected static ?int $navigationSort = 8;
     public static function canCreate(): bool { return false; }
     public static function canEdit(Model $record): bool { return false; }
     public static function canDelete(Model $record): bool { return false; }
@@ -40,6 +39,9 @@ class LaporanAlatResource extends Resource
                 Tables\Columns\TextColumn::make('kategori_alat')->label('Kategori'),
                 Tables\Columns\TextColumn::make('merek_alat')->label('Merek'),
                 Tables\Columns\TextColumn::make('mobil.nomor_plat')->label('Lokasi')->default('Gudang'),
+                Tables\Columns\TextColumn::make('tanggal_pembelian')
+                    ->label('Tanggal Pembelian')
+                    ->date('d M Y'),
                 Tables\Columns\BadgeColumn::make('status_alat')
                     ->label('Status Alat')
                     ->colors([
@@ -47,9 +49,6 @@ class LaporanAlatResource extends Resource
                         'danger' => 'Rusak',
                         'warning' => 'Hilang',
                     ]),
-                Tables\Columns\TextColumn::make('tanggal_pembelian')
-                    ->label('Tanggal Pembelian')
-                    ->date('d M Y'),
             ])
             ->filters([
                 Tables\Filters\MultiSelectFilter::make('status_alat')
@@ -123,8 +122,4 @@ class LaporanAlatResource extends Resource
         ];
     }
 
-        public static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::count();
-    }
 }

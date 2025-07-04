@@ -23,9 +23,9 @@ use Filament\Infolists\Components\Actions\Action;
 class LaporanGelarResource extends Resource
 {
     protected static ?string $model = Gelar::class;
-
+    protected static ?int $navigationSort = 8;
     protected static ?string $navigationGroup = 'Laporan';
-    protected static ?string $navigationLabel = 'Laporkan Gelar';
+    protected static ?string $navigationLabel = 'Laporan Gelar';
     protected static ?string $pluralLabel = 'Laporan Daftar Kegiatan Gelar Alat';
     protected static ?string $navigationIcon = 'heroicon-m-rectangle-stack';
 
@@ -192,8 +192,4 @@ class LaporanGelarResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::count();
-    }
 }

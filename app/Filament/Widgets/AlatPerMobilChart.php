@@ -7,7 +7,7 @@ use Filament\Widgets\BarChartWidget;
 
 class AlatPerMobilChart extends BarChartWidget
 {
-    protected static ?string $heading = 'Distribusi Kondisi Alat Per Mobil';
+    protected static ?string $heading = 'Kondisi Alat Per Mobil';
     protected static ?string $maxWidth = '7xl';
 
     public function getColumnSpan(): int|string|array
@@ -33,10 +33,7 @@ class AlatPerMobilChart extends BarChartWidget
         })->toArray();
 
         $kondisiLabels = ['Hilang', 'Rusak'];
-        $defaultColors = [
-            "#EF4136", "#FFD200", "#4CAF50", "#0071BC", "#FF9800",
-            "#9E9E9E", "#00BCD4", "#8E24AA", "#D81B60", "#795548",
-        ];
+        $defaultColors = ["#0089B6", "#FFD200"];
 
         $datasets = [];
 

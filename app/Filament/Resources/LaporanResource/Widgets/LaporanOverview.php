@@ -19,18 +19,18 @@ class LaporanOverview extends BaseWidget
     protected function getStats(): array
     {
         return [
-            stat::make('Rekapitulasi Jumlah Pengguna', User::count())
-                ->description('Total Pengguna')
-                ->descriptionIcon('heroicon-o-user')
-                ->color('success'),
+            // stat::make('Rekapitulasi Jumlah Pengguna', User::count())
+            //     ->description('Total Pengguna')
+            //     ->descriptionIcon('heroicon-o-user')
+            //     ->color('success'),
     
-            stat::make('Riwayat Penggunaan Alat', $this->getRusakHilangCount())
+            stat::make('Alat Dengan Kondisi Rusak/Hilang', $this->getRusakHilangCount())
                 ->description('Laporan Alat')
                 ->descriptionIcon('heroicon-o-wrench')
                 ->color('danger')
                 ->url(route('filament.admin.resources.laporan-alats.index')),
         
-            stat::make('Aktivitas Operasional Mobil', $this->getTidakAktifPerbaikanCount())
+            stat::make('Mobil Dengan Kondisi Dalam Perbaikan/Tidak Aktif', $this->getTidakAktifPerbaikanCount())
                 ->description('Laporan Mobil')
                 ->descriptionIcon('heroicon-o-truck')
                 ->color('warning')
@@ -53,7 +53,7 @@ class LaporanOverview extends BaseWidget
     protected function getTidakAktifPerbaikanCount()
     {
         // Asumsi bahwa ada kolom 'status' dengan nilai 'rusak' atau 'Hilang'
-        return Mobil::whereIn('status_mobil', ['Tidak Aktif', 'DalamPerbaikan'])->count();
+        return Mobil::whereIn('status_mobil', ['Tidak Aktif', 'Dalam Perbaikan'])->count();
     }
 
     protected function gettidaklengkapprosesCount()
