@@ -8,7 +8,6 @@
     "require": {
         "php": "^8.2",
         "bacon/bacon-qr-code": "^3.0",
-        "bezhansalleh/filament-shield": "^3.3",
         "doctrine/dbal": "^4.2",
         "filament/filament": "3.3",
         "filament/infolists": "3.3",

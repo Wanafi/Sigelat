@@ -53,7 +53,6 @@ class AlatResource extends Resource
     protected static ?string $modelLabel = 'Daftar Alat';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationGroup = 'Manajemen';
-
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
