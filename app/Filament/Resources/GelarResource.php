@@ -254,7 +254,19 @@ class GelarResource extends Resource
                         ->label('Cetak Form')
                         ->icon('heroicon-s-printer')
                         ->color('success')
-                        ->url(fn($record) => self::getUrl("formulir", ['record' => $record->id])),
+                        ->action(function ($record) {
+                            if (! $record->sudahDikonfirmasi()) {
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Belum Dikonfirmasi')
+                                    ->body('Formulir hanya dapat dicetak setelah dikonfirmasi di Laporan Gelar.')
+                                    ->danger()
+                                    ->send();
+                                return;
+                            }
+
+                            return redirect()->to(GelarResource::getUrl("formulir", ['record' => $record->id]));
+                        })
+                        ->requiresConfirmation(false),
                     ViewAction::make(),
                     EditAction::make()->color('warning'),
                     DeleteAction::make()->color('danger'),

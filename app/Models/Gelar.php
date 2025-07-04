@@ -16,20 +16,15 @@ class Gelar extends Model
         'tanggal_cek',
     ];
 
-    // Mobil yang digunakan dalam gelar
     public function mobil()
     {
         return $this->belongsTo(Mobil::class);
     }
 
-    // User yang membuat entri gelar (opsional)
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
-    // Pelaksana kegiatan (melalui tabel pelaksanas)
-    // App\Models\Gelar.php
 
     public function pelaksanas()
     {
@@ -42,7 +37,17 @@ class Gelar extends Model
     }
 
     public function detailGelars()
-    {   
+    {
         return $this->hasMany(\App\Models\DetailGelar::class);
+    }
+
+    public function riwayats()
+    {
+        return $this->morphMany(Riwayat::class, 'riwayatable');
+    }
+
+    public function sudahDikonfirmasi(): bool
+    {
+        return $this->riwayats()->exists();
     }
 }
