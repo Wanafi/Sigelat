@@ -42,7 +42,7 @@ class Gelar extends Model
     }
 
     public function detailGelars()
-    {
+    {   
         return $this->hasMany(\App\Models\DetailGelar::class);
     }
 }
