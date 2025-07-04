@@ -38,9 +38,11 @@ class CreateGelar extends CreateRecord
                 'gelar_id' => $gelar->id,
                 'alat_id' => $alat['alat_id'],
                 'status_alat' => $alat['kondisi'],
+                'keterangan' => $alat['keterangan'] ?? null, // ✅ Tambahkan baris ini
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
 
             Alat::where('id', $alat['alat_id'])->update([
                 'status_alat' => $alat['kondisi'],

@@ -2,34 +2,36 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
 use App\Models\Alat;
 use App\Models\User;
-use Filament\Tables;
 use App\Models\Gelar;
 use App\Models\Mobil;
-use Filament\Forms\Form;
 use App\Models\Pelaksana;
-use Filament\Tables\Table;
-use Filament\Infolists\Infolist;
-use Filament\Resources\Resource;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Infolists\Infolist;
 use Filament\Infolists\Components\TextEntry;
-use App\Filament\Resources\GelarResource\Pages;
 use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\Section as InfoSection;
+use App\Filament\Resources\GelarResource\Pages;
 use App\Filament\Resources\GelarResource\Pages\Formulir;
 use App\Filament\Resources\GelarResource\Pages\ViewGelar;
-use Filament\Infolists\Components\Section as InfoSection;
 use App\Filament\Resources\GelarResource\Pages\EditGelar;
 use App\Filament\Resources\GelarResource\Pages\ListGelars;
 use App\Filament\Resources\GelarResource\Pages\CreateGelar;
@@ -89,15 +91,25 @@ class GelarResource extends Resource
                         ->options(User::pluck('name', 'id'))
                         ->searchable()
                         ->required(),
-                ])->columns(2),
+                ])
+                ->columns(2),
 
             Section::make('Daftar Alat di Mobil')
                 ->schema([
                     Repeater::make('detail_alats')
                         ->label('Detail Alat')
+                        ->statePath('detail_alats') // penting!
                         ->schema([
-                            TextInput::make('alat_id')->label('ID Alat')->hidden(),
-                            TextInput::make('nama_alat')->label('Nama Alat')->disabled(),
+                            TextInput::make('alat_id')
+                                ->label('ID Alat')
+                                ->hidden()
+                                ->statePath('alat_id'),
+
+                            TextInput::make('nama_alat')
+                                ->label('Nama Alat')
+                                ->disabled()
+                                ->statePath('nama_alat'),
+
                             Select::make('kondisi')
                                 ->label('Kondisi Alat')
                                 ->options([
@@ -112,10 +124,13 @@ class GelarResource extends Resource
                                     if ($alatId && in_array($state, ['Bagus', 'Rusak', 'Hilang'])) {
                                         Alat::where('id', $alatId)->update(['status_alat' => $state]);
                                     }
-                                }),
+                                })
+                                ->statePath('kondisi'),
+
                             TextInput::make('keterangan')
-                                ->placeholder('Opsional, isi jika ada catatan khusus')
                                 ->label('Keterangan')
+                                ->placeholder('Opsional, isi jika ada catatan')
+                                ->statePath('keterangan')
                                 ->columnSpanFull(),
                         ])
                         ->columns(3)
@@ -126,6 +141,7 @@ class GelarResource extends Resource
                 ]),
         ]);
     }
+
 
     public static function afterCreate(Gelar $record): void
     {
@@ -142,7 +158,7 @@ class GelarResource extends Resource
             DB::table('detail_gelars')->insert([
                 'gelar_id' => $record->id,
                 'alat_id' => $alat['alat_id'],
-                'kondisi' => $alat['kondisi'],
+                'status_alat' => $alat['kondisi'],
                 'keterangan' => $alat['keterangan'] ?? null,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -165,8 +181,6 @@ class GelarResource extends Resource
                 'user_id' => $userId,
             ]);
         }
-
-        dd(request()->input('data'));
     }
 
     public static function afterSave(Gelar $record): void
@@ -182,15 +196,14 @@ class GelarResource extends Resource
         return $infolist->schema([
             InfoSection::make('Informasi Kegiatan')
                 ->schema([
-                    TextEntry::make('mobil.nomor_plat')->label('Nomor Plat Mobil')->icon('heroicon-m-truck'),
-                    TextEntry::make('tanggal_cek')->label('Tanggal Cek')->icon('heroicon-m-calendar-days')->date(),
+                    TextEntry::make('mobil.nomor_plat')->label('Nomor Plat Mobil'),
+                    TextEntry::make('tanggal_cek')->label('Tanggal Cek')->date(),
                     TextEntry::make('status')->label('Status')->badge()->colors([
                         'success' => 'Lengkap',
                         'warning' => 'Tidak Lengkap',
                     ]),
                     TextEntry::make('pelaksanas')
                         ->label('Pelaksana')
-                        ->icon('heroicon-m-user-group')
                         ->state(fn($record) => $record->pelaksanas->map(fn($p) => $p->user->name)->join(', ')),
                 ])
                 ->columns(2),
@@ -207,7 +220,7 @@ class GelarResource extends Resource
                                 'Hilang' => 'danger',
                                 default => 'gray',
                             }),
-                            TextEntry::make('keterangan')->label('Keterangan')->placeholder('-')->default('-')->color('gray'),
+                            TextEntry::make('keterangan')->label('Keterangan')->placeholder('-')->default('-'),
                         ])
                         ->columns(3)
                         ->visible(fn($record) => $record->detailAlats()->exists())
@@ -238,10 +251,10 @@ class GelarResource extends Resource
             ->actions([
                 ActionGroup::make([
                     Action::make("form_gelat")
-                        ->label(__('Cetak Form'))
+                        ->label('Cetak Form')
                         ->icon('heroicon-s-printer')
                         ->color('success')
-                        ->url(fn($record)=>self::getUrl("formulir", [ 'record' => $record->id])),
+                        ->url(fn($record) => self::getUrl("formulir", ['record' => $record->id])),
                     ViewAction::make(),
                     EditAction::make()->color('warning'),
                     DeleteAction::make()->color('danger'),
@@ -268,15 +281,5 @@ class GelarResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
-    }
-
-    public static function getLabel(): string
-    {
-        return 'Daftar Kegiatan Gelar Alat';
-    }
-
-    public static function getPluralLabel(): string
-    {
-        return 'Daftar Kegiatan Gelar Alat';
     }
 }

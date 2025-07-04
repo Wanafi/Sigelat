@@ -13,7 +13,9 @@ class DetailGelar extends Model
         'gelar_id',
         'alat_id',
         'status_alat',
+        'keterangan', // ✅ Tambahkan ini
     ];
+
 
     public function gelar()
     {
