@@ -34,13 +34,14 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors([
-                'danger' => Color::Rose,
-                'gray' => Color::Gray,
-                'info' => Color::Blue,
-                'primary' => Color::Yellow,
-                'success' => Color::Emerald,
-                'warning' => Color::Orange,
+                'primary' => Color::hex('#0089B6'),   // Biru PLN
+                'warning' => Color::hex('#FFD200'),   // Kuning PLN
+                'danger'  => Color::hex('#E63946'),   // Merah soft
+                'success' => Color::hex('#34D399'),   // Hijau emerald
+                'info'    => Color::hex('#3B82F6'),   // Biru info Tailwind
+                'gray'    => Color::Gray,             // Gray default
             ])
+
             ->databaseNotifications()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -80,6 +81,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
-]);
+            ]);
     }
 }
