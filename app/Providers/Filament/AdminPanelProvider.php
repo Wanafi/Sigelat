@@ -34,11 +34,11 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors([
-                'primary' => Color::hex('#0089B6'),   // Biru PLN
+                'primary' => Color::hex('#FFD200'),   // Biru PLN
                 'warning' => Color::hex('#FFD200'),   // Kuning PLN
                 'danger'  => Color::hex('#E63946'),   // Merah soft
                 'success' => Color::hex('#34D399'),   // Hijau emerald
-                'info'    => Color::hex('#3B82F6'),   // Biru info Tailwind
+                'info'    => Color::hex('#0089B6'),   // Biru info Tailwind
                 'gray'    => Color::Gray,             // Gray default
             ])
 
