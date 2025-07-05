@@ -23,7 +23,7 @@ class LaporanAlatResource extends Resource
     protected static ?string $model = Alat::class;
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?string $navigationLabel = 'Laporan Alat';
-    protected static ?string $modelLabel = 'Laporan Daftar Alat';
+    protected static ?string $modelLabel = 'Laporan Alat';
     protected static ?string $navigationIcon = 'heroicon-m-rectangle-stack';
     protected static ?int $navigationSort = 8;
     public static function canCreate(): bool { return false; }
@@ -120,6 +120,11 @@ class LaporanAlatResource extends Resource
             'index' => Pages\ListLaporanAlats::route('/'),
             'view' => Pages\ViewLaporanAlat::route('/{record}'),
         ];
+    }
+
+        public static function getPluralLabel(): string
+    {
+        return 'Laporan Alat';
     }
 
 }

@@ -36,7 +36,7 @@ class LaporanOverview extends BaseWidget
                 ->color('warning')
                 ->url(route('filament.admin.resources.laporan-mobils.index')),
 
-            stat::make('Distribusi Gelar Alat Operasional', $this->gettidaklengkapprosesCount())
+            stat::make('Hasil Kegiatan Gelar Alat', $this->gettidaklengkapprosesCount())
                 ->description('Kegiatan Gelar Alat')
                 ->descriptionIcon('heroicon-o-clipboard')
                 ->color('info')

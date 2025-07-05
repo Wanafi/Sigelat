@@ -26,7 +26,7 @@ class LaporanGelarResource extends Resource
     protected static ?int $navigationSort = 8;
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?string $navigationLabel = 'Laporan Gelar';
-    protected static ?string $pluralLabel = 'Laporan Daftar Kegiatan Gelar Alat';
+    protected static ?string $pluralLabel = 'Laporan Kegiatan Gelar Alat';
     protected static ?string $navigationIcon = 'heroicon-m-rectangle-stack';
 
     public static function canCreate(): bool
@@ -190,6 +190,10 @@ class LaporanGelarResource extends Resource
             'index' => Pages\ListLaporanGelars::route('/'),
             'view' => Pages\ViewLaporanGelar::route('/{record}'),
         ];
+    }
+        public static function getPluralLabel(): string
+    {
+        return 'Laporan Gelar Alat';
     }
 
 }

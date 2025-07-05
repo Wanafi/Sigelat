@@ -167,6 +167,11 @@ class MobilResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('nomor_plat')->searchable(),
+
+                TextColumn::make('merk_mobil')->label('Merek Mobil'),
+                TextColumn::make('no_unit'),
+                TextColumn::make('no_seri')->label('Nomor Seri')->searchable(),
+
                 TextColumn::make('nama_tim')
                     ->label('Tim Armada')
                     ->badge()
@@ -182,9 +187,6 @@ class MobilResource extends Resource
                         'heroicon-o-clipboard-document-check' => 'Assessment',
                         'heroicon-o-beaker' => 'Raw',
                     ]),
-                TextColumn::make('merk_mobil')->label('Merek Mobil'),
-                TextColumn::make('no_seri')->label('Nomor Seri')->searchable(),
-                TextColumn::make('no_unit'),
                 BadgeColumn::make('status_mobil')
                     ->label('Status')
                     ->colors([
@@ -338,7 +340,7 @@ class MobilResource extends Resource
         ];
     }
 
-        public static function getLabel(): string
+    public static function getLabel(): string
     {
         return 'Daftar Mobil';
     }

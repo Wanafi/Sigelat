@@ -27,7 +27,7 @@ class LaporanMobilResource extends Resource
     protected static ?int $navigationSort = 8;
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?string $navigationLabel = 'Laporan Mobil';
-    protected static ?string $modelLabel = 'Laporan Daftar Mobil';
+    protected static ?string $modelLabel = 'Laporan Mobil';
     protected static ?string $navigationIcon = 'heroicon-m-rectangle-stack';
 
     public static function canCreate(): bool
@@ -141,6 +141,10 @@ class LaporanMobilResource extends Resource
             'index' => Pages\ListLaporanMobils::route('/'),
             'view' => Pages\ViewLaporanMobil::route('/{record}'),
         ];
+    }
+        public static function getPluralLabel(): string
+    {
+        return 'Laporan Mobil';
     }
 
 }
