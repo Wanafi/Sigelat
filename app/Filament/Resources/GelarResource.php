@@ -113,7 +113,7 @@ class GelarResource extends Resource
                             Select::make('kondisi')
                                 ->label('Kondisi Alat')
                                 ->options([
-                                    'Bagus' => 'Bagus',
+                                    'Baik' => 'Baik',
                                     'Rusak' => 'Rusak',
                                     'Hilang' => 'Hilang',
                                 ])
@@ -121,7 +121,7 @@ class GelarResource extends Resource
                                 ->reactive()
                                 ->afterStateUpdated(function ($state, callable $get) {
                                     $alatId = $get('alat_id');
-                                    if ($alatId && in_array($state, ['Bagus', 'Rusak', 'Hilang'])) {
+                                    if ($alatId && in_array($state, ['Baik', 'Rusak', 'Hilang'])) {
                                         Alat::where('id', $alatId)->update(['status_alat' => $state]);
                                     }
                                 })
@@ -215,7 +215,7 @@ class GelarResource extends Resource
                         ->schema([
                             TextEntry::make('alat.nama_alat')->label('Nama Alat')->weight('bold'),
                             TextEntry::make('status_alat')->label('Kondisi')->badge()->color(fn(string $state): string => match ($state) {
-                                'Bagus' => 'success',
+                                'Baik' => 'success',
                                 'Rusak' => 'warning',
                                 'Hilang' => 'danger',
                                 default => 'gray',
@@ -236,6 +236,7 @@ class GelarResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('mobil.nomor_plat')->label('Nomor Plat'),
+                Tables\Columns\TextColumn::make('tanggal_cek')->label('Tanggal Cek')->date(),
                 Tables\Columns\TextColumn::make('status')->label('Status')
                     ->badge()
                     ->colors([
@@ -246,7 +247,6 @@ class GelarResource extends Resource
                         'heroicon-o-check-circle' => 'Lengkap',
                         'heroicon-o-exclamation-triangle' => 'Tidak Lengkap',
                     ]),
-                Tables\Columns\TextColumn::make('tanggal_cek')->label('Tanggal Cek')->date(),
             ])
             ->actions([
                 ActionGroup::make([

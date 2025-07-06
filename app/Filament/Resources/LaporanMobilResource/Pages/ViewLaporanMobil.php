@@ -9,7 +9,10 @@ use Filament\Resources\Pages\ViewRecord;
 class ViewLaporanMobil extends ViewRecord
 {
     protected static string $resource = LaporanMobilResource::class;
-
+    public function getTitle(): string
+    {
+        return 'Lihat Laporan Mobil';
+    }
     protected function getHeaderActions(): array
     {
         return [

@@ -36,8 +36,8 @@ class LaporanAlatResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('kode_barcode')->label('Kode Barcode')->searchable(),
                 Tables\Columns\TextColumn::make('nama_alat')->label('Nama Alat')->searchable(),
-                Tables\Columns\TextColumn::make('kategori_alat')->label('Kategori'),
-                Tables\Columns\TextColumn::make('merek_alat')->label('Merek'),
+                Tables\Columns\TextColumn::make('kategori_alat')->label('Kategori Alat'),
+                Tables\Columns\TextColumn::make('merek_alat')->label('Merek Alat'),
                 Tables\Columns\TextColumn::make('mobil.nomor_plat')->label('Lokasi')->default('Gudang'),
                 Tables\Columns\TextColumn::make('tanggal_pembelian')
                     ->label('Tanggal Pembelian')
@@ -45,7 +45,7 @@ class LaporanAlatResource extends Resource
                 Tables\Columns\BadgeColumn::make('status_alat')
                     ->label('Status Alat')
                     ->colors([
-                        'success' => 'Bagus',
+                        'success' => 'Baik',
                         'danger' => 'Rusak',
                         'warning' => 'Hilang',
                     ]),
@@ -54,7 +54,7 @@ class LaporanAlatResource extends Resource
                 Tables\Filters\MultiSelectFilter::make('status_alat')
                     ->label('Filter Status')
                     ->options([
-                        'Bagus' => 'Bagus',
+                        'Baik' => 'Baik',
                         'Rusak' => 'Rusak',
                         'Hilang' => 'Hilang',
                     ])
@@ -79,7 +79,7 @@ class LaporanAlatResource extends Resource
                         ->label('Status')
                         ->badge()
                         ->color(fn($state) => match ($state) {
-                            'Bagus' => 'success',
+                            'Baik' => 'success',
                             'Rusak' => 'danger',
                             'Hilang' => 'warning',
                             default => 'gray',
@@ -92,13 +92,13 @@ class LaporanAlatResource extends Resource
                     ->label('Konfirmasi Perbaikan')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn($record) => $record->status_alat !== 'Bagus')
+                    ->visible(fn($record) => $record->status_alat !== 'Baik')
                     ->form([
                         TextInput::make('aksi')->label('Tindakan')->required(),
                         Textarea::make('catatan')->label('Catatan')->required(),
                     ])
                     ->action(function (Model $record, array $data) {
-                        $record->update(['status_alat' => 'Bagus']);
+                        $record->update(['status_alat' => 'Baik']);
 
                         Riwayat::create([
                             'riwayatable_id' => $record->id,

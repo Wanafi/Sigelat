@@ -2,13 +2,15 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Tables;
 use App\Models\Riwayat;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Forms\Form;
+use Filament\Tables;
+use Filament\Tables\Table;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\RiwayatResource\Pages;
 
@@ -19,23 +21,8 @@ class RiwayatResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-m-clock';
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?int $navigationSort = 3;
-    protected static ?string $modelLabel = 'Riwayat / Aktifitas';
+    protected static ?string $modelLabel = 'Riwayat';
     protected static ?string $navigationLabel = 'Riwayat Konfirmasi';
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return true;
-    }
-
-    public static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::count();
-    }
-
-    public static function canCreate(): bool
-    {
-        return false;
-    }
 
     public static function form(Form $form): Form
     {
@@ -105,16 +92,59 @@ class RiwayatResource extends Resource
                     ->toggleable(),
             ])
             ->actions([
-                ViewAction::make(), // Hanya tombol View
+                ViewAction::make()
+                    ->infolist([
+                        Section::make('Detail Riwayat')
+                            ->schema([
+                                TextEntry::make('user.name')
+                                    ->label('Pelapor')
+                                    ->icon('heroicon-o-user'),
+
+                                TextEntry::make('riwayatable_type')
+                                    ->label('Jenis Laporan')
+                                    ->formatStateUsing(fn($state) => match($state) {
+                                        'App\\Models\\Mobil' => 'Mobil',
+                                        'App\\Models\\Alat' => 'Alat',
+                                        'App\\Models\\Gelar' => 'Gelar',
+                                        default => 'Lainnya',
+                                    })
+                                    ->badge()
+                                    ->color(fn($state) => match($state) {
+                                        'App\\Models\\Mobil' => 'info',
+                                        'App\\Models\\Alat' => 'success',
+                                        'App\\Models\\Gelar' => 'warning',
+                                        default => 'gray',
+                                    }),
+
+                                TextEntry::make('tanggal_cek')
+                                    ->label('Tanggal Cek')
+                                    ->date()
+                                    ->icon('heroicon-o-calendar'),
+
+                                TextEntry::make('aksi')
+                                    ->label('Aksi')
+                                    ->default('-'),
+
+                                TextEntry::make('catatan')
+                                    ->label('Catatan')
+                                    ->default('-'),
+
+                                TextEntry::make('status')
+                                    ->label('Status')
+                                    ->badge()
+                                    ->icon(fn($state) => $state === 'Selesai' ? 'heroicon-o-check-circle' : 'heroicon-o-clock')
+                                    ->color(fn($state) => $state === 'Selesai' ? 'success' : 'gray'),
+                            ])
+                            ->columns(2),
+                    ]),
             ])
-            ->bulkActions([]); // Tidak ada bulk actions
+            ->bulkActions([]);
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListRiwayats::route('/'),
-            'view' => Pages\ViewRiwayat::route('/{record}'),
         ];
     }
 
@@ -125,6 +155,16 @@ class RiwayatResource extends Resource
 
     public static function getPluralLabel(): string
     {
-        return 'Riwayat / Aktifitas';
+        return 'Riwayat';
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
     }
 }

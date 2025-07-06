@@ -2,54 +2,92 @@
 
 namespace App\Filament\Resources\RiwayatResource\Pages;
 
-use Filament\Infolists\Infolist;
-use Filament\Resources\Pages\ViewRecord;
-use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\RiwayatResource;
-use App\Models\Alat;
-use App\Models\Mobil;
-use App\Models\Gelar;
+use Filament\Resources\Pages\ViewRecord;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\Group;
+use Filament\Infolists\Components\TextEntry;
 
 class ViewRiwayat extends ViewRecord
 {
     protected static string $resource = RiwayatResource::class;
 
-    protected function getHeaderActions(): array
+    public function getHeaderInfolist(): ?Infolist
     {
-        return [
-            \Filament\Actions\EditAction::make(),
-        ];
-    }
+        return Infolist::make()
+            ->schema([
+                Section::make('Detail Riwayat')
+                    ->description('Informasi lengkap mengenai aktivitas atau laporan yang telah dikonfirmasi.')
+                    ->schema([
+                        Group::make([
+                            TextEntry::make('user.name')
+                                ->label('Pelapor')
+                                ->icon('heroicon-o-user'),
 
-    public function infolist(Infolist $infolist): Infolist
-    {
-        $record = $this->record;
-        $related = $record->riwayatable;
+                            TextEntry::make('riwayatable_type')
+                                ->label('Jenis Laporan')
+                                ->formatStateUsing(fn($state) => match($state) {
+                                    'App\\Models\\Mobil' => 'Mobil',
+                                    'App\\Models\\Alat' => 'Alat',
+                                    'App\\Models\\Gelar' => 'Gelar',
+                                    default => 'Lainnya',
+                                })
+                                ->badge()
+                                ->color(fn($state) => match($state) {
+                                    'App\\Models\\Mobil' => 'info',
+                                    'App\\Models\\Alat' => 'success',
+                                    'App\\Models\\Gelar' => 'warning',
+                                    default => 'gray',
+                                })
+                                ->icon(fn($state) => match($state) {
+                                    'App\\Models\\Mobil' => 'heroicon-o-truck',
+                                    'App\\Models\\Alat' => 'heroicon-o-wrench',
+                                    'App\\Models\\Gelar' => 'heroicon-o-map',
+                                    default => 'heroicon-o-question-mark-circle',
+                                }),
 
-        $items = [
-            TextEntry::make('user.name')->label('Pelapor'),
-            TextEntry::make('status')->label('Status'),
-            TextEntry::make('tanggal_cek')->label('Tanggal Cek')->date(),
-            TextEntry::make('aksi')->label('Aksi'),
-            TextEntry::make('catatan')->label('Catatan'),
-        ];
+                            TextEntry::make('tanggal_cek')
+                                ->label('Tanggal Cek')
+                                ->date()
+                                ->icon('heroicon-o-calendar'),
 
-        if ($related instanceof Gelar) {
-            $items[] = TextEntry::make('riwayatable.mobil.nomor_plat')->label('Nomor Plat Mobil');
-            $items[] = TextEntry::make('riwayatable.status')->label('Status Gelar');
-            $items[] = TextEntry::make('riwayatable.tanggal_cek')->label('Tanggal Gelar')->date();
-        } elseif ($related instanceof Mobil) {
-            $items[] = TextEntry::make('riwayatable.nomor_plat')->label('Nomor Plat Mobil');
-            $items[] = TextEntry::make('riwayatable.merk_mobil')->label('Merk');
-            $items[] = TextEntry::make('riwayatable.status_mobil')->label('Status Mobil');
-        } elseif ($related instanceof Alat) {
-            $items[] = TextEntry::make('riwayatable.nama_alat')->label('Nama Alat');
-            $items[] = TextEntry::make('riwayatable.kode_barcode')->label('Kode Alat');
-            $items[] = TextEntry::make('riwayatable.status_alat')->label('Status Alat');
-        } else {
-            $items[] = TextEntry::make('riwayatable_type')->label('Jenis Laporan');
-        }
+                            TextEntry::make('status')
+                                ->label('Status')
+                                ->badge()
+                                ->icon(fn($state) => $state === 'Selesai' ? 'heroicon-o-check-circle' : 'heroicon-o-clock')
+                                ->color(fn($state) => $state === 'Selesai' ? 'success' : 'gray'),
+                        ])->columns(2),
 
-        return $infolist->schema($items);
+                        Group::make([
+                            TextEntry::make('aksi')
+                                ->label('Aksi yang Dilakukan')
+                                ->default('-'),
+
+                            TextEntry::make('catatan')
+                                ->label('Catatan Tambahan')
+                                ->default('-')
+                                ->markdown(),
+
+                            TextEntry::make('riwayatable_id')
+                                ->label('ID Terkait')
+                                ->url(fn($record) => match($record->riwayatable_type) {
+                                    'App\\Models\\Mobil' => route('filament.admin.resources.mobils.view', $record->riwayatable_id),
+                                    'App\\Models\\Alat' => route('filament.admin.resources.alats.view', $record->riwayatable_id),
+                                    'App\\Models\\Gelar' => route('filament.admin.resources.gelars.view', $record->riwayatable_id),
+                                    default => null,
+                                })
+                                ->openUrlInNewTab()
+                                ->icon('heroicon-o-link')
+                                ->hidden(fn($record) => !in_array($record->riwayatable_type, [
+                                    'App\\Models\\Mobil',
+                                    'App\\Models\\Alat',
+                                    'App\\Models\\Gelar',
+                                ])),
+                        ])->columns(1),
+                    ])
+                    ->columns(2)
+                    ->collapsible(),
+            ]);
     }
 }

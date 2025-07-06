@@ -40,7 +40,7 @@
             <div>
                 <p class="text-sm font-semibold text-gray-500">Status</p>
                 <span class="inline-block px-3 py-1 rounded-full text-white text-sm
-                    {{ $alat->status_alat === 'Bagus' ? 'bg-green-500' : ($alat->status_alat === 'Rusak' ? 'bg-yellow-500' : 'bg-red-500') }} ">
+                    {{ $alat->status_alat === 'Baik' ? 'bg-green-500' : ($alat->status_alat === 'Rusak' ? 'bg-yellow-500' : 'bg-red-500') }} ">
                     {{ $alat->status_alat }}
                 </span>
             </div>
@@ -85,7 +85,7 @@
                 <h2 class="text-xl font-semibold text-gray-700 mb-3">🔄 Perbarui Status Alat</h2>
 
                 <div class="flex flex-wrap gap-3">
-                    @foreach (['Bagus' => 'green', 'Rusak' => 'yellow', 'Hilang' => 'red'] as $status => $color)
+                    @foreach (['Baik' => 'green', 'Rusak' => 'yellow', 'Hilang' => 'red'] as $status => $color)
                         <form method="POST" action="{{ route('scan.barcode.update-status', $alat->id) }}">
                             @csrf
                             @method('PUT')

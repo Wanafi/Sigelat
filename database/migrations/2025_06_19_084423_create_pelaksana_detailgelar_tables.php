@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('gelar_id')->constrained('gelars')->cascadeOnDelete();
             $table->foreignId('alat_id')->constrained('alats')->cascadeOnDelete();
-            $table->enum('status_alat', ['Bagus', 'Rusak', 'Hilang']);
+            $table->enum('status_alat', ['Baik', 'Rusak', 'Hilang']);
             $table->timestamps();
         });
 

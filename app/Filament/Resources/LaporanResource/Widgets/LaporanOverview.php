@@ -30,7 +30,7 @@ class LaporanOverview extends BaseWidget
                 ->color('danger')
                 ->url(route('filament.admin.resources.laporan-alats.index')),
         
-            stat::make('Mobil Dengan Kondisi Dalam Perbaikan/Tidak Aktif', $this->getTidakAktifPerbaikanCount())
+            stat::make('Mobil Dalam Kondisi Perbaikan/Tidak Aktif', $this->getTidakAktifPerbaikanCount())
                 ->description('Laporan Mobil')
                 ->descriptionIcon('heroicon-o-truck')
                 ->color('warning')

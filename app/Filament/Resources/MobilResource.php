@@ -117,7 +117,7 @@ class MobilResource extends Resource
 
                             // Baris 2
                             Select::make('merk_mobil')
-                                ->label('Merk Mobil')
+                                ->label('Merek Mobil')
                                 ->options(Mobil::distinct()->pluck('merk_mobil', 'merk_mobil'))
                                 ->searchable()
                                 ->placeholder('Pilih atau Tambahkan Merek')
@@ -130,7 +130,7 @@ class MobilResource extends Resource
                                         ->required(),
                                 ])
                                 ->createOptionAction(fn(Action $action) => $action
-                                    ->modalHeading('Tambah Merk Mobil')
+                                    ->modalHeading('Tambah Merek Mobil')
                                     ->modalSubmitActionLabel('Simpan')
                                     ->modalWidth('md'))
                                 ->createOptionUsing(fn(array $data) => $data['merk_mobil']),
@@ -160,8 +160,6 @@ class MobilResource extends Resource
                 ->columnSpanFull(),
         ]);
     }
-
-
     public static function table(Table $table): Table
     {
         return $table
@@ -232,7 +230,6 @@ class MobilResource extends Resource
                 ]),
             ]);
     }
-
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
@@ -244,22 +241,6 @@ class MobilResource extends Resource
                             ->label('Nomor Plat')
                             ->icon('heroicon-m-identification')
                             ->copyable(),
-
-                        TextEntry::make('merk_mobil')
-                            ->label('Merek Mobil')
-                            ->icon('heroicon-m-truck')
-                            ->copyable(),
-
-                        TextEntry::make('no_unit')
-                            ->label('Nomor Unit')
-                            ->icon('heroicon-m-hashtag')
-                            ->copyable(),
-
-                        TextEntry::make('no_seri')
-                            ->label('Nomor Seri')
-                            ->icon('heroicon-m-key')
-                            ->copyable(),
-
 
                         TextEntry::make('nama_tim')
                             ->label('Tim Armada')
@@ -280,6 +261,21 @@ class MobilResource extends Resource
                                 'Tidak Aktif' => 'heroicon-o-exclamation-triangle',
                                 'Dalam Perbaikan' => 'heroicon-o-wrench-screwdriver',
                             ])
+                            ->copyable(),
+
+                        TextEntry::make('no_seri')
+                            ->label('Nomor Seri')
+                            ->icon('heroicon-m-key')
+                            ->copyable(),
+                                                        
+                        TextEntry::make('merk_mobil')
+                            ->label('Merek Mobil')
+                            ->icon('heroicon-m-truck')
+                            ->copyable(),
+
+                        TextEntry::make('no_unit')
+                            ->label('Nomor Unit')
+                            ->icon('heroicon-m-hashtag')
                             ->copyable(),
                     ])
                     ->columns([
@@ -305,12 +301,12 @@ class MobilResource extends Resource
                                     ->label('Status')
                                     ->badge()
                                     ->colors([
-                                        'primary' => 'Bagus',
+                                        'primary' => 'Baik',
                                         'warning' => 'Hilang',
                                         'danger' => 'Rusak',
                                     ])
                                     ->icons([
-                                        'Bagus' => 'heroicon-o-check-circle',
+                                        'Baik' => 'heroicon-o-check-circle',
                                         'Hilang' => 'heroicon-o-no-symbol',
                                         'Rusak' => 'heroicon-o-exclamation-circle',
                                     ]),
@@ -322,14 +318,10 @@ class MobilResource extends Resource
                     ]),
             ]);
     }
-
-
-
     public static function getRelations(): array
     {
         return [];
     }
-
     public static function getPages(): array
     {
         return [
@@ -339,12 +331,10 @@ class MobilResource extends Resource
             'edit' => EditMobil::route('/{record}/edit'),
         ];
     }
-
     public static function getLabel(): string
     {
         return 'Daftar Mobil';
     }
-
     public static function getPluralLabel(): string
     {
         return 'Daftar Mobil';

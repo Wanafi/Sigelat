@@ -15,9 +15,9 @@ class ListAlats extends ListRecords
     {
         return [
             'Semua' => Tab::make(),
-            'Bagus' => Tab::make()
-                ->modifyQueryUsing(fn($query) => $query->where('status_alat', 'Bagus'))
-                ->badge(Alat::query()->where('status_alat', 'Bagus')->count()),
+            'Baik' => Tab::make()
+                ->modifyQueryUsing(fn($query) => $query->where('status_alat', 'Baik'))
+                ->badge(Alat::query()->where('status_alat', 'Baik')->count()),
             'Hilang' => Tab::make()
                 ->modifyQueryUsing(fn($query) => $query->where('status_alat', 'hilang'))
                 ->badge(Alat::query()->where('status_alat', 'hilang')->count()),

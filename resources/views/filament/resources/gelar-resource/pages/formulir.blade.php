@@ -147,7 +147,7 @@
                     <td>{{ $rowNumber++ }}</td>
                     <td class="left-align">{{ $detail->alat->nama_alat ?? '-' }}</td>
                     <td>{{ $detail->alat->satuan ?? 'bh' }}</td>
-                    <td>{{ $detail->status_alat == 'Bagus' ? '✔' : '' }}</td>
+                    <td>{{ $detail->status_alat == 'Baik' ? '✔' : '' }}</td>
                     <td>{{ $detail->status_alat == 'Rusak' ? '✔' : '' }}</td>
                     <td>{{ $detail->status_alat == 'Hilang' ? '✔' : '' }}</td>
                     <td class="left-align">{{ $detail->keterangan ?? '-' }}</td>

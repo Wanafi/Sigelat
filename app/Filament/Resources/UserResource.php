@@ -6,10 +6,11 @@ use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
 use Filament\Forms\Form;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Columns\BadgeColumn;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -20,7 +21,7 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
     protected static ?string $navigationIcon = 'heroicon-m-user-circle';
     protected static ?string $navigationLabel = 'Pengguna';
-    protected static ?string $navigationGroup = 'User & Role';
+    protected static ?string $navigationGroup = 'Pengguna & Peran';
     protected static ?string $modelLabel = 'Daftar Pengguna';
 
 
@@ -56,6 +57,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 BadgeColumn::make('roles.name')
+                    ->label('Peran')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -70,8 +72,10 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                ])->icon('heroicon-m-ellipsis-horizontal'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

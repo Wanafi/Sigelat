@@ -109,17 +109,17 @@ class AlatResource extends Resource
                         ToggleButtons::make('status_alat')
                             ->inline()
                             ->options([
-                                'Bagus' => 'Bagus',
+                                'Baik' => 'Baik',
                                 'Rusak' => 'Rusak',
                                 'Hilang' => 'Hilang',
                             ])
                             ->colors([
-                                'Bagus' => 'success',
+                                'Baik' => 'success',
                                 'Rusak' => 'warning',
                                 'Hilang' => 'danger',
                             ])
                             ->icons([
-                                'Bagus' => 'heroicon-o-check-circle',
+                                'Baik' => 'heroicon-o-check-circle',
                                 'Rusak' => 'heroicon-o-exclamation-triangle',
                                 'Hilang' => 'heroicon-o-wrench-screwdriver',
                             ])
@@ -152,12 +152,12 @@ class AlatResource extends Resource
                     ->label('Status')
                     ->sortable()
                     ->colors([
-                        'success' => 'Bagus',
-                        'warning' => 'Rusak',
-                        'danger' => 'Hilang',
+                        'success' => 'Baik',
+                        'danger' => 'Rusak',
+                        'warning' => 'Hilang',
                     ])
                     ->icons([
-                        'heroicon-o-check-circle' => 'Bagus',
+                        'heroicon-o-check-circle' => 'Baik',
                         'heroicon-o-exclamation-triangle' => 'Rusak',
                         'heroicon-o-wrench-screwdriver' => 'Hilang',
                     ]),
@@ -168,7 +168,7 @@ class AlatResource extends Resource
                 SelectFilter::make('status_alat')
                     ->label('Filter Status')
                     ->options([
-                        'Bagus' => 'Bagus',
+                        'Baik' => 'Baik',
                         'Rusak' => 'Rusak',
                         'Hilang' => 'Hilang',
                     ])
@@ -207,12 +207,12 @@ class AlatResource extends Resource
                                         TextEntry::make('status_alat')
                                             ->badge()
                                             ->colors([
-                                                'success' => 'Bagus',
-                                                'warning' => 'Rusak',
-                                                'danger' => 'Hilang',
+                                                'success' => 'Baik',
+                                                'danger' => 'Rusak',
+                                                'warning' => 'Hilang',
                                             ])
                                             ->icons([
-                                                'heroicon-o-check-circle' => 'Bagus',
+                                                'heroicon-o-check-circle' => 'Baik',
                                                 'heroicon-o-exclamation-triangle' => 'Rusak',
                                                 'heroicon-o-wrench-screwdriver' => 'Hilang',
                                             ]),
@@ -231,7 +231,7 @@ class AlatResource extends Resource
                                 ->html()
                                 ->state(function ($record) {
                                     // Ganti URL ini ke URL publik (scan)
-                                    $url = 'https://sigelat.loca.lt/scan/' . $record->kode_barcode;
+                                    $url = 'https://sigelat.web.id/scan/' . $record->kode_barcode;
 
                                     $renderer = new \BaconQrCode\Renderer\ImageRenderer(
                                         new \BaconQrCode\Renderer\RendererStyle\RendererStyle(200),

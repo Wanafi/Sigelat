@@ -38,7 +38,7 @@ Route::post('/scan/verifikasi/{id}', function (Request $request, $id) {
 // ✅ Update status alat (hanya jika sudah akses)
 Route::put('/scan/{alat}/update-status', function (Request $request, Alat $alat) {
     $request->validate([
-        'status' => 'required|in:Bagus,Rusak,Hilang',
+        'status' => 'required|in:Baik,Rusak,Hilang',
     ]);
 
     if (!session('akses_diizinkan')) {

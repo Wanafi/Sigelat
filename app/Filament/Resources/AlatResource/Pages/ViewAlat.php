@@ -9,7 +9,10 @@ use Filament\Resources\Pages\ViewRecord;
 class ViewAlat extends ViewRecord
 {
     protected static string $resource = AlatResource::class;
-
+    public function getTitle(): string
+    {
+        return 'Lihat Detail Alat';
+    }
     protected function getHeaderActions(): array
     {
         return [

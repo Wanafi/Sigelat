@@ -9,7 +9,10 @@ use App\Filament\Resources\LaporanGelarResource;
 class ViewLaporanGelar extends Page
 {
     protected static string $resource = LaporanGelarResource::class;
-
+    public function getTitle(): string
+    {
+        return 'Lihat Laporan Gelar Alat';
+    }
     protected static string $view = 'filament.resources.gelar-resource.pages.formulir';
 
     public $record;

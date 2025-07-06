@@ -59,7 +59,7 @@ class InventorySeeder extends Seeder
                     'merek_alat' => $faker->randomElement(['Fluke', 'Kyoritsu', 'Hioki', 'UNI-T']),
                     'spesifikasi' => $faker->sentence(5),
                     'tanggal_pembelian' => $faker->dateTimeBetween('-3 years', 'now')->format('Y-m-d'),
-                    'status_alat' => 'Bagus',
+                    'status_alat' => 'Baik',
                 ]);
                 $alatIds[] = $alat->id;
             }
@@ -77,7 +77,7 @@ class InventorySeeder extends Seeder
             $statusGelar = 'Lengkap';
 
             foreach ($alatDipakai as $alatId) {
-                $kondisi = $faker->randomElement(['Bagus', 'Rusak', 'Hilang']);
+                $kondisi = $faker->randomElement(['Baik', 'Rusak', 'Hilang']);
 
                 DB::table('detail_gelars')->insert([
                     'gelar_id' => $gelar->id,

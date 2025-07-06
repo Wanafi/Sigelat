@@ -48,19 +48,19 @@ class LaporanMobilResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nomor_plat')->label('Nomor Plat')->searchable(),
-                Tables\Columns\TextColumn::make('merk_mobil')->label('Merk')->searchable(),
+                Tables\Columns\TextColumn::make('merek_mobil')->label('Merek Mobil')->searchable(),
                 Tables\Columns\TextColumn::make('no_unit')->label('No Unit'),
                 Tables\Columns\BadgeColumn::make('status_mobil')
                     ->label('Status')
                     ->colors([
                         'success' => 'Aktif',
-                        'warning' => 'Tidak Aktif',
-                        'danger' => 'Dalam Perbaikan',
+                        'warning' => 'Dalam Perbaikan',
+                        'danger' => 'Tidak Aktif',
                     ])
                     ->icons([
                         'Aktif' => 'heroicon-o-check-circle',
-                        'Tidak Aktif' => 'heroicon-o-exclamation-triangle',
-                        'Dalam Perbaikan' => 'heroicon-o-wrench-screwdriver',
+                        'heroicon-o-exclamation-triangle' => 'Tidak Aktif',
+                        'heroicon-o-wrench-screwdriver' => 'Dalam Perbaikan',
                     ]),
             ])
             ->filters([
@@ -84,17 +84,27 @@ class LaporanMobilResource extends Resource
                 Section::make('Informasi Mobil')
                     ->schema([
                         TextEntry::make('nomor_plat')->label('Nomor Plat'),
-                        TextEntry::make('merk_mobil')->label('Merk'),
-                        TextEntry::make('no_unit')->label('No Unit'),
+                        TextEntry::make('nama_tim')
+                            ->label('Tim Armada')
+                            ->icon('heroicon-m-user-group')
+                            ->badge(),
                         TextEntry::make('status_mobil')
                             ->label('Status')
                             ->badge()
                             ->color(fn($state) => match ($state) {
                                 'Aktif' => 'success',
-                                'Tidak Aktif' => 'warning',
-                                'Dalam Perbaikan' => 'danger',
+                                'Tidak Aktif' => 'danger',
+                                'Dalam Perbaikan' => 'warning',
                                 default => 'gray',
                             }),
+                        TextEntry::make('no_seri')
+                            ->label('Nomor Seri')
+                            ->icon('heroicon-m-key')
+                            ->copyable()
+                            ->default('-'),
+                        TextEntry::make('merk_mobil')->label('Merek'),
+                        TextEntry::make('no_unit')->label('Nomor Unit'),
+
                     ])
                     ->columns(2),
 
@@ -142,9 +152,8 @@ class LaporanMobilResource extends Resource
             'view' => Pages\ViewLaporanMobil::route('/{record}'),
         ];
     }
-        public static function getPluralLabel(): string
+    public static function getPluralLabel(): string
     {
         return 'Laporan Mobil';
     }
-
 }

@@ -2,16 +2,35 @@
 
 namespace App\Filament\Resources\GelarResource\Pages;
 
-use App\Models\Gelar;
 use App\Models\Alat;
+use App\Models\Gelar;
 use App\Models\Pelaksana;
-use Filament\Resources\Pages\CreateRecord;
+use Filament\Actions\Action;
+use Filament\Actions\CreateAction;
 use Illuminate\Support\Facades\DB;
 use App\Filament\Resources\GelarResource;
+use Filament\Resources\Pages\CreateRecord;
 
 class CreateGelar extends CreateRecord
 {
     protected static string $resource = GelarResource::class;
+        public function getTitle(): string
+    {
+        return 'Buat Data Kegiatan Gelar Alat';
+    }
+    // protected function getFormActions(): array
+    // {
+    //     return [
+    //         CreateAction::make()
+    //             ->label('Simpan')
+    //             ->color('primary'),
+
+    //         Action::make('cancel')
+    //             ->label('Batalkan')
+    //             ->url($this->getResource()::getUrl()) // redirect ke halaman index
+    //             ->color('gray'),
+    //     ];
+    // }
 
     protected function handleRecordCreation(array $data): Gelar
     {
