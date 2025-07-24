@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Gelar extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'mobil_id',
@@ -58,5 +60,12 @@ class Gelar extends Model
             ->latest('created_at')
             ->with('user')
             ->first();
+    }
+
+        public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly(['status', 'tanggal_cek']);
+        // Chain fluent methods for configuration options
     }
 }

@@ -122,9 +122,14 @@ class GelarResource extends Resource
                                 ->afterStateUpdated(function ($state, callable $get) {
                                     $alatId = $get('alat_id');
                                     if ($alatId && in_array($state, ['Baik', 'Rusak', 'Hilang'])) {
-                                        Alat::where('id', $alatId)->update(['status_alat' => $state]);
+                                        $alat = Alat::find($alatId);
+                                        if ($alat && $alat->status_alat !== $state) {
+                                            $alat->status_alat = $state;
+                                            $alat->save(); // ✅ Activity log akan aktif di sini
+                                        }
                                     }
                                 })
+
                                 ->statePath('kondisi'),
 
                             TextInput::make('keterangan')
@@ -155,6 +160,7 @@ class GelarResource extends Resource
                 continue;
             }
 
+            // Simpan ke detail_gelars
             DB::table('detail_gelars')->insert([
                 'gelar_id' => $record->id,
                 'alat_id' => $alat['alat_id'],
@@ -164,17 +170,23 @@ class GelarResource extends Resource
                 'updated_at' => now(),
             ]);
 
-            Alat::where('id', $alat['alat_id'])->update([
-                'status_alat' => $alat['kondisi'],
-            ]);
+            // Update status alat via Eloquent untuk memicu activity log
+            $alatModel = Alat::find($alat['alat_id']);
+            if ($alatModel && $alatModel->status_alat !== $alat['kondisi']) {
+                $alatModel->status_alat = $alat['kondisi'];
+                $alatModel->save(); // Akan tercatat di activity log
+            }
 
+            // Deteksi apakah ada alat yang hilang
             if ($alat['kondisi'] === 'Hilang') {
                 $statusGelar = 'Tidak Lengkap';
             }
         }
 
+        // Update status kegiatan gelar
         $record->update(['status' => $statusGelar]);
 
+        // Simpan pelaksana
         foreach ($pelaksanaIds as $userId) {
             Pelaksana::create([
                 'gelar_id' => $record->id,
@@ -183,13 +195,15 @@ class GelarResource extends Resource
         }
     }
 
+
     public static function afterSave(Gelar $record): void
     {
         DB::table('detail_gelars')->where('gelar_id', $record->id)->delete();
         Pelaksana::where('gelar_id', $record->id)->delete();
 
-        self::afterCreate($record);
+        self::afterCreate($record); // Sudah diperbaiki agar activity log aktif
     }
+
 
     public static function infolist(Infolist $infolist): Infolist
     {
