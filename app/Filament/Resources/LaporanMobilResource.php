@@ -24,7 +24,7 @@ use App\Filament\Resources\LaporanMobilResource\Pages;
 class LaporanMobilResource extends Resource
 {
     protected static ?string $model = Mobil::class;
-    protected static ?int $navigationSort = 8;
+    protected static ?int $navigationSort = 3;
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?string $navigationLabel = 'Laporan Mobil';
     protected static ?string $modelLabel = 'Laporan Mobil';

@@ -37,7 +37,7 @@ class MobilResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-m-truck';
     protected static ?string $navigationLabel = 'Mobil';
     protected static ?string $modelLabel = 'Daftar Mobil';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
     protected static ?string $navigationGroup = 'Manajemen';
 
     public static function getNavigationBadge(): ?string

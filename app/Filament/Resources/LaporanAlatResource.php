@@ -25,7 +25,7 @@ class LaporanAlatResource extends Resource
     protected static ?string $navigationLabel = 'Laporan Alat';
     protected static ?string $modelLabel = 'Laporan Alat';
     protected static ?string $navigationIcon = 'heroicon-m-rectangle-stack';
-    protected static ?int $navigationSort = 8;
+    protected static ?int $navigationSort = 3;
     public static function canCreate(): bool { return false; }
     public static function canEdit(Model $record): bool { return false; }
     public static function canDelete(Model $record): bool { return false; }

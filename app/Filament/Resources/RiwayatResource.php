@@ -19,8 +19,7 @@ class RiwayatResource extends Resource
     protected static ?string $model = Riwayat::class;
 
     protected static ?string $navigationIcon = 'heroicon-m-clock';
-    protected static ?int $navigationSort = 1;
-    protected static ?string $modelLabel = 'Riwayat';
+    protected static ?int $navigationSort = 4;
     protected static ?string $navigationLabel = 'Riwayat Konfirmasi';
 
     public static function form(Form $form): Form
@@ -145,11 +144,6 @@ class RiwayatResource extends Resource
         return [
             'index' => Pages\ListRiwayats::route('/'),
         ];
-    }
-
-    public static function getLabel(): string
-    {
-        return 'Riwayat / Aktifitas';
     }
 
     public static function getPluralLabel(): string

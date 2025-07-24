@@ -23,7 +23,7 @@ use Filament\Infolists\Components\Actions\Action;
 class LaporanGelarResource extends Resource
 {
     protected static ?string $model = Gelar::class;
-    protected static ?int $navigationSort = 8;
+    protected static ?int $navigationSort = 3;
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?string $navigationLabel = 'Laporan Gelar';
     protected static ?string $pluralLabel = 'Laporan Kegiatan Gelar Alat';
