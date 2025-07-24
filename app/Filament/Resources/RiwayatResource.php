@@ -67,7 +67,7 @@ class RiwayatResource extends Resource
                     ])
                     ->toggleable(),
 
-                Tables\Columns\TextColumn::make('aksi')
+                Tables\Columns\TextColumn::make('aks')
                     ->label('Aksi')
                     ->getStateUsing(fn($record) => $record->aksi ?: '-')
                     ->toggleable(),
