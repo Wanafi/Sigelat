@@ -16,6 +16,11 @@ class Gelar extends Model
         'user_id',
         'status',
         'tanggal_cek',
+        'pelaksana',
+    ];
+
+    protected $casts = [
+        'pelaksana' => 'array', // jika kamu pakai TagsInput
     ];
 
     public function mobil()
@@ -26,11 +31,6 @@ class Gelar extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function pelaksanas()
-    {
-        return $this->hasMany(\App\Models\Pelaksana::class);
     }
 
     public function detailAlats()
@@ -62,10 +62,10 @@ class Gelar extends Model
             ->first();
     }
 
-        public function getActivitylogOptions(): LogOptions
+    public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly(['status', 'tanggal_cek']);
+            ->logOnly(['status', 'tanggal_cek']);
         // Chain fluent methods for configuration options
     }
 }

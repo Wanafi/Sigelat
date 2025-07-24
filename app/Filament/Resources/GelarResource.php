@@ -2,37 +2,38 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Forms;
 use App\Models\Alat;
 use App\Models\User;
+use Filament\Tables;
 use App\Models\Gelar;
 use App\Models\Mobil;
-use App\Models\Pelaksana;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Tables;
+use App\Models\Pelaksana;
 use Filament\Tables\Table;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\DB;
 use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Infolists\Infolist;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Actions\DeleteAction;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\Section as InfoSection;
 use App\Filament\Resources\GelarResource\Pages;
+use Filament\Infolists\Components\RepeatableEntry;
 use App\Filament\Resources\GelarResource\Pages\Formulir;
-use App\Filament\Resources\GelarResource\Pages\ViewGelar;
 use App\Filament\Resources\GelarResource\Pages\EditGelar;
+use App\Filament\Resources\GelarResource\Pages\ViewGelar;
+use Filament\Infolists\Components\Section as InfoSection;
 use App\Filament\Resources\GelarResource\Pages\ListGelars;
 use App\Filament\Resources\GelarResource\Pages\CreateGelar;
 
@@ -85,11 +86,10 @@ class GelarResource extends Resource
                         ->default(now())
                         ->required(),
 
-                    Select::make('pelaksana_ids')
-                        ->label('Petugas Pelaksana')
-                        ->multiple()
-                        ->options(User::pluck('name', 'id'))
-                        ->searchable()
+                    TagsInput::make('pelaksana')
+                        ->label('Nama Pelaksana')
+                        ->placeholder('Ketik nama, tekan Enter untuk tambah')
+                        ->separator(',')
                         ->required(),
                 ])
                 ->columns(2),
@@ -185,14 +185,6 @@ class GelarResource extends Resource
 
         // Update status kegiatan gelar
         $record->update(['status' => $statusGelar]);
-
-        // Simpan pelaksana
-        foreach ($pelaksanaIds as $userId) {
-            Pelaksana::create([
-                'gelar_id' => $record->id,
-                'user_id' => $userId,
-            ]);
-        }
     }
 
 
@@ -216,9 +208,8 @@ class GelarResource extends Resource
                         'success' => 'Lengkap',
                         'warning' => 'Tidak Lengkap',
                     ]),
-                    TextEntry::make('pelaksanas')
-                        ->label('Pelaksana')
-                        ->state(fn($record) => $record->pelaksanas->map(fn($p) => $p->user->name)->join(', ')),
+                    TextEntry::make('pelaksana')
+                        ->label('Pelaksana'),
                 ])
                 ->columns(2),
 
