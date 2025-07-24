@@ -19,8 +19,7 @@ class RiwayatResource extends Resource
     protected static ?string $model = Riwayat::class;
 
     protected static ?string $navigationIcon = 'heroicon-m-clock';
-    protected static ?string $navigationGroup = 'Laporan';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 1;
     protected static ?string $modelLabel = 'Riwayat';
     protected static ?string $navigationLabel = 'Riwayat Konfirmasi';
 

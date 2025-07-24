@@ -96,23 +96,6 @@ class InventorySeeder extends Seeder
 
             $gelar->update(['status' => $statusGelar]);
 
-            // ✅ Tambah Pelaksana
-            $availableUsers = collect($userIds);
-
-            if ($availableUsers->count() >= 3) {
-                $pelaksanaIds = $availableUsers->random(3);
-            } else {
-                $pelaksanaIds = $availableUsers;
-            }
-
-            foreach ($pelaksanaIds as $userId) {
-                DB::table('pelaksanas')->insert([
-                    'gelar_id' => $gelar->id,
-                    'user_id' => $userId,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
         }
     }
 }
