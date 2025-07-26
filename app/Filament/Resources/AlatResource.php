@@ -202,8 +202,12 @@ class AlatResource extends Resource
                             Grid::make(2)
                                 ->schema([
                                     Section::make([
-                                        TextEntry::make('kode_barcode')->icon('heroicon-m-qr-code')->copyable(),
-                                        TextEntry::make('nama_alat'),
+                                        TextEntry::make('kode_barcode')->icon('heroicon-m-qr-code')->copyable()->extraAttributes([
+                                            'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
+                                        ]),
+                                        TextEntry::make('nama_alat')->extraAttributes([
+                                            'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
+                                        ]),
                                         TextEntry::make('status_alat')
                                             ->badge()
                                             ->colors([
@@ -219,11 +223,18 @@ class AlatResource extends Resource
                                         TextEntry::make('mobil.nomor_plat')
                                             ->label('Digunakan di Mobil')
                                             ->icon('heroicon-m-truck')
-                                            ->visible(fn($record) => $record->mobil !== null),
+                                            ->visible(fn($record) => $record->mobil !== null)
+                                            ->extraAttributes([
+                                                'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
+                                            ]),
                                     ])->columns(2),
                                     Section::make([
-                                        TextEntry::make('merek_alat'),
-                                        TextEntry::make('kategori_alat')->badge(),
+                                        TextEntry::make('merek_alat')->extraAttributes([
+                                            'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
+                                        ]),
+                                        TextEntry::make('kategori_alat')->badge()->extraAttributes([
+                                            'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
+                                        ]),
                                     ])->columns(2),
                                 ]),
                             TextEntry::make('qrcode')
