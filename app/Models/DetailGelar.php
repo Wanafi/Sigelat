@@ -15,6 +15,7 @@ class DetailGelar extends Model
         'gelar_id',
         'alat_id',
         'status_alat',
+        'foto_alat',
         'keterangan',
     ];
 

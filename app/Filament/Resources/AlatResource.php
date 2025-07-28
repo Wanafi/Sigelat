@@ -76,7 +76,8 @@ class AlatResource extends Resource
                             ->directory('foto-alat')
                             ->imagePreviewHeight('200')
                             ->maxSize(2048)
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->extraAttributes(['accept' => 'image/*', 'capture' => 'environment']),
                         TextInput::make('kode_barcode')
                             ->required()
                             ->disabled()

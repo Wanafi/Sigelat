@@ -22,11 +22,16 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Actions\DeleteAction;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\GelarResource\Pages;
 use Filament\Infolists\Components\RepeatableEntry;
@@ -97,7 +102,6 @@ class GelarResource extends Resource
             Section::make('Daftar Alat di Mobil')
                 ->schema([
                     Repeater::make('detail_alats')
-                        ->label('Detail Alat')
                         ->statePath('detail_alats') // penting!
                         ->schema([
                             TextInput::make('alat_id')
@@ -110,14 +114,25 @@ class GelarResource extends Resource
                                 ->disabled()
                                 ->statePath('nama_alat'),
 
-                            Select::make('kondisi')
+                            ToggleButtons::make('status_alat')
                                 ->label('Kondisi Alat')
                                 ->options([
                                     'Baik' => 'Baik',
                                     'Rusak' => 'Rusak',
                                     'Hilang' => 'Hilang',
                                 ])
+                                ->colors([
+                                    'Baik' => 'success',
+                                    'Rusak' => 'warning',
+                                    'Hilang' => 'danger',
+                                ])
+                                ->icons([
+                                    'Baik' => 'heroicon-o-check-circle',
+                                    'Rusak' => 'heroicon-o-exclamation-triangle',
+                                    'Hilang' => 'heroicon-o-wrench-screwdriver',
+                                ])
                                 ->required()
+                                ->inline()
                                 ->reactive()
                                 ->afterStateUpdated(function ($state, callable $get) {
                                     $alatId = $get('alat_id');
@@ -135,8 +150,20 @@ class GelarResource extends Resource
                             TextInput::make('keterangan')
                                 ->label('Keterangan')
                                 ->placeholder('Opsional, isi jika ada catatan')
-                                ->statePath('keterangan')
-                                ->columnSpanFull(),
+                                ->statePath('keterangan'),
+
+                            FileUpload::make('foto_alat')
+                                ->label('Foto Kondisi Alat')
+                                ->directory('foto-alat')
+                                ->image()
+                                ->imageEditor()
+                                ->imagePreviewHeight('150')
+                                ->maxSize(2048)
+                                ->extraAttributes([
+                                    'accept' => 'image/*',
+                                    'capture' => 'environment', // aktifkan kamera belakang
+                                ])
+                                ->columnspanfull(),
                         ])
                         ->columns(3)
                         ->disableItemCreation()
@@ -147,45 +174,41 @@ class GelarResource extends Resource
         ]);
     }
 
-
     public static function afterCreate(Gelar $record): void
     {
-        $formData = request()->input('data', []);
-        $alatList = $formData['detail_alats'] ?? [];
-        $pelaksanaIds = $formData['pelaksana_ids'] ?? [];
+        $alatList = session()->pull('detail_alats_data', []);
         $statusGelar = 'Lengkap';
 
         foreach ($alatList as $alat) {
-            if (!isset($alat['alat_id'], $alat['kondisi'])) {
+            if (!isset($alat['alat_id'], $alat['status_alat'])) {
                 continue;
             }
 
-            // Simpan ke detail_gelars
             DB::table('detail_gelars')->insert([
                 'gelar_id' => $record->id,
                 'alat_id' => $alat['alat_id'],
-                'status_alat' => $alat['kondisi'],
+                'status_alat' => $alat['status_alat'],
                 'keterangan' => $alat['keterangan'] ?? null,
+                'foto_alat' => $alat['foto_alat'] ?? null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            // Update status alat via Eloquent untuk memicu activity log
-            $alatModel = Alat::find($alat['alat_id']);
-            if ($alatModel && $alatModel->status_alat !== $alat['kondisi']) {
-                $alatModel->status_alat = $alat['kondisi'];
-                $alatModel->save(); // Akan tercatat di activity log
+            if ($alat['status_alat'] === 'Hilang') {
+                $statusGelar = 'Tidak Lengkap';
             }
 
-            // Deteksi apakah ada alat yang hilang
-            if ($alat['kondisi'] === 'Hilang') {
-                $statusGelar = 'Tidak Lengkap';
+            // Update status alat
+            $alatModel = Alat::find($alat['alat_id']);
+            if ($alatModel && $alatModel->status_alat !== $alat['status_alat']) {
+                $alatModel->status_alat = $alat['status_alat'];
+                $alatModel->save();
             }
         }
 
-        // Update status kegiatan gelar
         $record->update(['status' => $statusGelar]);
     }
+
 
 
     public static function afterSave(Gelar $record): void
@@ -218,19 +241,34 @@ class GelarResource extends Resource
                     RepeatableEntry::make('detailAlats')
                         ->label('Detail Alat')
                         ->schema([
-                            TextEntry::make('alat.nama_alat')->label('Nama Alat')->weight('bold'),
-                            TextEntry::make('status_alat')->label('Kondisi')->badge()->color(fn(string $state): string => match ($state) {
-                                'Baik' => 'success',
-                                'Rusak' => 'warning',
-                                'Hilang' => 'danger',
-                                default => 'gray',
-                            }),
-                            TextEntry::make('keterangan')->label('Keterangan')->placeholder('-')->default('-'),
+                            TextEntry::make('alat.nama_alat')
+                                ->label('Nama Alat')
+                                ->weight('bold'),
+
+                            TextEntry::make('status_alat')
+                                ->label('Kondisi')
+                                ->badge()
+                                ->color(fn(string $state): string => match ($state) {
+                                    'Baik' => 'success',
+                                    'Rusak' => 'warning',
+                                    'Hilang' => 'danger',
+                                    default => 'gray',
+                                }),
+
+                            TextEntry::make('keterangan')
+                                ->label('Keterangan')
+                                ->placeholder('-')
+                                ->default('-'),
+
+                            \Filament\Infolists\Components\ImageEntry::make('foto_alat')
+                                ->label('Foto Alat')
+                                ->height(150)
+                                ->hidden(fn($state) => blank($state)),
                         ])
-                        ->columns(3)
+                        ->columns(2)
                         ->visible(fn($record) => $record->detailAlats()->exists())
                         ->contained()
-                        ->columnSpanFull(),
+                        ->columnSpanFull()
                 ])
                 ->visible(fn($record) => $record->detailAlats()->exists()),
         ]);
@@ -298,5 +336,13 @@ class GelarResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
+    }
+
+    public static function mutateFormDataBeforeCreate(array $data): array
+    {
+        // Simpan nanti via afterCreate
+        session(['detail_alats_data' => $data['detail_alats']]);
+
+        return $data;
     }
 }
