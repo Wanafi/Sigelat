@@ -4,17 +4,17 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use App\Models\Alat;
-use App\Models\Mobil;
 use Filament\Tables;
+use App\Models\Mobil;
 use BaconQrCode\Writer;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Filament\Tables\Actions\EditAction;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use BaconQrCode\Renderer\ImageRenderer;
 use Filament\Infolists\Components\Grid;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
@@ -22,20 +22,25 @@ use Filament\Infolists\Components\Group;
 use Filament\Infolists\Components\Split;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\Actions;
 use Filament\Infolists\Components\Section;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\HtmlEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Forms\Components\MarkdownEditor;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Tables\Actions\DeleteBulkAction;
 use App\Filament\Resources\AlatResource\Pages;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use Filament\Infolists\Components\Actions\Action;
+use Filament\Infolists\Components\RepeatableEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use Filament\Forms\Components\Section as FormSection;
@@ -65,6 +70,13 @@ class AlatResource extends Resource
                 FormSection::make('Barcode')
                     ->description('Kode Untuk Generate Barcode')
                     ->schema([
+                        FileUpload::make('foto')
+                            ->label('Foto Dokumentasi')
+                            ->image()
+                            ->directory('foto-alat')
+                            ->imagePreviewHeight('200')
+                            ->maxSize(2048)
+                            ->columnSpanFull(),
                         TextInput::make('kode_barcode')
                             ->required()
                             ->disabled()
@@ -143,6 +155,12 @@ class AlatResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('foto')
+                    ->label('Foto')
+                    ->circular()
+                    ->height(50)
+                    ->width(50)
+                    ->url(fn($record) => $record->foto ? asset('storage/' . $record->foto) : null),
                 Tables\Columns\TextColumn::make('kode_barcode')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('nama_alat')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('kategori_alat')->searchable()->sortable(),
@@ -196,19 +214,28 @@ class AlatResource extends Resource
     {
         return $infolist
             ->schema([
-                Section::make()
+                Section::make('Identitas Alat')
+                    ->description('Informasi utama mengenai alat inventaris.')
                     ->schema([
-                        Split::make([
-                            Grid::make(2)
-                                ->schema([
-                                    Section::make([
-                                        TextEntry::make('kode_barcode')->icon('heroicon-m-qr-code')->copyable()->extraAttributes([
-                                            'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
-                                        ]),
-                                        TextEntry::make('nama_alat')->extraAttributes([
-                                            'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
-                                        ]),
+                        Grid::make(3)
+                            ->schema([
+                                ImageEntry::make('foto')
+                                    ->label('Foto Alat')
+                                    ->url(fn($record) => $record->foto ? asset('storage/' . $record->foto) : null)
+                                    ->extraAttributes(['class' => 'rounded-xl w-full h-auto object-cover'])
+                                    ->columnSpan(1),
+
+                                Grid::make(1)
+                                    ->schema([
+                                        TextEntry::make('kode_barcode')
+                                            ->label('Kode Barcode')
+                                            ->icon('heroicon-m-qr-code')
+                                            ->copyable(),
+
+                                        TextEntry::make('nama_alat')->label('Nama Alat'),
+
                                         TextEntry::make('status_alat')
+                                            ->label('Status')
                                             ->badge()
                                             ->colors([
                                                 'success' => 'Baik',
@@ -220,49 +247,63 @@ class AlatResource extends Resource
                                                 'heroicon-o-exclamation-triangle' => 'Rusak',
                                                 'heroicon-o-wrench-screwdriver' => 'Hilang',
                                             ]),
+                                    ])
+                                    ->columnSpan(1),
+
+                                Grid::make(1)
+                                    ->schema([
                                         TextEntry::make('mobil.nomor_plat')
                                             ->label('Digunakan di Mobil')
                                             ->icon('heroicon-m-truck')
-                                            ->visible(fn($record) => $record->mobil !== null)
-                                            ->extraAttributes([
-                                                'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
-                                            ]),
-                                    ])->columns(2),
-                                    Section::make([
-                                        TextEntry::make('merek_alat')->extraAttributes([
-                                            'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
-                                        ]),
-                                        TextEntry::make('kategori_alat')->badge()->extraAttributes([
-                                            'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
-                                        ]),
-                                    ])->columns(2),
-                                ]),
-                            TextEntry::make('qrcode')
-                                ->label('QR Code')
-                                ->html()
-                                ->state(function ($record) {
-                                    // Ganti URL ini ke URL publik (scan)
-                                    $url = 'https://sigelat.web.id/scan/' . $record->kode_barcode;
+                                            ->visible(fn($record) => $record->mobil !== null),
 
-                                    $renderer = new \BaconQrCode\Renderer\ImageRenderer(
-                                        new \BaconQrCode\Renderer\RendererStyle\RendererStyle(200),
-                                        new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
-                                    );
+                                        TextEntry::make('merek_alat')->label('Merek'),
 
-                                    $writer = new \BaconQrCode\Writer($renderer);
-                                    $qrSvg = $writer->writeString($url);
-                                    $base64 = base64_encode($qrSvg);
-
-                                    return '<img src="data:image/svg+xml;base64,' . $base64 . '" width="300" height="300">';
-                                })
-                                ->hiddenLabel(),
-
-
-                        ])
+                                        TextEntry::make('kategori_alat')->label('Kategori')->badge(),
+                                    ])
+                                    ->columnSpan(1),
+                            ]),
                     ]),
-                Section::make('Deskripsi Alat')
+
+                Section::make('Spesifikasi & Deskripsi')
+                    ->description('Informasi teknis atau deskripsi tambahan alat.')
                     ->schema([
                         TextEntry::make('spesifikasi')->prose()->markdown()->hiddenLabel(),
+                    ])
+                    ->collapsible(),
+
+                Section::make('QR Code')
+                    ->description('Scan QR untuk melihat informasi alat secara cepat.')
+                    ->schema([
+                        TextEntry::make('qrcode')
+                            ->label('QR Code')
+                            ->html()
+                            ->state(function ($record) {
+                                $url = 'https://sigelat.web.id/scan/' . $record->kode_barcode;
+
+                                $renderer = new \BaconQrCode\Renderer\ImageRenderer(
+                                    new \BaconQrCode\Renderer\RendererStyle\RendererStyle(200),
+                                    new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
+                                );
+
+                                $writer = new \BaconQrCode\Writer($renderer);
+                                $qrSvg = $writer->writeString($url);
+                                $base64 = base64_encode($qrSvg);
+
+                                return '<img src="data:image/svg+xml;base64,' . $base64 . '" width="200" height="200">';
+                            })
+                            ->hiddenLabel()
+                            ->extraAttributes(['class' => 'flex justify-center']),
+
+                        // Actions::make([
+                        //     Action::make('printQr')
+                        //         ->label('🖨️ Print QR Code')
+                        //         ->action(fn() => null)
+                        //         ->color('primary')
+                        //         ->extraAttributes([
+                        //             'onclick' => 'window.print()',
+                        //         ]),
+                        // ])->alignment('center'),
                     ])
                     ->collapsible(),
             ]);

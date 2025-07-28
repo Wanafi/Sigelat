@@ -58,3 +58,9 @@ Route::get('/admin/gelars/{id}/formulir', function ($id) {
     $gelar = Gelar::with(['mobil.alats', 'detailGelars.alat'])->findOrFail($id);
     return view('filament.resources.gelar-resource.pages.formulir', compact('gelar'));
 })->name('admin.gelars.formulir');
+
+Route::get('/qr/{id}/print', function ($id) {
+    $alat = \App\Models\Alat::findOrFail($id);
+    return view('qr.print', compact('alat'));
+})->name('qr.print');
+

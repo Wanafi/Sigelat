@@ -15,6 +15,7 @@ class Alat extends Model
         'mobil_id',
         'kode_barcode',
         'nama_alat',
+        'foto',
         'kategori_alat',
         'merek_alat',
         'spesifikasi',
