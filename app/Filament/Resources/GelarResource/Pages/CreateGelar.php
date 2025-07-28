@@ -57,7 +57,8 @@ class CreateGelar extends CreateRecord
                 'gelar_id' => $gelar->id,
                 'alat_id' => $alat['alat_id'],
                 'status_alat' => $alat['kondisi'],
-                'keterangan' => $alat['keterangan'] ?? null, // ✅ Tambahkan baris ini
+                'keterangan' => $alat['keterangan'] ?? null,
+                'foto_alat' => $alat['foto_alat'] ?? null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

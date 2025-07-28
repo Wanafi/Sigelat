@@ -231,9 +231,18 @@ class AlatResource extends Resource
                                         TextEntry::make('kode_barcode')
                                             ->label('Kode Barcode')
                                             ->icon('heroicon-m-qr-code')
-                                            ->copyable(),
+                                            ->copyable()
+                                            ->extraAttributes([
+                                                'placeholder' => 'Nama Alat',
+                                                'class' => 'border border-gray-300 rounded-md p-2',
+                                            ]),
 
-                                        TextEntry::make('nama_alat')->label('Nama Alat'),
+                                        TextEntry::make('nama_alat')
+                                            ->label('Nama Alat')
+                                            ->extraAttributes([
+                                                'placeholder' => 'Nama Alat',
+                                                'class' => 'border border-gray-300 rounded-md p-2',
+                                            ]),
 
                                         TextEntry::make('status_alat')
                                             ->label('Status')
@@ -256,11 +265,22 @@ class AlatResource extends Resource
                                         TextEntry::make('mobil.nomor_plat')
                                             ->label('Digunakan di Mobil')
                                             ->icon('heroicon-m-truck')
-                                            ->visible(fn($record) => $record->mobil !== null),
+                                            ->visible(fn($record) => $record->mobil !== null)
+                                            ->extraAttributes([
+                                                'placeholder' => 'Nama Alat',
+                                                'class' => 'border border-gray-300 rounded-md p-2',
+                                            ]),
 
-                                        TextEntry::make('merek_alat')->label('Merek'),
+                                        TextEntry::make('merek_alat')
+                                            ->label('Merek')
+                                            ->extraAttributes([
+                                                'placeholder' => 'Nama Alat',
+                                                'class' => 'border border-gray-300 rounded-md p-2',
+                                            ]),
 
-                                        TextEntry::make('kategori_alat')->label('Kategori')->badge(),
+                                        TextEntry::make('kategori_alat')
+                                            ->label('Kategori')
+                                            ->badge(),
                                     ])
                                     ->columnSpan(1),
                             ]),
@@ -269,7 +289,14 @@ class AlatResource extends Resource
                 Section::make('Spesifikasi & Deskripsi')
                     ->description('Informasi teknis atau deskripsi tambahan alat.')
                     ->schema([
-                        TextEntry::make('spesifikasi')->prose()->markdown()->hiddenLabel(),
+                        TextEntry::make('spesifikasi')
+                            ->prose()
+                            ->markdown()
+                            ->hiddenLabel()
+                                            ->extraAttributes([
+                                                'placeholder' => 'Nama Alat',
+                                                'class' => 'border border-gray-300 rounded-md p-2',
+                                            ]),
                     ])
                     ->collapsible(),
 

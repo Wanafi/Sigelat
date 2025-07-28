@@ -240,15 +240,19 @@ class MobilResource extends Resource
                         TextEntry::make('nomor_plat')
                             ->label('Nomor Plat')
                             ->icon('heroicon-m-identification')
-                            ->copyable()->extraAttributes([
-                                'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
+                            ->copyable()
+                            ->extraAttributes([
+                                'placeholder' => 'Nama Alat',
+                                'class' => 'border border-gray-300 rounded-md p-2',
                             ]),
 
                         TextEntry::make('nama_tim')
                             ->label('Tim Armada')
                             ->icon('heroicon-m-user-group')
-                            ->badge()->extraAttributes([
-                                'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
+                            ->badge()
+                            ->extraAttributes([
+                                'placeholder' => 'Nama Alat',
+                                'class' => 'border border-gray-300 rounded-md p-2',
                             ]),
 
                         TextEntry::make('status_mobil')
@@ -270,22 +274,28 @@ class MobilResource extends Resource
                         TextEntry::make('no_seri')
                             ->label('Nomor Seri')
                             ->icon('heroicon-m-key')
-                            ->copyable()->extraAttributes([
-                                'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
+                            ->copyable()
+                            ->extraAttributes([
+                                'placeholder' => 'Nama Alat',
+                                'class' => 'border border-gray-300 rounded-md p-2',
                             ]),
 
                         TextEntry::make('merk_mobil')
                             ->label('Merek Mobil')
                             ->icon('heroicon-m-truck')
-                            ->copyable()->extraAttributes([
-                                'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
+                            ->copyable()
+                            ->extraAttributes([
+                                'placeholder' => 'Nama Alat',
+                                'class' => 'border border-gray-300 rounded-md p-2',
                             ]),
 
                         TextEntry::make('no_unit')
                             ->label('Nomor Unit')
                             ->icon('heroicon-m-hashtag')
-                            ->copyable()->extraAttributes([
-                                'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
+                            ->copyable()
+                            ->extraAttributes([
+                                'placeholder' => 'Nama Alat',
+                                'class' => 'border border-gray-300 rounded-md p-2',
                             ]),
                     ])
                     ->columns([
@@ -301,14 +311,18 @@ class MobilResource extends Resource
                             ->schema([
                                 TextEntry::make('nama_alat')
                                     ->label('Nama Alat')
-                                    ->icon('heroicon-m-wrench-screwdriver')->extraAttributes([
-                                        'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
+                                    ->icon('heroicon-m-wrench-screwdriver')
+                                    ->extraAttributes([
+                                        'placeholder' => 'Nama Alat',
+                                        'class' => 'border border-gray-300 rounded-md p-2',
                                     ]),
 
                                 TextEntry::make('kode_barcode')
                                     ->label('Kode Barcode')
-                                    ->icon('heroicon-m-qr-code')->extraAttributes([
-                                        'class' => 'text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium',
+                                    ->icon('heroicon-m-qr-code')
+                                    ->extraAttributes([
+                                        'placeholder' => 'Nama Alat',
+                                        'class' => 'border border-gray-300 rounded-md p-2',
                                     ]),
 
                                 TextEntry::make('status_alat')

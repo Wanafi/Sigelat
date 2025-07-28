@@ -106,13 +106,11 @@ class GelarResource extends Resource
                         ->schema([
                             TextInput::make('alat_id')
                                 ->label('ID Alat')
-                                ->hidden()
-                                ->statePath('alat_id'),
+                                ->hidden(),
 
                             TextInput::make('nama_alat')
                                 ->label('Nama Alat')
-                                ->disabled()
-                                ->statePath('nama_alat'),
+                                ->disabled(),
 
                             ToggleButtons::make('status_alat')
                                 ->label('Kondisi Alat')
@@ -149,12 +147,11 @@ class GelarResource extends Resource
 
                             TextInput::make('keterangan')
                                 ->label('Keterangan')
-                                ->placeholder('Opsional, isi jika ada catatan')
-                                ->statePath('keterangan'),
+                                ->placeholder('Opsional, isi jika ada catatan'),
 
                             FileUpload::make('foto_alat')
                                 ->label('Foto Kondisi Alat')
-                                ->directory('foto-alat')
+                                ->directory('foto-kondisi')
                                 ->image()
                                 ->imageEditor()
                                 ->imagePreviewHeight('150')
@@ -176,10 +173,10 @@ class GelarResource extends Resource
 
     public static function afterCreate(Gelar $record): void
     {
-        $alatList = session()->pull('detail_alats_data', []);
+        $detailAlats = $record->form->getState()['detail_alats'] ?? [];
         $statusGelar = 'Lengkap';
 
-        foreach ($alatList as $alat) {
+        foreach ($detailAlats as $alat) {
             if (!isset($alat['alat_id'], $alat['status_alat'])) {
                 continue;
             }
@@ -198,7 +195,6 @@ class GelarResource extends Resource
                 $statusGelar = 'Tidak Lengkap';
             }
 
-            // Update status alat
             $alatModel = Alat::find($alat['alat_id']);
             if ($alatModel && $alatModel->status_alat !== $alat['status_alat']) {
                 $alatModel->status_alat = $alat['status_alat'];
@@ -209,8 +205,6 @@ class GelarResource extends Resource
         $record->update(['status' => $statusGelar]);
     }
 
-
-
     public static function afterSave(Gelar $record): void
     {
         DB::table('detail_gelars')->where('gelar_id', $record->id)->delete();
@@ -219,20 +213,31 @@ class GelarResource extends Resource
         self::afterCreate($record); // Sudah diperbaiki agar activity log aktif
     }
 
-
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist->schema([
             InfoSection::make('Informasi Kegiatan')
                 ->schema([
-                    TextEntry::make('mobil.nomor_plat')->label('Nomor Plat Mobil'),
-                    TextEntry::make('tanggal_cek')->label('Tanggal Cek')->date(),
+                    TextEntry::make('mobil.nomor_plat')->label('Nomor Plat Mobil')
+                        ->extraAttributes([
+                            'placeholder' => 'Nama Alat',
+                            'class' => 'border border-gray-300 rounded-md p-2',
+                        ]),
+                    TextEntry::make('tanggal_cek')->label('Tanggal Cek')->date()
+                        ->extraAttributes([
+                            'placeholder' => 'Nama Alat',
+                            'class' => 'border border-gray-300 rounded-md p-2',
+                        ]),
                     TextEntry::make('status')->label('Status')->badge()->colors([
                         'success' => 'Lengkap',
                         'warning' => 'Tidak Lengkap',
                     ]),
                     TextEntry::make('pelaksana')
-                        ->label('Pelaksana'),
+                        ->label('Pelaksana')
+                        ->extraAttributes([
+                            'placeholder' => 'Nama Alat',
+                            'class' => 'border border-gray-300 rounded-md p-2',
+                        ]),
                 ])
                 ->columns(2),
 
@@ -243,7 +248,11 @@ class GelarResource extends Resource
                         ->schema([
                             TextEntry::make('alat.nama_alat')
                                 ->label('Nama Alat')
-                                ->weight('bold'),
+                                ->weight('bold')
+                                ->extraAttributes([
+                                    'placeholder' => 'Nama Alat',
+                                    'class' => 'border border-gray-300 rounded-md p-2',
+                                ]),
 
                             TextEntry::make('status_alat')
                                 ->label('Kondisi')
@@ -253,12 +262,20 @@ class GelarResource extends Resource
                                     'Rusak' => 'warning',
                                     'Hilang' => 'danger',
                                     default => 'gray',
-                                }),
+                                })
+                                ->extraAttributes([
+                                    'placeholder' => 'Nama Alat',
+                                    'class' => 'border border-gray-300 rounded-md p-2',
+                                ]),
 
                             TextEntry::make('keterangan')
                                 ->label('Keterangan')
                                 ->placeholder('-')
-                                ->default('-'),
+                                ->default('-')
+                                ->extraAttributes([
+                                    'placeholder' => 'Nama Alat',
+                                    'class' => 'border border-gray-300 rounded-md p-2',
+                                ]),
 
                             \Filament\Infolists\Components\ImageEntry::make('foto_alat')
                                 ->label('Foto Alat')
@@ -336,13 +353,5 @@ class GelarResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
-    }
-
-    public static function mutateFormDataBeforeCreate(array $data): array
-    {
-        // Simpan nanti via afterCreate
-        session(['detail_alats_data' => $data['detail_alats']]);
-
-        return $data;
     }
 }
