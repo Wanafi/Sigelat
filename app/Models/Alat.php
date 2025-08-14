@@ -19,7 +19,7 @@ class Alat extends Model
         'kategori_alat',
         'merek_alat',
         'spesifikasi',
-        'tanggal_pembelian',
+        'tanggal_masuk',
         'status_alat',
     ];
 

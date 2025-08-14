@@ -256,6 +256,10 @@ class AlatResource extends Resource
                                                 'heroicon-o-check-circle' => 'Baik',
                                                 'heroicon-o-exclamation-triangle' => 'Rusak',
                                                 'heroicon-o-wrench-screwdriver' => 'Hilang',
+                                            ])
+                                            ->extraAttributes([
+                                                'placeholder' => 'Nama Alat',
+                                                'class' => 'border border-gray-300 rounded-md p-2',
                                             ]),
                                     ])
                                     ->columnSpan(1),
@@ -280,7 +284,11 @@ class AlatResource extends Resource
 
                                         TextEntry::make('kategori_alat')
                                             ->label('Kategori')
-                                            ->badge(),
+                                            ->badge()
+                                            ->extraAttributes([
+                                                'placeholder' => 'Nama Alat',
+                                                'class' => 'border border-gray-300 rounded-md p-2',
+                                            ]),
                                     ])
                                     ->columnSpan(1),
                             ]),
