@@ -112,7 +112,7 @@ class AlatResource extends Resource
                 FormSection::make('Tanggal')
                     ->description('Masukan Tanggal Masuk/Keluar Alat')
                     ->schema([
-                        DatePicker::make('tanggal_pembelian')
+                        DatePicker::make('tanggal_masuk')
                             ->required()
                             ->displayFormat('d/m/Y'),
                     ]),

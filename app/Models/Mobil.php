@@ -13,6 +13,7 @@ class Mobil extends Model
     protected $fillable = [
         'nomor_plat',
         'merk_mobil',
+        'no_seri',
         'no_unit',
         'nama_tim',
         'status_mobil',

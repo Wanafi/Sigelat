@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mobils', function (Blueprint $table) {
+        Schema::create('gelars', function (Blueprint $table) {
             $table->id();
-            $table->string('nomor_plat');
-            $table->string('merk_mobil');
-            $table->string('no_unit');
-            $table->string('nama_tim')->nullable();
-            $table->Enum ('status_mobil', ['Aktif','Tidak Aktif','Dalam Perbaikan']);
+            $table->foreignId('mobil_id')->constrained('mobils')->cascadeOnDelete();
+            $table->json('alat_ids')->nullable()->change();
+            $table->text('pelaksana')->nullable();
+            $table->enum('status', ['Lengkap', 'Tidak Lengkap']);
+            $table->date('tanggal_cek');
             $table->timestamps();
-
         });
     }
 
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('mobils');
+        Schema::dropIfExists('gelar');
     }
 };

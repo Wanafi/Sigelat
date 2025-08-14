@@ -16,18 +16,12 @@ return new class extends Migration
             $table->foreignId('mobil_id')->constrained('mobils')->onDelete('cascade');
             $table->string('kode_barcode')->unique();
             $table->string('nama_alat');
-            $table->enum('kategori_alat', [
-                'distribusi',
-                'pemeliharaan',
-                'proteksi',
-                'pengukuran',
-                'energi_terbarukan',
-                'pendukung'
-            ]);
+            $table->string('kategori_alat');
             $table->string('merek_alat');
             $table->text('spesifikasi');
-            $table->date('tanggal_pembelian');
+            $table->date('tanggal_masuk');
             $table->enum('status_alat', ['Baik', 'Rusak', 'Hilang']);
+            $table->string('foto')->nullable();
             $table->timestamps();
         });
     }
@@ -37,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('alats');
+        Schema::dropIfExists('alat');
     }
 };

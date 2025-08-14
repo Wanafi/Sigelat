@@ -3,10 +3,11 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use App\Models\User;
 use Filament\Tables;
 use App\Models\Mobil;
-use Filament\Forms\Form;
 
+use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
@@ -17,6 +18,7 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Actions\DeleteAction;
@@ -25,9 +27,9 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\Section as InfoSection;
 use App\Filament\Resources\MobilResource\Pages\EditMobil;
 use App\Filament\Resources\MobilResource\Pages\ViewMobil;
+use Filament\Infolists\Components\Section as InfoSection;
 use App\Filament\Resources\MobilResource\Pages\ListMobils;
 use App\Filament\Resources\MobilResource\Pages\CreateMobil;
 
@@ -269,7 +271,11 @@ class MobilResource extends Resource
                                 'Tidak Aktif' => 'heroicon-o-exclamation-triangle',
                                 'Dalam Perbaikan' => 'heroicon-o-wrench-screwdriver',
                             ])
-                            ->copyable(),
+                            ->copyable()
+                            ->extraAttributes([
+                                'placeholder' => 'Nama Alat',
+                                'class' => 'border border-gray-300 rounded-md p-2',
+                            ]),
 
                         TextEntry::make('no_seri')
                             ->label('Nomor Seri')
@@ -367,4 +373,5 @@ class MobilResource extends Resource
     {
         return 'Daftar Mobil';
     }
+
 }

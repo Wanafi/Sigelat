@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('detail_gelars', function (Blueprint $table) {
@@ -13,20 +16,17 @@ return new class extends Migration
             $table->foreignId('gelar_id')->constrained('gelars')->cascadeOnDelete();
             $table->foreignId('alat_id')->constrained('alats')->cascadeOnDelete();
             $table->enum('status_alat', ['Baik', 'Rusak', 'Hilang']);
-            $table->timestamps();
-        });
-
-        Schema::create('pelaksanas', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('gelar_id')->constrained('gelars')->onDelete('cascade');
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // ✅ kolom + FK
+            $table->text('keterangan')->nullable();
+            $table->string('foto_kondisi')->nullable();
             $table->timestamps();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('pelaksanas');
-        Schema::dropIfExists('detail_gelars');
+        Schema::dropIfExists('detail_gelar');
     }
 };
