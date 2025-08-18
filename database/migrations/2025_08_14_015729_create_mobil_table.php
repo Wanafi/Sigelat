@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('no_seri')->nullable();
             $table->string('no_unit');
             $table->string('nama_tim')->nullable();
-            $table->Enum ('status_mobil', ['aktif','Tidak Aktif','Dalam Perbaikan']);
+            $table->Enum ('status_mobil', ['Aktif','Tidak Aktif','Dalam Perbaikan']);
             $table->timestamps();
         });
     }

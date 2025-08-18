@@ -244,8 +244,9 @@ class MobilResource extends Resource
                             ->icon('heroicon-m-identification')
                             ->copyable()
                             ->extraAttributes([
-                                'placeholder' => 'Nama Alat',
-                                'class' => 'border border-gray-300 rounded-md p-2',
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
                             ]),
 
                         TextEntry::make('nama_tim')
@@ -253,8 +254,9 @@ class MobilResource extends Resource
                             ->icon('heroicon-m-user-group')
                             ->badge()
                             ->extraAttributes([
-                                'placeholder' => 'Nama Alat',
-                                'class' => 'border border-gray-300 rounded-md p-2',
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
                             ]),
 
                         TextEntry::make('status_mobil')
@@ -267,14 +269,15 @@ class MobilResource extends Resource
                                 'warning' => 'Dalam Perbaikan',
                             ])
                             ->icons([
-                                'Aktif' => 'heroicon-o-check-circle',
-                                'Tidak Aktif' => 'heroicon-o-exclamation-triangle',
-                                'Dalam Perbaikan' => 'heroicon-o-wrench-screwdriver',
+                                'heroicon-o-check-circle' => 'Aktif',
+                                'heroicon-o-exclamation-triangle' => 'Tidak Aktif',
+                                'heroicon-o-wrench-screwdriver' => 'Dalam Perbaikan',
                             ])
                             ->copyable()
                             ->extraAttributes([
-                                'placeholder' => 'Nama Alat',
-                                'class' => 'border border-gray-300 rounded-md p-2',
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
                             ]),
 
                         TextEntry::make('no_seri')
@@ -282,8 +285,9 @@ class MobilResource extends Resource
                             ->icon('heroicon-m-key')
                             ->copyable()
                             ->extraAttributes([
-                                'placeholder' => 'Nama Alat',
-                                'class' => 'border border-gray-300 rounded-md p-2',
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
                             ]),
 
                         TextEntry::make('merk_mobil')
@@ -291,8 +295,9 @@ class MobilResource extends Resource
                             ->icon('heroicon-m-truck')
                             ->copyable()
                             ->extraAttributes([
-                                'placeholder' => 'Nama Alat',
-                                'class' => 'border border-gray-300 rounded-md p-2',
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
                             ]),
 
                         TextEntry::make('no_unit')
@@ -300,8 +305,9 @@ class MobilResource extends Resource
                             ->icon('heroicon-m-hashtag')
                             ->copyable()
                             ->extraAttributes([
-                                'placeholder' => 'Nama Alat',
-                                'class' => 'border border-gray-300 rounded-md p-2',
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
                             ]),
                     ])
                     ->columns([
@@ -319,16 +325,18 @@ class MobilResource extends Resource
                                     ->label('Nama Alat')
                                     ->icon('heroicon-m-wrench-screwdriver')
                                     ->extraAttributes([
-                                        'placeholder' => 'Nama Alat',
-                                        'class' => 'border border-gray-300 rounded-md p-2',
+                                        'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                        'style' => 'transform: perspective(800px) translateZ(10px);',
                                     ]),
 
                                 TextEntry::make('kode_barcode')
                                     ->label('Kode Barcode')
                                     ->icon('heroicon-m-qr-code')
                                     ->extraAttributes([
-                                        'placeholder' => 'Nama Alat',
-                                        'class' => 'border border-gray-300 rounded-md p-2',
+                                        'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                        'style' => 'transform: perspective(800px) translateZ(10px);',
                                     ]),
 
                                 TextEntry::make('status_alat')
@@ -343,6 +351,11 @@ class MobilResource extends Resource
                                         'Baik' => 'heroicon-o-check-circle',
                                         'Hilang' => 'heroicon-o-no-symbol',
                                         'Rusak' => 'heroicon-o-exclamation-circle',
+                                    ])
+                                    ->extraAttributes([
+                                        'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                        'style' => 'transform: perspective(800px) translateZ(10px);',
                                     ]),
                             ])
                             ->columns([
@@ -373,5 +386,4 @@ class MobilResource extends Resource
     {
         return 'Daftar Mobil';
     }
-
 }

@@ -224,8 +224,10 @@ class AlatResource extends Resource
                                 ImageEntry::make('foto')
                                     ->label('Foto Alat')
                                     ->url(fn($record) => $record->foto ? asset('storage/' . $record->foto) : null)
-                                    ->extraAttributes(['class' => 'rounded-xl w-full h-auto object-cover'])
-                                    ->columnSpan(1),
+                                    ->columnSpan(1)
+                                    ->extraAttributes([
+                                        'class' => 'flex items-center justify-center',
+                                    ]),
 
                                 Grid::make(1)
                                     ->schema([
@@ -234,15 +236,17 @@ class AlatResource extends Resource
                                             ->icon('heroicon-m-qr-code')
                                             ->copyable()
                                             ->extraAttributes([
-                                                'placeholder' => 'Nama Alat',
-                                                'class' => 'border border-gray-300 rounded-md p-2',
+                                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                                'style' => 'transform: perspective(800px) translateZ(10px);',
                                             ]),
 
                                         TextEntry::make('nama_alat')
                                             ->label('Nama Alat')
                                             ->extraAttributes([
-                                                'placeholder' => 'Nama Alat',
-                                                'class' => 'border border-gray-300 rounded-md p-2',
+                                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                                'style' => 'transform: perspective(800px) translateZ(10px);',
                                             ]),
 
                                         TextEntry::make('status_alat')
@@ -259,8 +263,9 @@ class AlatResource extends Resource
                                                 'heroicon-o-wrench-screwdriver' => 'Hilang',
                                             ])
                                             ->extraAttributes([
-                                                'placeholder' => 'Nama Alat',
-                                                'class' => 'border border-gray-300 rounded-md p-2',
+                                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                                'style' => 'transform: perspective(800px) translateZ(10px);',
                                             ]),
                                     ])
                                     ->columnSpan(1),
@@ -272,23 +277,26 @@ class AlatResource extends Resource
                                             ->icon('heroicon-m-truck')
                                             ->visible(fn($record) => $record->mobil !== null)
                                             ->extraAttributes([
-                                                'placeholder' => 'Nama Alat',
-                                                'class' => 'border border-gray-300 rounded-md p-2',
+                                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                                'style' => 'transform: perspective(800px) translateZ(10px);',
                                             ]),
 
                                         TextEntry::make('merek_alat')
                                             ->label('Merek')
                                             ->extraAttributes([
-                                                'placeholder' => 'Nama Alat',
-                                                'class' => 'border border-gray-300 rounded-md p-2',
+                                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                                'style' => 'transform: perspective(800px) translateZ(10px);',
                                             ]),
 
                                         TextEntry::make('kategori_alat')
                                             ->label('Kategori')
                                             ->badge()
                                             ->extraAttributes([
-                                                'placeholder' => 'Nama Alat',
-                                                'class' => 'border border-gray-300 rounded-md p-2',
+                                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                                'style' => 'transform: perspective(800px) translateZ(10px);',
                                             ]),
                                     ])
                                     ->columnSpan(1),
@@ -302,10 +310,11 @@ class AlatResource extends Resource
                             ->prose()
                             ->markdown()
                             ->hiddenLabel()
-                                            ->extraAttributes([
-                                                'placeholder' => 'Nama Alat',
-                                                'class' => 'border border-gray-300 rounded-md p-2',
-                                            ]),
+                            ->extraAttributes([
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
+                            ]),
                     ])
                     ->collapsible(),
 
