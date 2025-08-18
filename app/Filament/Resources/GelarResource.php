@@ -33,6 +33,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ImageEntry;
 use App\Filament\Resources\GelarResource\Pages;
 use Filament\Infolists\Components\RepeatableEntry;
 use App\Filament\Resources\GelarResource\Pages\Formulir;
@@ -149,7 +150,7 @@ class GelarResource extends Resource
                                 ->label('Keterangan')
                                 ->placeholder('Opsional, isi jika ada catatan'),
 
-                            FileUpload::make('foto_alat')
+                            FileUpload::make('foto_kondisi')
                                 ->label('Foto Kondisi Alat')
                                 ->directory('foto-kondisi')
                                 ->image()
@@ -186,7 +187,7 @@ class GelarResource extends Resource
                 'alat_id' => $alat['alat_id'],
                 'status_alat' => $alat['status_alat'],
                 'keterangan' => $alat['keterangan'] ?? null,
-                'foto_alat' => $alat['foto_alat'] ?? null,
+                'foto_kondisi' => $alat['foto_kondisi'] ?? null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -277,10 +278,15 @@ class GelarResource extends Resource
                                     'class' => 'border border-gray-300 rounded-md p-2',
                                 ]),
 
-                            \Filament\Infolists\Components\ImageEntry::make('foto_alat')
-                                ->label('Foto Alat')
-                                ->height(150)
-                                ->hidden(fn($state) => blank($state)),
+                            TextEntry::make('foto_kondisi')
+                                ->label('Lihat Foto')
+                                ->url(fn($state) => filled($state)
+                                    ? asset('storage/' . $state)
+                                    : null)
+                                ->openUrlInNewTab()
+                                ->hidden(fn($state) => blank($state))
+                                ->badge() // biar kelihatan kayak tombol kecil
+                                ->color('info'),
                         ])
                         ->columns(2)
                         ->visible(fn($record) => $record->detailAlats()->exists())
