@@ -158,6 +158,7 @@ class AlatResource extends Resource
             ->columns([
                 ImageColumn::make('foto')
                     ->label('Foto')
+                    ->toggleable()
                     ->circular()
                     ->height(50)
                     ->width(50)
@@ -166,7 +167,7 @@ class AlatResource extends Resource
                 Tables\Columns\TextColumn::make('nama_alat')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('kategori_alat')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('merek_alat')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('tanggal_pembelian')->date()->sortable(),
+                Tables\Columns\TextColumn::make('tanggal_masuk')->date()->sortable(),
                 BadgeColumn::make('status_alat')
                     ->label('Status')
                     ->sortable()
