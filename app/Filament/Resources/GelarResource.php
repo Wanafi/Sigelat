@@ -317,8 +317,8 @@ class GelarResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('mobil.nomor_plat')->label('Nomor Plat'),
-                Tables\Columns\TextColumn::make('tanggal_cek')->label('Tanggal Cek')->date(),
+                Tables\Columns\TextColumn::make('mobil.nomor_plat')->label('Nomor Plat')->sortable(),
+                Tables\Columns\TextColumn::make('tanggal_cek')->label('Tanggal Cek')->date()->sortable(),
                 Tables\Columns\TextColumn::make('status')->label('Status')
                     ->badge()
                     ->colors([
@@ -328,7 +328,7 @@ class GelarResource extends Resource
                     ->icons([
                         'heroicon-o-check-circle' => 'Lengkap',
                         'heroicon-o-exclamation-triangle' => 'Tidak Lengkap',
-                    ]),
+                    ])->sortable(),
             ])
             ->actions([
                 ActionGroup::make([
