@@ -221,23 +221,31 @@ class GelarResource extends Resource
                 ->schema([
                     TextEntry::make('mobil.nomor_plat')->label('Nomor Plat Mobil')
                         ->extraAttributes([
-                            'placeholder' => 'Nama Alat',
-                            'class' => 'border border-gray-300 rounded-md p-2',
+                            'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                            'style' => 'transform: perspective(800px) translateZ(10px);',
                         ]),
                     TextEntry::make('tanggal_cek')->label('Tanggal Cek')->date()
                         ->extraAttributes([
-                            'placeholder' => 'Nama Alat',
-                            'class' => 'border border-gray-300 rounded-md p-2',
+                            'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                            'style' => 'transform: perspective(800px) translateZ(10px);',
                         ]),
                     TextEntry::make('status')->label('Status')->badge()->colors([
                         'success' => 'Lengkap',
                         'warning' => 'Tidak Lengkap',
-                    ]),
+                    ])
+                        ->extraAttributes([
+                            'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                            'style' => 'transform: perspective(800px) translateZ(10px);',
+                        ]),
                     TextEntry::make('pelaksana')
                         ->label('Pelaksana')
                         ->extraAttributes([
-                            'placeholder' => 'Nama Alat',
-                            'class' => 'border border-gray-300 rounded-md p-2',
+                            'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                            'style' => 'transform: perspective(800px) translateZ(10px);',
                         ]),
                 ])
                 ->columns(2),
@@ -251,8 +259,9 @@ class GelarResource extends Resource
                                 ->label('Nama Alat')
                                 ->weight('bold')
                                 ->extraAttributes([
-                                    'placeholder' => 'Nama Alat',
-                                    'class' => 'border border-gray-300 rounded-md p-2',
+                                    'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                    'style' => 'transform: perspective(800px) translateZ(10px);',
                                 ]),
 
                             TextEntry::make('status_alat')
@@ -265,8 +274,9 @@ class GelarResource extends Resource
                                     default => 'gray',
                                 })
                                 ->extraAttributes([
-                                    'placeholder' => 'Nama Alat',
-                                    'class' => 'border border-gray-300 rounded-md p-2',
+                                    'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                    'style' => 'transform: perspective(800px) translateZ(10px);',
                                 ]),
 
                             TextEntry::make('keterangan')
@@ -274,8 +284,9 @@ class GelarResource extends Resource
                                 ->placeholder('-')
                                 ->default('-')
                                 ->extraAttributes([
-                                    'placeholder' => 'Nama Alat',
-                                    'class' => 'border border-gray-300 rounded-md p-2',
+                                    'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                    'style' => 'transform: perspective(800px) translateZ(10px);',
                                 ]),
 
                             TextEntry::make('foto_kondisi')
@@ -286,7 +297,12 @@ class GelarResource extends Resource
                                 ->openUrlInNewTab()
                                 ->hidden(fn($state) => blank($state))
                                 ->badge() // biar kelihatan kayak tombol kecil
-                                ->color('info'),
+                                ->color('info')
+                                ->extraAttributes([
+                                    'class' => 'inline-block px-4 py-2 rounded-xl bg-white/20 backdrop-blur-md 
+                text-white shadow-lg border border-white/30 
+                hover:bg-white/30 cursor-pointer transition-all duration-200',
+                                ]),
                         ])
                         ->columns(2)
                         ->visible(fn($record) => $record->detailAlats()->exists())
