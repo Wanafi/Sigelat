@@ -48,7 +48,7 @@ class LaporanMobilResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nomor_plat')->label('Nomor Plat')->searchable(),
-                Tables\Columns\TextColumn::make('merek_mobil')->label('Merek Mobil')->searchable(),
+                Tables\Columns\TextColumn::make('merk_mobil')->label('Merek Mobil')->searchable(),
                 Tables\Columns\TextColumn::make('no_unit')->label('No Unit'),
                 Tables\Columns\BadgeColumn::make('status_mobil')
                     ->label('Status')
@@ -83,11 +83,22 @@ class LaporanMobilResource extends Resource
             ->schema([
                 Section::make('Informasi Mobil')
                     ->schema([
-                        TextEntry::make('nomor_plat')->label('Nomor Plat'),
+                        TextEntry::make('nomor_plat')
+                            ->label('Nomor Plat')
+                            ->extraAttributes([
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
+                            ]),
                         TextEntry::make('nama_tim')
                             ->label('Tim Armada')
                             ->icon('heroicon-m-user-group')
-                            ->badge(),
+                            ->badge()
+                            ->extraAttributes([
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
+                            ]),
                         TextEntry::make('status_mobil')
                             ->label('Status')
                             ->badge()
@@ -96,14 +107,36 @@ class LaporanMobilResource extends Resource
                                 'Tidak Aktif' => 'danger',
                                 'Dalam Perbaikan' => 'warning',
                                 default => 'gray',
-                            }),
+                            })
+                            ->extraAttributes([
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
+                            ]),
                         TextEntry::make('no_seri')
                             ->label('Nomor Seri')
                             ->icon('heroicon-m-key')
                             ->copyable()
-                            ->default('-'),
-                        TextEntry::make('merk_mobil')->label('Merek'),
-                        TextEntry::make('no_unit')->label('Nomor Unit'),
+                            ->default('-')
+                            ->extraAttributes([
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
+                            ]),
+                        TextEntry::make('merk_mobil')
+                            ->label('Merek')
+                            ->extraAttributes([
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
+                            ]),
+                        TextEntry::make('no_unit')
+                            ->label('Nomor Unit')
+                            ->extraAttributes([
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
+                            ]),
 
                     ])
                     ->columns(2),
