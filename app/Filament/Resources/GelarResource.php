@@ -46,7 +46,6 @@ use App\Filament\Resources\GelarResource\Pages\CreateGelar;
 class GelarResource extends Resource
 {
     protected static ?string $model = Gelar::class;
-
     protected static ?string $navigationIcon = 'heroicon-m-map';
     protected static ?string $navigationLabel = 'Gelar Alat';
     protected static ?string $pluralLabel = 'Daftar Kegiatan Gelar Alat';

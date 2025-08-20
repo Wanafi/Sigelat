@@ -160,4 +160,9 @@ class LaporanAlatResource extends Resource
     {
         return 'Laporan Alat';
     }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 }

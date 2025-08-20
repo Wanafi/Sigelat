@@ -16,7 +16,7 @@ use App\Filament\Resources\RiwayatResource\Pages;
 class RiwayatResource extends Resource
 {
     protected static ?string $model = Riwayat::class;
-
+    protected static ?string $navigationGroup = 'Riwayat / Aktifitas';
     protected static ?string $navigationIcon = 'heroicon-m-clock';
     protected static ?int $navigationSort = 4;
     protected static ?string $navigationLabel = 'Riwayat Konfirmasi';

@@ -189,4 +189,9 @@ class LaporanMobilResource extends Resource
     {
         return 'Laporan Mobil';
     }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 }
