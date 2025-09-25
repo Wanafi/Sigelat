@@ -11,21 +11,21 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Infolists\Components\Actions;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Infolists\Components\Actions\Action as InfoAction;
 use Filament\Infolists\Components\RepeatableEntry;
 use App\Filament\Resources\MobilResource\Pages\EditMobil;
 use App\Filament\Resources\MobilResource\Pages\ViewMobil;
@@ -317,6 +317,14 @@ class MobilResource extends Resource
 
                 InfoSection::make('Daftar Alat di Kendaraan')
                     ->description('Data seluruh alat yang terdaftar di mobil ini.')
+                    ->headerActions([ // 👈 ini kuncinya
+                        InfoAction::make('printAllQr')
+                            ->label('Print Semua QR Alat')
+                            ->color('success')
+                            ->icon('heroicon-o-printer')
+                            ->url(fn($record) => route('mobil.print-all-qr', $record))
+                            ->openUrlInNewTab(),
+                    ])
                     ->schema([
                         RepeatableEntry::make('alats')
                             ->label('Alat Terdaftar')

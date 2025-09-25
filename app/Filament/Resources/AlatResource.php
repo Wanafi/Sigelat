@@ -23,6 +23,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Infolists\Components\Actions;
 use Filament\Infolists\Components\Section;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\TextEntry;
@@ -30,6 +31,7 @@ use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Infolists\Components\Actions\Action;
 use Filament\Forms\Components\Section as FormSection;
 use App\Filament\Resources\AlatResource\Pages\EditAlat;
 use App\Filament\Resources\AlatResource\Pages\ViewAlat;
@@ -327,15 +329,15 @@ class AlatResource extends Resource
                             ->hiddenLabel()
                             ->extraAttributes(['class' => 'flex justify-center']),
 
-                        // Actions::make([
-                        //     Action::make('printQr')
-                        //         ->label('🖨️ Print QR Code')
-                        //         ->action(fn() => null)
-                        //         ->color('primary')
-                        //         ->extraAttributes([
-                        //             'onclick' => 'window.print()',
-                        //         ]),
-                        // ])->alignment('center'),
+                        Actions::make([
+                            Action::make('printQr')
+                                ->label('Print QR')
+                                ->url(fn($record) => route('alat.print-qr', $record))
+                                ->openUrlInNewTab()
+                                ->button()
+                                ->color('success')
+                                ->icon('heroicon-o-printer')
+                        ])->alignment('center')
                     ])
                     ->collapsible(),
             ]);

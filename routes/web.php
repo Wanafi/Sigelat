@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\MobilController;
+use App\Http\Controllers\QrCodeController;
 
 Route::get('/scan/{kode}', function ($kode, Request $request) {
     $alat = Alat::where('kode_barcode', $kode)->firstOrFail();
@@ -59,3 +61,7 @@ Route::get('/admin/gelars/{id}/formulir', function ($id) {
     return view('filament.resources.gelar-resource.pages.formulir', compact('gelar'));
 })->name('admin.gelars.formulir');
 
+Route::get('/alat/{alat}/print-qr', [QrCodeController::class, 'print'])->name('alat.print-qr');
+Route::get('/mobil/{mobil}/print-all-qr', [MobilController::class, 'printAllQr'])
+    ->name('mobil.print-all-qr')
+    ->middleware(['web','auth']);
