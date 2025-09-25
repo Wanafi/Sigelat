@@ -2,139 +2,196 @@
 
 namespace App\Filament\Resources;
 
+use App\Models\Mobil;
+use App\Models\Riwayat;
 use Filament\Forms;
 use Filament\Tables;
-use App\Models\Mobil;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\BadgeColumn;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Tables\Filters\MultiSelectFilter;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Notifications\Notification;
+use Filament\Infolists\Components\Actions;
+use Filament\Infolists\Components\Actions\Action;
 use App\Filament\Resources\LaporanMobilResource\Pages;
-use App\Filament\Resources\LaporanMobilResource\RelationManagers;
-use App\Filament\Resources\RiwayatsRelationManagerResource\RelationManagers\RiwayatsRelationManager;
 
 class LaporanMobilResource extends Resource
 {
     protected static ?string $model = Mobil::class;
-
-    protected static ?string $navigationIcon = 'heroicon-m-rectangle-stack';
+    protected static ?int $navigationSort = 3;
     protected static ?string $navigationGroup = 'Laporan';
-    protected static ?string $navigationLabel = 'Laporkan Mobil';
-    public static function shouldRegisterNavigation(): bool
+    protected static ?string $navigationLabel = 'Laporan Mobil';
+    protected static ?string $modelLabel = 'Laporan Mobil';
+    protected static ?string $navigationIcon = 'heroicon-m-rectangle-stack';
+
+    public static function canCreate(): bool
     {
         return false;
     }
-
-
-
-    public static function form(Form $form): Form
+    public static function canEdit(Model $record): bool
     {
-        return $form
-            ->schema([
-                //
-            ]);
+        return false;
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return false;
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nomor_plat')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('merk_mobil'),
-                Tables\Columns\TextColumn::make('no_unit'),
-                BadgeColumn::make('status_mobil')
+                Tables\Columns\TextColumn::make('nomor_plat')->label('Nomor Plat')->searchable(),
+                Tables\Columns\TextColumn::make('merk_mobil')->label('Merek Mobil')->searchable(),
+                Tables\Columns\TextColumn::make('no_unit')->label('No Unit'),
+                Tables\Columns\BadgeColumn::make('status_mobil')
                     ->label('Status')
                     ->colors([
-                        'warning' => 'TidakAktif',
-                        'danger' => 'DalamPerbaikan',
+                        'success' => 'Aktif',
+                        'warning' => 'Dalam Perbaikan',
+                        'danger' => 'Tidak Aktif',
                     ])
                     ->icons([
-                        'heroicon-o-exclamation-triangle' => 'TidakAktif',
-                        'heroicon-o-wrench-screwdriver' => 'DalamPerbaikan',
+                        'Aktif' => 'heroicon-o-check-circle',
+                        'heroicon-o-exclamation-triangle' => 'Tidak Aktif',
+                        'heroicon-o-wrench-screwdriver' => 'Dalam Perbaikan',
                     ]),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                MultiSelectFilter::make('status_mobil')
-                    ->label('Status Mobil')
+                Tables\Filters\MultiSelectFilter::make('status_mobil')
                     ->options([
-                        'aktif' => 'Aktif', 
-                        'tidakaktif' => 'TidakAktif',
-                        'dalamperbaikan' => 'DalamPerbaikan',
+                        'Aktif' => 'Aktif',
+                        'Tidak Aktif' => 'Tidak Aktif',
+                        'Dalam Perbaikan' => 'Dalam Perbaikan',
                     ])
-                    ->default(['TidakAktif', 'DalamPerbaikan']),
+                    ->default(['Tidak Aktif', 'Dalam Perbaikan']),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-            
-                Tables\Actions\Action::make('konfirmasi')
-                    ->label('Konfirmasi')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->form([
-                        Forms\Components\TextInput::make('aksi')
-                            ->label('Aksi')
-                            ->required(),
-            
-                        Forms\Components\Textarea::make('catatan')
-                            ->label('Catatan')
-                            ->rows(3)
-                            ->required(),
-                    ])
-                    ->action(function (Model $record, array $data) {
-                        /** @var Mobil $record */
-                        $record->status_mobil = 'ProsesPelaporan';
-                        $record->save();
-            
-                        \App\Models\Riwayat::create([
-                            'riwayatable_id' => $record->id,
-                            'riwayatable_type' => get_class($record),
-                            'status' => 'proses',
-                            'user_id' => auth()->id(),
-                            'tanggal_cek' => now()->toDateString(),
-                            'aksi' => $data['aksi'],
-                            'catatan' => $data['catatan'],
-                        ]);
-            
-                        session()->flash('message', 'Laporan Gelar berhasil diproses!');
-                    })
-                    ->visible(fn ($record) => $record->status !== 'proses'),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
             ]);
     }
 
-    public static function getRelations(): array
+    public static function infolist(Infolist $infolist): Infolist
     {
-        return [
-            //
-        ];
-    }
+        return $infolist
+            ->schema([
+                Section::make('Informasi Mobil')
+                    ->schema([
+                        TextEntry::make('nomor_plat')
+                            ->label('Nomor Plat')
+                            ->extraAttributes([
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
+                            ]),
+                        TextEntry::make('nama_tim')
+                            ->label('Tim Armada')
+                            ->icon('heroicon-m-user-group')
+                            ->badge()
+                            ->extraAttributes([
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
+                            ]),
+                        TextEntry::make('status_mobil')
+                            ->label('Status')
+                            ->badge()
+                            ->color(fn($state) => match ($state) {
+                                'Aktif' => 'success',
+                                'Tidak Aktif' => 'danger',
+                                'Dalam Perbaikan' => 'warning',
+                                default => 'gray',
+                            })
+                            ->extraAttributes([
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
+                            ]),
+                        TextEntry::make('no_seri')
+                            ->label('Nomor Seri')
+                            ->icon('heroicon-m-key')
+                            ->copyable()
+                            ->default('-')
+                            ->extraAttributes([
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
+                            ]),
+                        TextEntry::make('merk_mobil')
+                            ->label('Merek')
+                            ->extraAttributes([
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
+                            ]),
+                        TextEntry::make('no_unit')
+                            ->label('Nomor Unit')
+                            ->extraAttributes([
+                                'class' => 'px-3 py-2 rounded-xl bg-white/30 backdrop-blur-md border border-white/20 
+                shadow-lg text-gray-900',
+                                'style' => 'transform: perspective(800px) translateZ(10px);',
+                            ]),
 
+                    ])
+                    ->columns(2),
+
+                Actions::make([
+                    Action::make('konfirmasi')
+                        ->label('Konfirmasi')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->form([
+                            TextInput::make('aksi')
+                                ->label('Tindakan')
+                                ->required(),
+                            Textarea::make('catatan')
+                                ->label('Catatan')
+                                ->required()
+                                ->rows(3),
+                        ])
+                        ->action(function (Model $record, array $data) {
+                            $record->update(['status_mobil' => 'Aktif']);
+
+                            Riwayat::create([
+                                'riwayatable_id' => $record->id,
+                                'riwayatable_type' => get_class($record),
+                                'user_id' => auth()->id(),
+                                'status' => 'Selesai',
+                                'tanggal_cek' => now(),
+                                'aksi' => $data['aksi'],
+                                'catatan' => $data['catatan'],
+                            ]);
+
+                            Notification::make()
+                                ->title('Berhasil')
+                                ->body('Status mobil berhasil dikonfirmasi & diperbarui.')
+                                ->success()
+                                ->send();
+                        }),
+                ]),
+            ]);
+    }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListLaporanMobils::route('/'),
-            'create' => Pages\CreateLaporanMobil::route('/create'),
             'view' => Pages\ViewLaporanMobil::route('/{record}'),
-            'edit' => Pages\EditLaporanMobil::route('/{record}/edit'),
         ];
+    }
+    public static function getPluralLabel(): string
+    {
+        return 'Laporan Mobil';
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 }

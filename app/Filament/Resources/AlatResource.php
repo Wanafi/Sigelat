@@ -12,14 +12,10 @@ use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
-use BaconQrCode\Renderer\ImageRenderer;
 use Filament\Infolists\Components\Grid;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\Group;
-use Filament\Infolists\Components\Split;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\ImageColumn;
@@ -27,29 +23,20 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Actions;
 use Filament\Infolists\Components\Section;
 use Filament\Forms\Components\ToggleButtons;
-use Filament\Infolists\Components\HtmlEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Tables\Actions\DeleteBulkAction;
-use App\Filament\Resources\AlatResource\Pages;
-use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use Filament\Infolists\Components\Actions\Action;
-use Filament\Infolists\Components\RepeatableEntry;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use Filament\Forms\Components\Section as FormSection;
 use App\Filament\Resources\AlatResource\Pages\EditAlat;
 use App\Filament\Resources\AlatResource\Pages\ViewAlat;
 use App\Filament\Resources\AlatResource\Pages\ListAlats;
 use App\Filament\Resources\AlatResource\Pages\CreateAlat;
-use App\Filament\Resources\AlatResource\RelationManagers;
-use Illuminate\Support\Facades\Storage;
 
 class AlatResource extends Resource
 {
@@ -163,7 +150,7 @@ class AlatResource extends Resource
                     ->circular()
                     ->height(50)
                     ->width(50)
-                    ->url(fn($record) => $record->foto ? asset('/' . $record->foto) : null),
+                    ->url(fn($record) => $record->foto ? asset('storage/' . $record->foto) : null),
                 Tables\Columns\TextColumn::make('kode_barcode')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('nama_alat')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('kategori_alat')->searchable()->sortable(),
@@ -224,7 +211,7 @@ class AlatResource extends Resource
                             ->schema([
                                 ImageEntry::make('foto')
                                     ->label('Foto Alat')
-                                    ->url(fn($record) => $record->foto ? asset('foto-alat/' . basename($record->foto)) : null)
+                                    ->url(fn($record) => $record->foto ? asset('storage/' . $record->foto) : null)
                                     ->columnSpan(1)
                                     ->extraAttributes([
                                         'class' => 'flex items-center justify-center',
@@ -342,15 +329,15 @@ class AlatResource extends Resource
                             ->hiddenLabel()
                             ->extraAttributes(['class' => 'flex justify-center']),
 
-                        // Actions::make([
-                        //     Action::make('printQr')
-                        //         ->label('ЁЯЦия╕П Print QR Code')
-                        //         ->action(fn() => null)
-                        //         ->color('primary')
-                        //         ->extraAttributes([
-                        //             'onclick' => 'window.print()',
-                        //         ]),
-                        // ])->alignment('center'),
+                        Actions::make([
+                            Action::make('printQr')
+                                ->label('Print QR')
+                                ->url(fn($record) => route('alat.print-qr', $record))
+                                ->openUrlInNewTab()
+                                ->button()
+                                ->color('success')
+                                ->icon('heroicon-o-printer')
+                        ])->alignment('center')
                     ])
                     ->collapsible(),
             ]);

@@ -2,14 +2,12 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Alat;
 use App\Models\Mobil;
 use Filament\Widgets\BarChartWidget;
 
 class AlatPerMobilChart extends BarChartWidget
 {
-    protected static ?string $heading = 'Distribusi Kondisi Alat Per Mobil';
-
+    protected static ?string $heading = 'Kondisi Alat Per Mobil';
     protected static ?string $maxWidth = '7xl';
 
     public function getColumnSpan(): int|string|array
@@ -20,19 +18,22 @@ class AlatPerMobilChart extends BarChartWidget
     public function getExtraAttributes(): array
     {
         return [
-            'class' => 'w-full', // tambahan untuk memastikan lebar penuh
+            'class' => 'w-full',
         ];
     }
 
     protected function getData(): array
     {
+        // Ambil semua mobil beserta relasi alats
         $mobils = Mobil::with('alats')->get();
-        $labels = $mobils->pluck('nomor_plat')->toArray();
-        $kondisiLabels = Alat::select('status_alat')->distinct()->pluck('status_alat')->toArray();
 
-        $defaultColors = [
-            '#60A5FA', '#34D399', '#FBBF24', '#F87171', '#A78BFA', '#FB7185', '#FACC15',
-        ];
+        $labels = $mobils->map(function ($mobil) {
+            $namaTim = $mobil->nama_tim ?? 'Tidak Diketahui';
+            return [$mobil->nomor_plat, "({$namaTim})"];
+        })->toArray();
+
+        $kondisiLabels = ['Hilang', 'Rusak'];
+        $defaultColors = ["#0089B6", "#FFD200"];
 
         $datasets = [];
 
@@ -42,7 +43,11 @@ class AlatPerMobilChart extends BarChartWidget
                 'backgroundColor' => $defaultColors[$index % count($defaultColors)],
                 'borderColor' => 'transparent',
                 'borderWidth' => 0,
-                'data' => $mobils->map(fn($mobil) => $mobil->alats->where('status_alat', $kondisi)->count())->toArray(),
+                'data' => $mobils->map(function ($mobil) use ($kondisi) {
+                    return $mobil->alats
+                        ? $mobil->alats->where('status_alat', $kondisi)->count()
+                        : 0;
+                })->toArray(),
             ];
         }
 

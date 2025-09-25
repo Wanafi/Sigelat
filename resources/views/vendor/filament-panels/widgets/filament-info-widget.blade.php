@@ -18,13 +18,13 @@
             <div class="flex flex-col items-end gap-y-1">
                 <x-filament::link
                     color="gray"
-                    href="https://filamentphp.com/docs"
+                    href="https://hsse.pln.co.id/"
                     icon="heroicon-m-book-open"
                     icon-alias="panels::widgets.filament-info.open-documentation-button"
                     rel="noopener noreferrer"
                     target="_blank"
                 >
-                    {{ __('filament-panels::widgets/filament-info-widget.actions.open_documentation.label') }}
+                    {{ __('Inspekta') }}
                 </x-filament::link>
 
                 <x-filament::link

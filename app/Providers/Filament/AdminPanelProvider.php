@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
+use Livewire\Livewire;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Http\Middleware\Authenticate;
@@ -18,6 +19,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use App\Filament\Resources\LaporanResource\Widgets\LaporanOverview;
+use Rmsramos\Activitylog\ActivitylogPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -30,14 +32,17 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->registration()
             ->colors([
-                'danger' => Color::Rose,
-                'gray' => Color::Gray,
-                'info' => Color::Blue,
-                'primary' => Color::Yellow,
-                'success' => Color::Emerald,
-                'warning' => Color::Orange,
+                'primary' => Color::hex('#FFD200'),   // Biru PLN
+                'warning' => Color::hex('#FFD200'),   // Kuning PLN
+                'danger'  => Color::hex('#E63946'),   // Merah soft
+                'success' => Color::hex('#34D399'),   // Hijau emerald
+                'info'    => Color::hex('#0089B6'),   // Biru info Tailwind
+                'gray'    => Color::Gray,             // Gray default
             ])
+
+            ->databaseNotifications()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
@@ -49,6 +54,7 @@ class AdminPanelProvider extends PanelProvider
                 LaporanOverview::class,
                 Widgets\FilamentInfoWidget::class,
             ])
+
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -59,6 +65,9 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->plugins([
+                ActivitylogPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,

@@ -2,18 +2,30 @@
 
 namespace App\Filament\Resources\LaporanGelarResource\Pages;
 
+use App\Models\Gelar;
+use Filament\Resources\Pages\Page;
 use App\Filament\Resources\LaporanGelarResource;
-use Filament\Actions;
-use Filament\Resources\Pages\ViewRecord;
 
-class ViewLaporanGelar extends ViewRecord
+class ViewLaporanGelar extends Page
 {
     protected static string $resource = LaporanGelarResource::class;
+    public function getTitle(): string
+    {
+        return 'Lihat Laporan Gelar Alat';
+    }
+    protected static string $view = 'filament.resources.gelar-resource.pages.formulir';
 
-    protected function getHeaderActions(): array
+    public $record;
+
+    public function mount($record): void
+    {
+        $this->record = Gelar::with(['mobil.alats', 'detailGelars.alat'])->findOrFail($record);
+    }
+
+    protected function getViewData(): array
     {
         return [
-            Actions\EditAction::make(),
+            'gelar' => $this->record,
         ];
     }
 }
