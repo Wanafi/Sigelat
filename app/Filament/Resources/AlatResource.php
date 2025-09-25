@@ -150,7 +150,7 @@ class AlatResource extends Resource
                     ->circular()
                     ->height(50)
                     ->width(50)
-                    ->url(fn($record) => $record->foto ? asset('storage/' . $record->foto) : null),
+                    ->url(fn($record) => $record->foto ? asset('storage/foto-alat/' . $record->foto) : null),
                 Tables\Columns\TextColumn::make('kode_barcode')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('nama_alat')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('kategori_alat')->searchable()->sortable(),
@@ -211,7 +211,7 @@ class AlatResource extends Resource
                             ->schema([
                                 ImageEntry::make('foto')
                                     ->label('Foto Alat')
-                                    ->url(fn($record) => $record->foto ? asset('storage/' . $record->foto) : null)
+                                    ->url(fn($record) => $record->foto ? asset('storage/foto-alat/' . $record->foto) : null)
                                     ->columnSpan(1)
                                     ->extraAttributes([
                                         'class' => 'flex items-center justify-center',
