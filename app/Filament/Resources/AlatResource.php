@@ -82,12 +82,8 @@ class AlatResource extends Resource
                             ->label('Kategori Alat')
                             ->required()
                             ->options([
-                                'distribusi' => 'Distribusi',
-                                'pemeliharaan' => 'Pemeliharaan',
-                                'proteksi' => 'Proteksi',
-                                'pengukuran' => 'Pengukuran',
-                                'energi_terbarukan' => 'Energi Terbarukan',
-                                'pendukung' => 'Pendukung',
+                                'Peralatan Kerja' => 'Peralatan Kerja',
+                                'Peralatan K3' => 'Peralatan K3',
                             ])
                             ->searchable()
                             ->native(false)
@@ -151,11 +147,11 @@ class AlatResource extends Resource
                     ->height(50)
                     ->width(50)
                     ->url(fn($record) => $record->foto ? asset('storage/' . $record->foto) : null),
-                Tables\Columns\TextColumn::make('kode_barcode')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('nama_alat')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('kategori_alat')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('merek_alat')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('tanggal_masuk')->date()->sortable(),
+                Tables\Columns\TextColumn::make('kode_barcode')->searchable()->sortable()->toggleable(),
+                Tables\Columns\TextColumn::make('nama_alat')->searchable()->sortable()->toggleable(),
+                Tables\Columns\TextColumn::make('kategori_alat')->searchable()->sortable()->toggleable(),
+                Tables\Columns\TextColumn::make('merek_alat')->searchable()->sortable()->toggleable(),
+                Tables\Columns\TextColumn::make('tanggal_masuk')->date()->sortable()->toggleable(),
                 BadgeColumn::make('status_alat')
                     ->label('Status')
                     ->sortable()

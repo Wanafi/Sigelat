@@ -83,6 +83,7 @@ class MobilResource extends Resource
                                     'Har' => 'Har',
                                     'Assessment' => 'Assessment',
                                     'Raw' => 'Raw',
+                                    'Yantek' => 'Yantek',
                                 ])
                                 ->placeholder('Pilih Tim')
                                 ->native(false)
@@ -167,25 +168,26 @@ class MobilResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('nomor_plat')->searchable(),
-
                 TextColumn::make('merk_mobil')->label('Merek Mobil'),
                 TextColumn::make('no_unit'),
-                TextColumn::make('no_seri')->label('Nomor Seri')->searchable(),
-
+                TextColumn::make('no_seri')->label('Nomor Seri')->searchable()->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('nama_tim')
                     ->label('Tim Armada')
                     ->badge()
+                    ->sortable()
                     ->colors([
                         'info' => 'Ops',
                         'success' => 'Har',
                         'warning' => 'Assessment',
                         'danger' => 'Raw',
+                        'gray' => 'Yantek',
                     ])
                     ->icons([
                         'heroicon-o-rocket-launch' => 'Ops',
                         'heroicon-o-cog-6-tooth' => 'Har',
                         'heroicon-o-clipboard-document-check' => 'Assessment',
                         'heroicon-o-beaker' => 'Raw',
+                        'heroicon-s-clipboard-document-check' => 'Yantek',
                     ]),
                 BadgeColumn::make('status_mobil')
                     ->label('Status')
